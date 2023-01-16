@@ -1,9 +1,42 @@
 ﻿@page "/"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Rce2 Message Broker</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="p-4 vh-90">
+    @if (string.IsNullOrWhiteSpace(_code) == false)
+    {
+        <div class="d-flex flex-column h-100">
+            <div class="d-flex flex-grow-1 align-items-center">
+                <div class="card border-primary admin-max-width mx-auto">
+                    <div class="card-body">
 
-Welcome to your new app.
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column flex-grow-1 h-100 justify-content-center">
+            <div class="mx-auto">
+                <input @oninput="OnCode" type="text" placeholder="Code">
+            </div>
+        </div>
+    }
+</div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    private string _code;
+
+    public void OnCode(ChangeEventArgs changeEventArgs)
+    {
+        var code = "foo";
+        if ((changeEventArgs.Value as string) == code)
+        {
+            _code = code;
+        }
+    }
+}
