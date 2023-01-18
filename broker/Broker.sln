@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Broker.Server", "Broker\Ser
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Broker.Client", "Broker\Client\Broker.Client.csproj", "{EEA99E75-7AC2-4597-AFA3-05C131174D8A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Broker.Shared", "Broker\Shared\Broker.Shared.csproj", "{0E13E5EF-C556-4E27-BE37-B7342CC4E676}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{EEA99E75-7AC2-4597-AFA3-05C131174D8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEA99E75-7AC2-4597-AFA3-05C131174D8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEA99E75-7AC2-4597-AFA3-05C131174D8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E13E5EF-C556-4E27-BE37-B7342CC4E676}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E13E5EF-C556-4E27-BE37-B7342CC4E676}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E13E5EF-C556-4E27-BE37-B7342CC4E676}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E13E5EF-C556-4E27-BE37-B7342CC4E676}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

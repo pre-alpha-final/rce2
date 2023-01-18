@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Client\Broker.Client.csproj" />
+    <ProjectReference Include="..\Shared\Broker.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

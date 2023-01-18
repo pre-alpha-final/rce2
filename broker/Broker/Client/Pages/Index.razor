@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Broker.Shared
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
@@ -33,10 +34,9 @@
 
     public void OnCode(ChangeEventArgs changeEventArgs)
     {
-        var code = "foo";
-        if ((changeEventArgs.Value as string) == code)
+        if ((changeEventArgs.Value as string) == Deployment.Code)
         {
-            _code = code;
+            _code = Deployment.Code;
         }
     }
 }

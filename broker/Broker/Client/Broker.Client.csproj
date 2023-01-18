@@ -20,4 +20,8 @@
     <Folder Include="Properties\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\Broker.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
