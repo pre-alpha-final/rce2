@@ -1,9 +1,14 @@
+using Broker.Server.Services;
+using Broker.Server.Services.Implementation;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddScoped<IFeedService, FeedService>();
+builder.Services.AddSingleton<IFeedRepository, FeedRepository>();
 
 var app = builder.Build();
 
@@ -25,7 +30,6 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 
 app.MapRazorPages();
 app.MapControllers();
