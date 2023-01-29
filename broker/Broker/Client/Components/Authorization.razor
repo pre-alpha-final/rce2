@@ -1,12 +1,9 @@
-﻿@if (AppDataContext.AuthorizationFailure)
+﻿@if (AuthorizationFailure)
 {
     <div class="alert alert-danger">Wrong Code</div>
 }
 
 @code {
-    [CascadingParameter]
-    public AppDataContext AppDataContext { get; set; }
-
     [Parameter]
-    public Action BlazorSux { get; set; }
+    public bool AuthorizationFailure { get; set; }
 }

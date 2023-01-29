@@ -3,6 +3,7 @@
 @using System.Net.Http.Headers
 @using System.Net
 @using Broker.Shared.Events
+@using Broker.Shared.Model
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq
 @inject IJSRuntime JSRuntime
@@ -12,7 +13,7 @@
 <PageTitle>Rce2 Message Broker</PageTitle>
 
 <div class="p-4 vh-90">
-    @if (string.IsNullOrWhiteSpace(AppDataContext.Code))
+    @if (string.IsNullOrWhiteSpace(_code))
     {
         <div class="d-flex flex-column flex-grow-1 h-100 justify-content-center">
             <div class="mx-auto">
@@ -22,7 +23,7 @@
     }
     else
     {
-        <Authorization BlazorSux=@(() => {}) />
+        <Authorization AuthorizationFailure=AuthorizationFailure />
         <div class="d-flex flex-column h-100">
             <div class="d-flex flex-grow-1 align-items-center">
                 <div class="card border-primary admin-max-width mx-auto">
@@ -35,16 +36,19 @@
 </div>
 
 @code {
+    private string _code;
     private string _codeInput;
 
-    [CascadingParameter]
-    public AppDataContext AppDataContext { get; set; }
+    public bool AuthorizationFailure { get; set; }
+    public List<Agent> Agents { get; set; }
+    public List<Binding> Bindings { get; set; }
+    public List<string> Outputs { get; set; }
 
     public void OnCode(KeyboardEventArgs e)
     {
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
-            AppDataContext.Code = _codeInput;
+            _code = _codeInput;
             Task.Run(GetFeed);
         }
     }
@@ -52,7 +56,7 @@
     private async Task GetFeed()
     {
         var id = Guid.NewGuid();
-        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Code", AppDataContext.Code);
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Code", _code);
 
         while(true)
         {
@@ -79,7 +83,7 @@
         {
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                AppDataContext.AuthorizationFailure = true;
+                AuthorizationFailure = true;
                 StateHasChanged();
             }
             return false;
@@ -105,7 +109,7 @@
 
     private void Handle(BrokerInitEvent brokerInitEvent)
     {
-        AppDataContext.Agents = brokerInitEvent.Agents;
-        AppDataContext.Bindings = brokerInitEvent.Bindings;
+        Agents = brokerInitEvent.Agents;
+        Bindings = brokerInitEvent.Bindings;
     }
 }
