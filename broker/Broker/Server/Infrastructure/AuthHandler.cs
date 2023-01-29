@@ -14,8 +14,8 @@ public class AuthHandler : IAuthorizationMiddlewareResultHandler
 
     public async Task HandleAsync(RequestDelegate next, HttpContext context, AuthorizationPolicy policy, PolicyAuthorizationResult authorizeResult)
     {
-        var x = context.Request.Headers.Authorization.FirstOrDefault()?.Substring(5);
-        if (context.Request.Headers.Authorization.FirstOrDefault()?.Substring(5) != _configuration["code"])
+        var authorizeHeader = context.Request.Headers.Authorization.FirstOrDefault();
+        if (authorizeHeader == null || authorizeHeader.Length < 6 || authorizeHeader.Substring(5) != _configuration["code"])
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;

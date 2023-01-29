@@ -2,7 +2,7 @@
 
 namespace Broker.Client.Infrastructure;
 
-public class AppData
+public class AppDataContext
 {
     public string Code { get; set; }
     public bool AuthorizationFailure { get; set; }

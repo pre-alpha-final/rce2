@@ -1,15 +1,28 @@
 ﻿@page "/"
 @using Broker.Shared
+@using System.Net.Http.Headers
+@using System.Net
+@using Broker.Shared.Events
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
-@inject HttpClient Http
+@inject HttpClient HttpClient
 
 <PageTitle>Rce2 Message Broker</PageTitle>
 
 <div class="p-4 vh-90">
-    @if (string.IsNullOrWhiteSpace(AppData.Code) == false)
+    @if (string.IsNullOrWhiteSpace(AppDataContext.Code))
     {
-        <Authorization />
+        <div class="d-flex flex-column flex-grow-1 h-100 justify-content-center">
+            <div class="mx-auto">
+                <input @bind="_codeInput" @onkeyup="OnCode" type="text" placeholder="Code">
+            </div>
+        </div>
+    }
+    else
+    {
+        <Authorization BlazorSux=@(() => {}) />
         <div class="d-flex flex-column h-100">
             <div class="d-flex flex-grow-1 align-items-center">
                 <div class="card border-primary admin-max-width mx-auto">
@@ -19,27 +32,80 @@
             </div>
         </div>
     }
-    else
-    {
-        <div class="d-flex flex-column flex-grow-1 h-100 justify-content-center">
-            <div class="mx-auto">
-                <input @bind="_codeInput" @onkeyup="OnCode" type="text" placeholder="Code">
-            </div>
-        </div>
-    }
 </div>
 
 @code {
     private string _codeInput;
 
     [CascadingParameter]
-    public AppData AppData { get; set; }
+    public AppDataContext AppDataContext { get; set; }
 
     public void OnCode(KeyboardEventArgs e)
     {
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
-            AppData.Code = _codeInput;
+            AppDataContext.Code = _codeInput;
+            Task.Run(GetFeed);
         }
+    }
+
+    private async Task GetFeed()
+    {
+        var id = Guid.NewGuid();
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Code", AppDataContext.Code);
+
+        while(true)
+        {
+            try
+            {
+                var response = await HttpClient.GetAsync($"/api/broker/{id}");
+                if (IsValid(response) == false)
+                {
+                    await Task.Delay(5000);
+                    continue;
+                }
+                await HandleFeed(response);
+            }
+            catch (Exception e)
+            {
+                await Task.Delay(5000);
+            }
+        }
+    }
+
+    private bool IsValid(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode == false)
+        {
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                AppDataContext.AuthorizationFailure = true;
+                StateHasChanged();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private async Task HandleFeed(HttpResponseMessage response)
+    {
+        var brokerEvents = JsonConvert.DeserializeObject<List<JObject>>(await response.Content.ReadAsStringAsync());
+        foreach (var brokerEvent in brokerEvents)
+        {
+            var brokerEventBase = brokerEvent.ToObject<BrokerEventBase>();
+            switch (brokerEventBase.BrokerEventType)
+            {
+                case nameof(BrokerInitEvent):
+                    Handle(brokerEvent.ToObject<BrokerInitEvent>());
+                    break;
+            }
+        }
+        StateHasChanged();
+    }
+
+    private void Handle(BrokerInitEvent brokerInitEvent)
+    {
+        AppDataContext.Agents = brokerInitEvent.Agents;
+        AppDataContext.Bindings = brokerInitEvent.Bindings;
     }
 }

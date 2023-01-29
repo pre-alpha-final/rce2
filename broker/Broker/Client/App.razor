@@ -1,6 +1,6 @@
 ﻿<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <CascadingValue Value="@AppData">
+        <CascadingValue Value="@AppDataContext">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </CascadingValue>
@@ -14,5 +14,5 @@
 </Router>
 
 @code {
-    public AppData AppData { get; set; } = new();
+    public AppDataContext AppDataContext { get; set; } = new();
 }
