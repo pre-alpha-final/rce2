@@ -1,4 +1,4 @@
-﻿namespace Broker.Shared.Infrastructure;
+﻿namespace Broker.Shared.Model;
 
 public class Agent
 {

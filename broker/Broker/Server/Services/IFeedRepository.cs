@@ -1,10 +1,8 @@
-﻿using Broker.Shared.Infrastructure;
+﻿namespace Broker.Server.Services;
 
-namespace Broker.Server.Services;
-
-public interface IFeedRepository
+public interface IFeedRepository<T> where T : class
 {
     bool Exists(Guid id);
-    void AddItem(Guid id, Rce2Message rce2Message);
-    Rce2Message GetNext(Guid id);
+    void AddItem(Guid id, T item);
+    T GetNext(Guid id);
 }

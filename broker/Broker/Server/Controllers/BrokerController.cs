@@ -1,4 +1,5 @@
 using Broker.Server.Services;
+using Broker.Shared.Events;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Broker.Server.Controllers
@@ -7,9 +8,9 @@ namespace Broker.Server.Controllers
     [Route("api/broker")]
     public class BrokerController : ControllerBase
     {
-        private readonly IFeedService _feedService;
+        private readonly IFeedService<BrokerEventBase> _feedService;
 
-        public BrokerController(IFeedService feedService)
+        public BrokerController(IFeedService<BrokerEventBase> feedService)
         {
             _feedService = feedService;
         }
@@ -17,7 +18,7 @@ namespace Broker.Server.Controllers
         [HttpGet("{id:Guid}")]
         public async Task<OkObjectResult> GetFeed(Guid id)
         {
-            return Ok(await _feedService.GetNext(id));
+            return Ok((await _feedService.GetNext(id)).Select(e => Convert.ChangeType(e, e.GetType())));
         }
     }
 }

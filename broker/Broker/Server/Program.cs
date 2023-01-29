@@ -1,5 +1,6 @@
 using Broker.Server.Services;
 using Broker.Server.Services.Implementation;
+using Broker.Shared.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddScoped<IFeedService, FeedService>();
-builder.Services.AddSingleton<IFeedRepository, FeedRepository>();
+builder.Services.AddScoped<IFeedService<BrokerEventBase>, FeedService<BrokerEventBase>>();
+builder.Services.AddSingleton<IFeedRepository<BrokerEventBase>, FeedRepository<BrokerEventBase>>();
 
 var app = builder.Build();
 

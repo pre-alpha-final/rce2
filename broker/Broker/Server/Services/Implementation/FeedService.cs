@@ -1,45 +1,72 @@
-﻿using Broker.Shared.Infrastructure;
+﻿using Broker.Shared.Events;
 
 namespace Broker.Server.Services.Implementation;
 
-public class FeedService : IFeedService
+public class FeedService<T> : IFeedService<T> where T : class
 {
     private const int BatchCount = 10;
     private const int LongPollingTimeout = 30;
-    private readonly IFeedRepository _feedRepository;
-    private readonly SemaphoreSlim _getSync = new SemaphoreSlim(0, 1);
+    private readonly IFeedRepository<T> _feedRepository;
+    private readonly SemaphoreSlim _getSync = new(0, 1);
 
-    public FeedService(IFeedRepository feedRepository)
+    public FeedService(IFeedRepository<T> feedRepository)
     {
         _feedRepository = feedRepository;
     }
 
-    public async Task AddItem(Guid id, Rce2Message rce2Message)
+    public async Task AddItem(Guid id, T item)
     {
-        _feedRepository.AddItem(id, rce2Message);
+        _feedRepository.AddItem(id, item);
     }
 
-    public async Task<List<Rce2Message>> GetNext(Guid id)
+    public async Task<List<T>> GetNext(Guid id)
     {
         if (_feedRepository.Exists(id) == false)
         {
-            // feed initial state
-            _feedRepository.AddItem(id, new Rce2Message { Type = Rce2Types.Agent, Payload = new List<object> { new Agent() } });
+            _feedRepository.AddItem(id, new BrokerInitEvent
+            {
+                Agents = new()
+                {
+                    new()
+                    {
+                        Name = "Agent1",
+                    },
+                    new()
+                    {
+                        Name = "Agent2",
+                    },
+                },
+                Bindings = new()
+                {
+                    new()
+                    {
+                        Name = "Binding1",
+                    },
+                    new()
+                    {
+                        Name = "Binding2",
+                    }
+                }
+            } as T);
         }
 
         var feed = GetFeed(id);
         if (feed.Any() == false)
         {
-            await Task.WhenAny(_getSync.WaitAsync(), Task.Delay(TimeSpan.FromSeconds(LongPollingTimeout)));
-            feed = GetFeed(id);
+            var delay = Task.Delay(TimeSpan.FromSeconds(LongPollingTimeout));
+            await Task.WhenAny(delay, _getSync.WaitAsync());
+            if (delay.IsCompleted == false)
+            {
+                feed = GetFeed(id);
+            }
         }
 
         return feed;
     }
 
-    private List<Rce2Message> GetFeed(Guid id)
+    private List<T> GetFeed(Guid id)
     {
-        var feed = new List<Rce2Message>();
+        var feed = new List<T>();
         for (var i = 0; i < BatchCount; i++)
         {
             var next = _feedRepository.GetNext(id);

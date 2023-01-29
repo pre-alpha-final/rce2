@@ -1,9 +1,7 @@
-﻿using Broker.Shared.Infrastructure;
+﻿namespace Broker.Server.Services;
 
-namespace Broker.Server.Services;
-
-public interface IFeedService
+public interface IFeedService<T> where T : class
 {
-    Task AddItem(Guid id, Rce2Message rce2Message);
-    Task<List<Rce2Message>> GetNext(Guid id);
+    Task AddItem(Guid id, T item);
+    Task<List<T>> GetNext(Guid id);
 }
