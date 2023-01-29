@@ -23,20 +23,21 @@
     {
         <div class="d-flex flex-column flex-grow-1 h-100 justify-content-center">
             <div class="mx-auto">
-                <input @oninput="OnCode" type="text" placeholder="Code">
+                <input @bind="_codeInput" @onkeyup="OnCode" type="text" placeholder="Code">
             </div>
         </div>
     }
 </div>
 
 @code {
+    private string _codeInput;
     private string _code;
 
-    public void OnCode(ChangeEventArgs changeEventArgs)
+    public void OnCode(KeyboardEventArgs e)
     {
-        if ((changeEventArgs.Value as string) == Deployment.Code)
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
-            _code = Deployment.Code;
+            _code = _codeInput;
         }
     }
 }

@@ -1,11 +1,13 @@
 using Broker.Server.Services;
 using Broker.Shared.Events;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Broker.Server.Controllers
 {
     [ApiController]
     [Route("api/broker")]
+    [Authorize]
     public class BrokerController : ControllerBase
     {
         private readonly IFeedService<BrokerEventBase> _feedService;

@@ -1,6 +1,8 @@
+using Broker.Server.Infrastructure;
 using Broker.Server.Services;
 using Broker.Server.Services.Implementation;
 using Broker.Shared.Events;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, AuthHandler>();
 builder.Services.AddScoped<IFeedService<BrokerEventBase>, FeedService<BrokerEventBase>>();
 builder.Services.AddSingleton<IFeedRepository<BrokerEventBase>, FeedRepository<BrokerEventBase>>();
 
@@ -30,7 +33,9 @@ app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
+app.UseAuthentication();
 app.UseRouting();
+app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();
