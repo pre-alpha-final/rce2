@@ -7,13 +7,13 @@
 <PageTitle>Rce2 Message Broker</PageTitle>
 
 <div class="p-4 vh-90">
-    @if (string.IsNullOrWhiteSpace(_code) == false)
+    @if (string.IsNullOrWhiteSpace(AppData.Code) == false)
     {
+        <Authorization />
         <div class="d-flex flex-column h-100">
             <div class="d-flex flex-grow-1 align-items-center">
                 <div class="card border-primary admin-max-width mx-auto">
                     <div class="card-body">
-
                     </div>
                 </div>
             </div>
@@ -31,13 +31,15 @@
 
 @code {
     private string _codeInput;
-    private string _code;
+
+    [CascadingParameter]
+    public AppData AppData { get; set; }
 
     public void OnCode(KeyboardEventArgs e)
     {
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
-            _code = _codeInput;
+            AppData.Code = _codeInput;
         }
     }
 }

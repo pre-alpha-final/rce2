@@ -1,0 +1,9 @@
+﻿@if (AppData.AuthorizationFailure)
+{
+    <div class="alert alert-danger">Authentication Error</div>
+}
+
+@code {
+    [CascadingParameter]
+    public AppData AppData { get; set; }
+}
