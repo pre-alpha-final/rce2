@@ -12,28 +12,25 @@
 
 <PageTitle>Rce2 Message Broker</PageTitle>
 
-<div class="p-4 vh-90">
-    @if (string.IsNullOrWhiteSpace(_code))
-    {
+@if (string.IsNullOrWhiteSpace(_code))
+{
+    <div class="p-4 vh-90">
         <div class="d-flex flex-column flex-grow-1 h-100 justify-content-center">
             <div class="mx-auto">
                 <input @bind="_codeInput" @onkeyup="OnCode" type="text" placeholder="Code">
             </div>
         </div>
-    }
-    else
-    {
-        <Authorization AuthorizationFailure=AuthorizationFailure />
-        <div class="d-flex flex-column h-100">
-            <div class="d-flex flex-grow-1 align-items-center">
-                <div class="card border-primary admin-max-width mx-auto">
-                    <div class="card-body">
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-</div>
+    </div>
+}
+else
+{
+    <div class="p-4">
+        <div><Authorization AuthorizationFailure=AuthorizationFailure /></div>
+        <div><AgentList Agents="Agents" /></div>
+        <div class="mt-5"><BindingList Agents="Agents" Bindings="Bindings" /></div>
+        <div class="mt-5"><OutputList Outputs="Outputs" /></div>
+    </div>
+}
 
 @code {
     private string _code;
@@ -41,8 +38,8 @@
 
     public bool AuthorizationFailure { get; set; }
     public List<Agent> Agents { get; set; }
-    public List<string> Outputs { get; set; }
     public List<Binding> Bindings { get; set; }
+    public List<string> Outputs { get; set; }
 
     public void OnCode(KeyboardEventArgs e)
     {
@@ -51,6 +48,21 @@
             _code = _codeInput;
             Task.Run(GetFeed);
         }
+
+        Outputs = new()
+        {
+            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
+            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
+            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
+            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
+            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
+            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
+            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
+            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
+            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
+            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
+            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
+        };
     }
 
     private async Task GetFeed()

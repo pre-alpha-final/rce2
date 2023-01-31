@@ -29,23 +29,146 @@ public class FeedService<T> : IFeedService<T> where T : class
                 {
                     new()
                     {
+                        Id = Guid.NewGuid(),
                         Name = "Agent1",
+                        Ins = new()
+                        {
+                            { "jakies wejscie", "void" }
+                        },
+                        Outs = new()
+                        {
+                            { "cos wyjscie", "number" }
+                        },
+                        LastOut = "foo1",
                     },
                     new()
                     {
+                        Id = Guid.NewGuid(),
+                        Name = "Agent1",
+                        Ins = new()
+                        {
+                            { "jakies wejscie", "void" }
+                        },
+                        Outs = new()
+                        {
+                            { "cos wyjscie", "number" }
+                        },
+                        LastOut = "foo1",
+                    },                    new()
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "Agent1",
+                        Ins = new()
+                        {
+                            { "jakies wejscie", "void" }
+                        },
+                        Outs = new()
+                        {
+                            { "cos wyjscie", "number" }
+                        },
+                        LastOut = "foo1",
+                    },                    new()
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "Agent1",
+                        Ins = new()
+                        {
+                            { "jakies wejscie", "void" }
+                        },
+                        Outs = new()
+                        {
+                            { "cos wyjscie", "number" }
+                        },
+                        LastOut = "foo1",
+                    },                    new()
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "Agent1",
+                        Ins = new()
+                        {
+                            { "jakies wejscie", "void" }
+                        },
+                        Outs = new()
+                        {
+                            { "cos wyjscie", "number" }
+                        },
+                        LastOut = "foo1",
+                    },                    new()
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "Agent1",
+                        Ins = new()
+                        {
+                            { "jakies wejscie", "void" }
+                        },
+                        Outs = new()
+                        {
+                            { "cos wyjscie", "number" }
+                        },
+                        LastOut = "foo1",
+                    },
+                    new()
+                    {
+                        Id = Guid.NewGuid(),
                         Name = "Agent2",
+                        Ins = new()
+                        {
+                            { "in21", "string" }
+                        },
+                        Outs = new()
+                        {
+                            { "out21", "string-list" }
+                        },
+                        LastOut = "foo2",
                     },
                 },
                 Bindings = new()
                 {
                     new()
                     {
-                        Name = "Binding1",
+                        OutId = Guid.NewGuid(),
+                        OutName = "Agent1",
+                        OutOut = "out11",
+                        InId = Guid.NewGuid(),
+                        InName = "Agent1",
+                        InIn = "in11",
                     },
                     new()
                     {
-                        Name = "Binding2",
-                    }
+                        OutId = Guid.NewGuid(),
+                        OutName = "Agent2",
+                        OutOut = "out21",
+                        InId = Guid.NewGuid(),
+                        InName = "Agent1",
+                        InIn = "in11",
+                    },
+                                        new()
+                    {
+                        OutId = Guid.NewGuid(),
+                        OutName = "Agent2",
+                        OutOut = "out21",
+                        InId = Guid.NewGuid(),
+                        InName = "Agent1",
+                        InIn = "in11",
+                    },
+                                                            new()
+                    {
+                        OutId = Guid.NewGuid(),
+                        OutName = "Agent2",
+                        OutOut = "out21",
+                        InId = Guid.NewGuid(),
+                        InName = "Agent1",
+                        InIn = "in11",
+                    },
+                                                                                new()
+                    {
+                        OutId = Guid.NewGuid(),
+                        OutName = "Agent2",
+                        OutOut = "out21",
+                        InId = Guid.NewGuid(),
+                        InName = "Agent1",
+                        InIn = "in11",
+                    },
                 }
             } as T);
         }

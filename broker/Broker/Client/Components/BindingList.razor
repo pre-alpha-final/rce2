@@ -1,0 +1,129 @@
+﻿@using Broker.Shared.Model
+
+<h1>Bindings</h1>
+<div class="container container-max-width">
+    <div class="row">
+        @foreach (var binding in Bindings)
+        {
+            <div class="col-12 col-xl-6">
+                <div class="mb-3 card border-primary not-black">
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-10">
+                                    <div>
+                                        <span>OUT</span>
+                                        <span> - </span>
+                                        <span>@binding.OutId</span>
+                                        <span> - </span>
+                                        <span class="binding-name">@binding.OutName</span>
+                                        <span> : </span>
+                                        <span class="binding-contact">@binding.OutOut</span>
+                                    </div>
+                                    <div>
+                                        <span>IN</span>
+                                        <span> - </span>
+                                        <span>@binding.InId</span>
+                                        <span> - </span>
+                                        <span class="binding-name">@binding.InName</span>
+                                        <span> : </span>
+                                        <span class="binding-contact">@binding.InIn</span>
+                                    </div>
+                                </div>
+                                <div class="col-2 d-flex justify-content-end">
+                                    <button type="button" class="btn btn-danger">X</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row">
+        <div class="col-12 col-md-6 col-xl-3">
+            <label class="form-label mt-2">From agent</label>
+            <select class="form-select" @bind="FromAgentResult" @onfocus="OnFromAgentFocus">
+                <option></option>
+                @foreach (var value in FromAgentList)
+                {
+                    <option>@value</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <label class="form-label mt-2">Out</label>
+            <select class="form-select" @bind="OutResult" @onfocus="OnOutFocus">
+                <option></option>
+                @foreach (var value in OutList)
+                {
+                    <option>@value</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <label class="form-label mt-2">To agent</label>
+            <select class="form-select" @bind="ToAgentResult" @onfocus="OnToAgentFocus">
+                <option></option>
+                @foreach (var value in ToAgentList)
+                {
+                    <option>@value</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <label class="form-label mt-2">In</label>
+            <select class="form-select" @bind="InResult" @onfocus="OnInFocus">
+                <option></option>
+                @foreach (var value in InList)
+                {
+                    <option>@value</option>
+                }
+            </select>
+        </div>
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-success w-75 mt-2">Create binding</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<Agent> Agents { get; set; }
+
+    [Parameter]
+    public List<Binding> Bindings { get; set; }
+
+    public List<string> FromAgentList { get; set; } = new();
+    public List<string> OutList { get; set; } = new();
+    public List<string> ToAgentList { get; set; } = new();
+    public List<string> InList { get; set; } = new();
+    public string FromAgentResult { get; set; }
+    public string OutResult { get; set; }
+    public string ToAgentResult { get; set; }
+    public string InResult { get; set; }
+
+    public void OnFromAgentFocus()
+    {
+        FromAgentList = Agents.Select(e => $"{e.Name} - {e.Id}").ToList();
+        StateHasChanged();
+    }
+
+    public void OnOutFocus()
+    {
+        OutList = Agents.First(e => FromAgentResult == $"{e.Name} - {e.Id}").Outs.Select(e => e.Key).ToList();
+        StateHasChanged();
+    }
+
+    public void OnToAgentFocus()
+    {
+        ToAgentList = Agents.Select(e => $"{e.Name} - {e.Id}").ToList();
+        StateHasChanged();
+    }
+
+    public void OnInFocus()
+    {
+        InList = Agents.First(e => ToAgentResult == $"{e.Name} - {e.Id}").Ins.Select(e => e.Key).ToList();
+        StateHasChanged();
+    }
+}

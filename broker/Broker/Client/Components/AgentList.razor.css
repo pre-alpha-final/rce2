@@ -1,0 +1,20 @@
+﻿.container-max-width {
+    max-width: 10000px;
+}
+
+.agent-id {
+    font-size: 12px;
+    color: grey;
+}
+
+.agent-min-width {
+    min-width: 350px;
+}
+
+.larger {
+    font-size: larger;
+}
+
+.not-black {
+    color: rgba(0, 0, 0, 0.7);
+}

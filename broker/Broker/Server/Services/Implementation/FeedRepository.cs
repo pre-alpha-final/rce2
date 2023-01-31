@@ -1,5 +1,4 @@
-﻿using Broker.Shared.Model;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 
 namespace Broker.Server.Services.Implementation;
 

@@ -1,0 +1,18 @@
+﻿@using Broker.Shared.Model
+
+<h1>Outputs</h1>
+<table class="table table-hover">
+    <tbody>
+        @foreach (var output in Outputs)
+       {
+            <tr class="table-light">
+                <td>@output</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<string> Outputs { get; set; }
+}

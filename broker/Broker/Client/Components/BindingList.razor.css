@@ -1,0 +1,15 @@
+﻿.container-max-width {
+    max-width: 10000px;
+}
+
+.not-black {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.binding-name {
+    color: grey;
+}
+
+.binding-contact {
+    color: grey;
+}

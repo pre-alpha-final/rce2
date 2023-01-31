@@ -1,0 +1,46 @@
+﻿@using Broker.Shared.Model
+
+<h1>Agents</h1>
+<div class="container container-max-width">
+    <div class="row">
+        @foreach (var agent in Agents)
+        {
+            <div class="col-12 col-sm-8 col-md-6 col-lg-4 col-xl-3 agent-min-width">
+                <div class="mb-3 card border-primary not-black">
+                    <div class="card-header">
+                        <h4>@agent.Name</h4>
+                        <div class="agent-id">@agent.Id</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="larger">Ins</div>
+                                    @foreach (var agentIn in agent.Ins)
+                                    {
+                                        <div>@agentIn.Key : @agentIn.Value</div>
+                                    }
+                                </div>
+                                <div class="col">
+                                    <div class="larger">Outs</div>
+                                    @foreach (var agentOut in agent.Outs)
+                                    {
+                                        <div>@agentOut.Key : @agentOut.Value</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        Last out: @agent.LastOut
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<Agent> Agents { get; set; }
+}
