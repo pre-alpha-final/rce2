@@ -2,6 +2,10 @@
 
 public static class Rce2Types
 {
+    // Infrastructure
+    public const string WhoIs = "whois";
+
+    // System
     public const string Void = "void";
     public const string String = "string";
     public const string StringList = "string-list";

@@ -37,18 +37,6 @@ public class FeedService<T> : IFeedService<T>, IDisposable where T : class
     {
         _requestId = id;
 
-        if (_feedRepository.Exists(id) == false)
-        {
-            if (typeof(T) == typeof(BrokerEventBase))
-            {
-                HandleInitialBrokerMessage(id);
-            }
-            if (typeof(T) == typeof(Rce2Message))
-            {
-                HandleInitialAgentMessage(id);
-            }
-        }
-
         var feed = GetFeed(id);
         if (feed.Any() == false)
         {
@@ -71,6 +59,11 @@ public class FeedService<T> : IFeedService<T>, IDisposable where T : class
         }
     }
 
+    public bool Exists(Guid id)
+    {
+        return _feedRepository.Exists(id);
+    }
+
     public void Dispose()
     {
         PubSub.Hub.Default.Unsubscribe(this);
@@ -90,164 +83,5 @@ public class FeedService<T> : IFeedService<T>, IDisposable where T : class
         }
 
         return feed;
-    }
-
-    private void HandleInitialBrokerMessage(Guid id)
-    {
-        _feedRepository.AddItem(id, new BrokerInitEvent
-        {
-            Agents = new()
-                {
-                    new()
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Agent1",
-                        Ins = new()
-                        {
-                            { "jakies wejscie", "void" }
-                        },
-                        Outs = new()
-                        {
-                            { "cos wyjscie", "number" }
-                        },
-                        LastOut = "foo1",
-                    },
-                    new()
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Agent1",
-                        Ins = new()
-                        {
-                            { "jakies wejscie", "void" }
-                        },
-                        Outs = new()
-                        {
-                            { "cos wyjscie", "number" }
-                        },
-                        LastOut = "foo1",
-                    },                    new()
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Agent1",
-                        Ins = new()
-                        {
-                            { "jakies wejscie", "void" }
-                        },
-                        Outs = new()
-                        {
-                            { "cos wyjscie", "number" }
-                        },
-                        LastOut = "foo1",
-                    },                    new()
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Agent1",
-                        Ins = new()
-                        {
-                            { "jakies wejscie", "void" }
-                        },
-                        Outs = new()
-                        {
-                            { "cos wyjscie", "number" }
-                        },
-                        LastOut = "foo1",
-                    },                    new()
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Agent1",
-                        Ins = new()
-                        {
-                            { "jakies wejscie", "void" }
-                        },
-                        Outs = new()
-                        {
-                            { "cos wyjscie", "number" }
-                        },
-                        LastOut = "foo1",
-                    },                    new()
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Agent1",
-                        Ins = new()
-                        {
-                            { "jakies wejscie", "void" }
-                        },
-                        Outs = new()
-                        {
-                            { "cos wyjscie", "number" }
-                        },
-                        LastOut = "foo1",
-                    },
-                    new()
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Agent2",
-                        Ins = new()
-                        {
-                            { "in21", "string" }
-                        },
-                        Outs = new()
-                        {
-                            { "out21", "string-list" }
-                        },
-                        LastOut = "foo2",
-                    },
-                },
-            Bindings = new()
-                {
-                    new()
-                    {
-                        OutId = Guid.NewGuid(),
-                        OutName = "Agent1",
-                        OutContact = "out11",
-                        InId = Guid.NewGuid(),
-                        InName = "Agent1",
-                        InContact = "in11",
-                    },
-                    new()
-                    {
-                        OutId = Guid.NewGuid(),
-                        OutName = "Agent2",
-                        OutContact = "out21",
-                        InId = Guid.NewGuid(),
-                        InName = "Agent1",
-                        InContact = "in11",
-                    },
-                                        new()
-                    {
-                        OutId = Guid.NewGuid(),
-                        OutName = "Agent2",
-                        OutContact = "out21",
-                        InId = Guid.NewGuid(),
-                        InName = "Agent1",
-                        InContact = "in11",
-                    },
-                                                            new()
-                    {
-                        OutId = Guid.NewGuid(),
-                        OutName = "Agent2",
-                        OutContact = "out21",
-                        InId = Guid.NewGuid(),
-                        InName = "Agent1",
-                        InContact = "in11",
-                    },
-                                                                                new()
-                    {
-                        OutId = Guid.NewGuid(),
-                        OutName = "Agent2",
-                        OutContact = "out21",
-                        InId = Guid.NewGuid(),
-                        InName = "Agent1",
-                        InContact = "in11",
-                    },
-                }
-        } as T);
-    }
-
-    private void HandleInitialAgentMessage(Guid id)
-    {
-        // WhoIs isn't saved anywhere (sent ad-hoc by the broker) so nothing initial here
-
-        // Challenge-response security could be implemented here
     }
 }

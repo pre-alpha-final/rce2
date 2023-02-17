@@ -17,7 +17,7 @@
     <div class="p-4 vh-90">
         <div class="d-flex flex-column flex-grow-1 h-100 justify-content-center">
             <div class="mx-auto">
-                <input @bind="_codeInput" @onkeyup="OnCode" type="text" placeholder="Code">
+                <input @bind="_codeInput" @onkeyup="OnCode" type="password" placeholder="Code">
             </div>
         </div>
     </div>
@@ -111,8 +111,8 @@ else
             var brokerEventBase = brokerEvent.ToObject<BrokerEventBase>();
             switch (brokerEventBase.BrokerEventType)
             {
-                case nameof(BrokerInitEvent):
-                    Handle(brokerEvent.ToObject<BrokerInitEvent>());
+                case nameof(AgentUpdatedEvent):
+                    Handle(brokerEvent.ToObject<AgentUpdatedEvent>());
                     break;
 
                 case nameof(BindingAddedEvent):
@@ -127,10 +127,14 @@ else
         StateHasChanged();
     }
 
-    private void Handle(BrokerInitEvent brokerInitEvent)
+    private void Handle(AgentUpdatedEvent agentUpdatedEvent)
     {
-        Agents = brokerInitEvent.Agents;
-        Bindings = brokerInitEvent.Bindings;
+        var agent = Agents?.FirstOrDefault(e => e.Id == agentUpdatedEvent.Agent.Id);
+        if (agent != null)
+        {
+            Agents?.Remove(agent);
+        }
+        Agents?.Add(agentUpdatedEvent.Agent);
     }
 
     private void Handle(BindingAddedEvent bindingAddedEvent)

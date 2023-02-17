@@ -1,5 +1,4 @@
 using Broker.Server.Services;
-using Broker.Server.Services.Implementation;
 using Broker.Shared.Events;
 using Broker.Shared.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -12,19 +11,38 @@ namespace Broker.Server.Controllers
     [Authorize]
     public class BrokerController : ControllerBase
     {
-        private readonly IFeedService<BrokerEventBase> _feedService;
+        private readonly IFeedService<BrokerEventBase> _brokerFeedService;
+        private readonly IFeedService<Rce2Message> _agentFeedService;
         private readonly IBindingRepository _bindingRepository;
 
-        public BrokerController(IFeedService<BrokerEventBase> feedService, IBindingRepository bindingRepository)
+        public BrokerController(IFeedService<BrokerEventBase> brokerFeedService, IFeedService<Rce2Message> agentFeedService,
+            IBindingRepository bindingRepository)
         {
-            _feedService = feedService;
+            _brokerFeedService = brokerFeedService;
+            _agentFeedService = agentFeedService;
             _bindingRepository = bindingRepository;
         }
 
         [HttpGet("{id:Guid}")]
         public async Task<OkObjectResult> GetFeed(Guid id)
         {
-            return Ok((await _feedService.GetNext(id)).Select(e => Convert.ChangeType(e, e.GetType())));
+            if (_brokerFeedService.Exists(id) == false)
+            {
+                await _agentFeedService.BroadcastItem(new Rce2Message
+                {
+                    Type = Rce2Types.WhoIs,
+                });
+
+                foreach (var binding in _bindingRepository.GetAll())
+                {
+                    await _brokerFeedService.AddItem(id, new BindingAddedEvent
+                    {
+                        Binding = binding,
+                    });
+                }
+            }
+
+            return Ok((await _brokerFeedService.GetNext(id)).Select(e => Convert.ChangeType(e, e.GetType())));
         }
 
         [HttpPost("createBinding")]
@@ -32,7 +50,7 @@ namespace Broker.Server.Controllers
         {
             if (_bindingRepository.AddBinding(binding))
             {
-                await _feedService.BroadcastItem(new BindingAddedEvent
+                await _brokerFeedService.BroadcastItem(new BindingAddedEvent
                 {
                     Binding = binding,
                 });
@@ -46,7 +64,7 @@ namespace Broker.Server.Controllers
         {
             if (_bindingRepository.DeleteBinding(binding))
             {
-                await _feedService.BroadcastItem(new BindingDeletedEvent
+                await _brokerFeedService.BroadcastItem(new BindingDeletedEvent
                 {
                     Binding = binding,
                 });
