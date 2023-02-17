@@ -1,5 +1,6 @@
 ﻿using Broker.Server.Infrastructure;
 using Broker.Shared.Events;
+using Broker.Shared.Model;
 
 namespace Broker.Server.Services.Implementation;
 
@@ -38,9 +39,64 @@ public class FeedService<T> : IFeedService<T>, IDisposable where T : class
 
         if (_feedRepository.Exists(id) == false)
         {
-            _feedRepository.AddItem(id, new BrokerInitEvent
+            if (typeof(T) == typeof(BrokerEventBase))
             {
-                Agents = new()
+                HandleInitialBrokerMessage(id);
+            }
+            if (typeof(T) == typeof(Rce2Message))
+            {
+                HandleInitialAgentMessage(id);
+            }
+        }
+
+        var feed = GetFeed(id);
+        if (feed.Any() == false)
+        {
+            var delay = Task.Delay(TimeSpan.FromSeconds(LongPollingTimeout));
+            await Task.WhenAny(delay, _getSync.WaitAsync());
+            if (delay.IsCompleted == false)
+            {
+                feed = GetFeed(id);
+            }
+        }
+
+        return feed;
+    }
+
+    public void OnFeedUpdate(FeedUpdate feedUpdate)
+    {
+        if (feedUpdate.Id == null || feedUpdate.Id == _requestId)
+        {
+            _getSync.Release();
+        }
+    }
+
+    public void Dispose()
+    {
+        PubSub.Hub.Default.Unsubscribe(this);
+    }
+
+    private List<T> GetFeed(Guid id)
+    {
+        var feed = new List<T>();
+        for (var i = 0; i < BatchCount; i++)
+        {
+            var next = _feedRepository.GetNext(id);
+            if (next == null)
+            {
+                break;
+            }
+            feed.Add(next);
+        }
+
+        return feed;
+    }
+
+    private void HandleInitialBrokerMessage(Guid id)
+    {
+        _feedRepository.AddItem(id, new BrokerInitEvent
+        {
+            Agents = new()
                 {
                     new()
                     {
@@ -137,7 +193,7 @@ public class FeedService<T> : IFeedService<T>, IDisposable where T : class
                         LastOut = "foo2",
                     },
                 },
-                Bindings = new()
+            Bindings = new()
                 {
                     new()
                     {
@@ -185,49 +241,13 @@ public class FeedService<T> : IFeedService<T>, IDisposable where T : class
                         InContact = "in11",
                     },
                 }
-            } as T);
-        }
-
-        var feed = GetFeed(id);
-        if (feed.Any() == false)
-        {
-            var delay = Task.Delay(TimeSpan.FromSeconds(LongPollingTimeout));
-            await Task.WhenAny(delay, _getSync.WaitAsync());
-            if (delay.IsCompleted == false)
-            {
-                feed = GetFeed(id);
-            }
-        }
-
-        return feed;
+        } as T);
     }
 
-    public void OnFeedUpdate(FeedUpdate feedUpdate)
+    private void HandleInitialAgentMessage(Guid id)
     {
-        if (feedUpdate.Id == null || feedUpdate.Id == _requestId)
-        {
-            _getSync.Release();
-        }
-    }
+        // WhoIs isn't saved anywhere (sent ad-hoc by the broker) so nothing initial here
 
-    public void Dispose()
-    {
-        PubSub.Hub.Default.Unsubscribe(this);
-    }
-
-    private List<T> GetFeed(Guid id)
-    {
-        var feed = new List<T>();
-        for (var i = 0; i < BatchCount; i++)
-        {
-            var next = _feedRepository.GetNext(id);
-            if (next == null)
-            {
-                break;
-            }
-            feed.Add(next);
-        }
-
-        return feed;
+        // Challenge-response security could be implemented here
     }
 }

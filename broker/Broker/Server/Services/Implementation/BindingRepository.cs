@@ -6,6 +6,11 @@ public class BindingRepository : IBindingRepository
 {
     public HashSet<Binding> Bindings { get; set; } = new();
 
+    public List<Binding> GetBindingsFrom(Guid id)
+    {
+        return Bindings.Where(e => e.OutId == id).ToList();
+    }
+
     public bool AddBinding(Binding binding)
     {
         return Bindings.Add(binding);
