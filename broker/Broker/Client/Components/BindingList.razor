@@ -1,4 +1,5 @@
 ﻿@using Broker.Shared.Model
+@inject HttpClient HttpClient
 
 <h1>Bindings</h1>
 <div class="container container-max-width">
@@ -18,7 +19,7 @@
                                         <span> - </span>
                                         <span class="binding-name">@binding.OutName</span>
                                         <span> : </span>
-                                        <span class="binding-contact">@binding.OutOut</span>
+                                        <span class="binding-contact">@binding.OutContact</span>
                                     </div>
                                     <div>
                                         <span>IN</span>
@@ -27,11 +28,11 @@
                                         <span> - </span>
                                         <span class="binding-name">@binding.InName</span>
                                         <span> : </span>
-                                        <span class="binding-contact">@binding.InIn</span>
+                                        <span class="binding-contact">@binding.InContact</span>
                                     </div>
                                 </div>
                                 <div class="col-2 d-flex justify-content-end">
-                                    <button type="button" class="btn btn-danger">X</button>
+                                    <button type="button" class="btn btn-danger" @onclick="@(_ => OnDeleteBinding(binding))">X</button>
                                 </div>
                             </div>
                         </div>
@@ -82,7 +83,7 @@
             </select>
         </div>
         <div class="d-flex justify-content-center">
-            <button type="button" class="btn btn-success w-75 mt-2">Create binding</button>
+            <button type="button" class="btn btn-success w-75 mt-2" @onclick="OnCreateBinding">Create binding</button>
         </div>
     </div>
 </div>
@@ -125,5 +126,23 @@
     {
         InList = Agents.First(e => ToAgentResult == $"{e.Name} - {e.Id}").Ins.Select(e => e.Key).ToList();
         StateHasChanged();
+    }
+
+    public async Task OnCreateBinding(MouseEventArgs _)
+    {
+        var response = await HttpClient.PostAsJsonAsync($"/api/broker/createBinding", new Binding
+        {
+            OutId = Guid.Parse(FromAgentResult.Split(" - ").Last()),
+            OutName = string.Join(" - ", FromAgentResult.Split(" - ").Take(FromAgentResult.Split(" - ").Length - 1)),
+            OutContact = OutResult,
+            InId = Guid.Parse(ToAgentResult.Split(" - ").Last()),
+            InName = string.Join(" - ", ToAgentResult.Split(" - ").Take(ToAgentResult.Split(" - ").Length - 1)),
+            InContact = InResult,
+        });
+    }
+
+    public async Task OnDeleteBinding(Binding binding)
+    {
+        var response = await HttpClient.PostAsJsonAsync($"/api/broker/deleteBinding", binding);
     }
 }

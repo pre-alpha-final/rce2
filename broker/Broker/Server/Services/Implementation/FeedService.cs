@@ -1,26 +1,41 @@
-﻿using Broker.Shared.Events;
+﻿using Broker.Server.Infrastructure;
+using Broker.Shared.Events;
 
 namespace Broker.Server.Services.Implementation;
 
-public class FeedService<T> : IFeedService<T> where T : class
+public class FeedService<T> : IFeedService<T>, IDisposable where T : class
 {
     private const int BatchCount = 10;
     private const int LongPollingTimeout = 30;
     private readonly IFeedRepository<T> _feedRepository;
-    private readonly SemaphoreSlim _getSync = new(0, 1);
+    private readonly SemaphoreSlim _getSync = new(0);
+    private Guid? _requestId;
 
     public FeedService(IFeedRepository<T> feedRepository)
     {
         _feedRepository = feedRepository;
+        PubSub.Hub.Default.Subscribe<FeedUpdate>(this, OnFeedUpdate);
     }
 
     public async Task AddItem(Guid id, T item)
     {
         _feedRepository.AddItem(id, item);
+        await PubSub.Hub.Default.PublishAsync(new FeedUpdate
+        {
+            Id = id,
+        });
+    }
+
+    public async Task BroadcastItem(T item)
+    {
+        _feedRepository.BroadcastItem(item);
+        await PubSub.Hub.Default.PublishAsync(new FeedUpdate());
     }
 
     public async Task<List<T>> GetNext(Guid id)
     {
+        _requestId = id;
+
         if (_feedRepository.Exists(id) == false)
         {
             _feedRepository.AddItem(id, new BrokerInitEvent
@@ -128,46 +143,46 @@ public class FeedService<T> : IFeedService<T> where T : class
                     {
                         OutId = Guid.NewGuid(),
                         OutName = "Agent1",
-                        OutOut = "out11",
+                        OutContact = "out11",
                         InId = Guid.NewGuid(),
                         InName = "Agent1",
-                        InIn = "in11",
+                        InContact = "in11",
                     },
                     new()
                     {
                         OutId = Guid.NewGuid(),
                         OutName = "Agent2",
-                        OutOut = "out21",
+                        OutContact = "out21",
                         InId = Guid.NewGuid(),
                         InName = "Agent1",
-                        InIn = "in11",
+                        InContact = "in11",
                     },
                                         new()
                     {
                         OutId = Guid.NewGuid(),
                         OutName = "Agent2",
-                        OutOut = "out21",
+                        OutContact = "out21",
                         InId = Guid.NewGuid(),
                         InName = "Agent1",
-                        InIn = "in11",
+                        InContact = "in11",
                     },
                                                             new()
                     {
                         OutId = Guid.NewGuid(),
                         OutName = "Agent2",
-                        OutOut = "out21",
+                        OutContact = "out21",
                         InId = Guid.NewGuid(),
                         InName = "Agent1",
-                        InIn = "in11",
+                        InContact = "in11",
                     },
                                                                                 new()
                     {
                         OutId = Guid.NewGuid(),
                         OutName = "Agent2",
-                        OutOut = "out21",
+                        OutContact = "out21",
                         InId = Guid.NewGuid(),
                         InName = "Agent1",
-                        InIn = "in11",
+                        InContact = "in11",
                     },
                 }
             } as T);
@@ -187,6 +202,19 @@ public class FeedService<T> : IFeedService<T> where T : class
         return feed;
     }
 
+    public void OnFeedUpdate(FeedUpdate feedUpdate)
+    {
+        if (feedUpdate.Id == null || feedUpdate.Id == _requestId)
+        {
+            _getSync.Release();
+        }
+    }
+
+    public void Dispose()
+    {
+        PubSub.Hub.Default.Unsubscribe(this);
+    }
+
     private List<T> GetFeed(Guid id)
     {
         var feed = new List<T>();
@@ -201,17 +229,5 @@ public class FeedService<T> : IFeedService<T> where T : class
         }
 
         return feed;
-    }
-
-    private void TryRelease()
-    {
-        try
-        {
-            _getSync.Release();
-        }
-        catch (Exception e)
-        {
-            // ignore
-        }
     }
 }

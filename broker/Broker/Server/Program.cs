@@ -13,6 +13,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, AuthHandler>();
 builder.Services.AddScoped<IFeedService<BrokerEventBase>, FeedService<BrokerEventBase>>();
 builder.Services.AddSingleton<IFeedRepository<BrokerEventBase>, FeedRepository<BrokerEventBase>>();
+builder.Services.AddSingleton<IBindingRepository, BindingRepository>();
 
 var app = builder.Build();
 

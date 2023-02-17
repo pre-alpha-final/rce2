@@ -37,9 +37,9 @@ else
     private string _codeInput;
 
     public bool AuthorizationFailure { get; set; }
-    public List<Agent> Agents { get; set; }
-    public List<Binding> Bindings { get; set; }
-    public List<string> Outputs { get; set; }
+    public List<Agent> Agents { get; set; } = new();
+    public List<Binding> Bindings { get; set; } = new();
+    public List<string> Outputs { get; set; } = new();
 
     public void OnCode(KeyboardEventArgs e)
     {
@@ -114,6 +114,14 @@ else
                 case nameof(BrokerInitEvent):
                     Handle(brokerEvent.ToObject<BrokerInitEvent>());
                     break;
+
+                case nameof(BindingAddedEvent):
+                    Handle(brokerEvent.ToObject<BindingAddedEvent>());
+                    break;
+
+                case nameof(BindingDeletedEvent):
+                    Handle(brokerEvent.ToObject<BindingDeletedEvent>());
+                    break;
             }
         }
         StateHasChanged();
@@ -123,5 +131,15 @@ else
     {
         Agents = brokerInitEvent.Agents;
         Bindings = brokerInitEvent.Bindings;
+    }
+
+    private void Handle(BindingAddedEvent bindingAddedEvent)
+    {
+        Bindings.Add(bindingAddedEvent.Binding);
+    }
+
+    private void Handle(BindingDeletedEvent bindingDeletedEvent)
+    {
+        Bindings.Remove(bindingDeletedEvent.Binding);
     }
 }

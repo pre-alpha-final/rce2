@@ -2,10 +2,10 @@
 
 public class BrokerEventBase
 {
-	public string BrokerEventType { get; set; }
+    public string BrokerEventType { get; set; }
 
-	public BrokerEventBase(string brokerEventType)
-	{
-		BrokerEventType = brokerEventType;
-	}
+    public BrokerEventBase(string brokerEventType)
+    {
+        BrokerEventType = brokerEventType;
+    }
 }

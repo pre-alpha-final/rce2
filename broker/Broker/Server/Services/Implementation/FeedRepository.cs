@@ -17,6 +17,15 @@ public class FeedRepository<T> : IFeedRepository<T> where T : class
         feed.Enqueue(item);
     }
 
+    public void BroadcastItem(T item)
+    {
+        var feeds = _feeds.ToList();
+        foreach (var feed in feeds)
+        {
+            feed.Value.Enqueue(item);
+        }
+    }
+
     public T GetNext(Guid id)
     {
         var feed = _feeds.GetOrAdd(id, new ConcurrentQueue<T>());
