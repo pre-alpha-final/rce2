@@ -5,6 +5,7 @@
 .agent-id {
     font-size: 12px;
     color: grey;
+    margin-top: -5px;
 }
 
 .agent-min-width {

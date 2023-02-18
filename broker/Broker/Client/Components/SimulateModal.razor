@@ -11,7 +11,7 @@
                     <div class="mt-up mb-2">
                         <h5>Simulate payload</h5>
                     </div>
-                    <textarea class="form-control" @bind="_payloadText" />
+                    <textarea class="form-control" rows="5" @bind="_payloadText" />
                     <div class="d-flex justify-content-center">
                         <button type="button" class="btn btn-success w-75 mt-2" @onclick=@(_ => OnSend())>Send</button>
                     </div>
@@ -23,7 +23,7 @@
 
 @code {
     private bool _show;
-    private string _payloadText = "{\n}";
+    private string _payloadText = "{\n    \"data\": 0\n}";
     private TaskCompletionSource<string> _tcs;
 
     public Task<string> Open()

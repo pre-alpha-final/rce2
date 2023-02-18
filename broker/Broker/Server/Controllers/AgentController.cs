@@ -51,18 +51,20 @@ namespace Broker.Server.Controllers
             {
                 return BadRequest();
             }
-            var bindings = _bindingRepository.GetBindingsFrom(id, rce2Message.Contact);
-            foreach(var binding in bindings)
-            {
-                rce2Message.Contact = binding.InContact;
-                await _agentFeedService.AddItem(binding.InId, rce2Message);
-            }
+
             await _brokerFeedService.BroadcastItem(new AgentOutputEvent
             {
                 AgentId = id,
                 Contact = rce2Message.Contact,
                 Payload = rce2Message.Payload,
             });
+
+            var bindings = _bindingRepository.GetBindingsFrom(id, rce2Message.Contact);
+            foreach(var binding in bindings)
+            {
+                rce2Message.Contact = binding.InContact;
+                await _agentFeedService.AddItem(binding.InId, rce2Message);
+            }
 
             return Ok();
         }
