@@ -48,21 +48,6 @@ else
             _code = _codeInput;
             Task.Run(GetFeed);
         }
-
-        Outputs = new()
-        {
-            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
-            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
-            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
-            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
-            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
-            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
-            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
-            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
-            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
-            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
-            "HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(, _code);",
-        };
     }
 
     private async Task GetFeed()
@@ -115,6 +100,10 @@ else
                     Handle(brokerEvent.ToObject<AgentUpdatedEvent>());
                     break;
 
+                case nameof(AgentOutputEvent):
+                    Handle(brokerEvent.ToObject<AgentOutputEvent>());
+                    break;
+
                 case nameof(BindingAddedEvent):
                     Handle(brokerEvent.ToObject<BindingAddedEvent>());
                     break;
@@ -135,6 +124,18 @@ else
             Agents?.Remove(agent);
         }
         Agents?.Add(agentUpdatedEvent.Agent);
+    }
+
+    private void Handle(AgentOutputEvent agentOutputEvent)
+    {
+        Outputs.Insert(0, $"{agentOutputEvent.AgentId} - {agentOutputEvent.Payload}");
+        Outputs = Outputs.Take(100).ToList();
+
+        var agent = Agents.FirstOrDefault(e => e.Id == agentOutputEvent.AgentId);
+        if (agent != null)
+        {
+            agent.LastOut = agentOutputEvent.Payload.ToString();
+        }
     }
 
     private void Handle(BindingAddedEvent bindingAddedEvent)

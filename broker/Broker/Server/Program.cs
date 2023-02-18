@@ -2,15 +2,18 @@ using Broker.Server.Infrastructure;
 using Broker.Server.Services;
 using Broker.Server.Services.Implementation;
 using Broker.Shared.Events;
+using Broker.Shared.Model;
 using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddNewtonsoftJson();
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, AuthHandler>();
+builder.Services.AddScoped<IFeedService<Rce2Message>, FeedService<Rce2Message>>();
+builder.Services.AddSingleton<IFeedRepository<Rce2Message>, FeedRepository<Rce2Message>>();
 builder.Services.AddScoped<IFeedService<BrokerEventBase>, FeedService<BrokerEventBase>>();
 builder.Services.AddSingleton<IFeedRepository<BrokerEventBase>, FeedRepository<BrokerEventBase>>();
 builder.Services.AddSingleton<IBindingRepository, BindingRepository>();

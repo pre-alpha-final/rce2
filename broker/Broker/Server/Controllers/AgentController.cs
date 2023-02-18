@@ -36,7 +36,7 @@ namespace Broker.Server.Controllers
         }
 
         [HttpPost("{id:Guid}")]
-        public async Task<OkResult> PostOutput(Guid id, [FromBody] Rce2Message rce2Message)
+        public async Task<StatusCodeResult> PostOutput(Guid id, [FromBody] Rce2Message rce2Message)
         {
             if (rce2Message.Type == Rce2Types.WhoIs)
             {
@@ -47,11 +47,21 @@ namespace Broker.Server.Controllers
                 return Ok();
             }
 
+            if (rce2Message.Contact == null)
+            {
+                return BadRequest();
+            }
             var bindings = _bindingRepository.GetBindingsFrom(id);
             foreach(var binding in bindings)
             {
+                rce2Message.Contact = binding.InContact;
                 await _agentFeedService.AddItem(binding.InId, rce2Message);
             }
+            await _brokerFeedService.BroadcastItem(new AgentOutputEvent
+            {
+                AgentId = id,
+                Payload = rce2Message.Payload,
+            });
 
             return Ok();
         }
