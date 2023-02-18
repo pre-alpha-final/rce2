@@ -17,7 +17,9 @@
     <div class="p-4 vh-90">
         <div class="d-flex flex-column flex-grow-1 h-100 justify-content-center">
             <div class="mx-auto">
-                <input @bind="_codeInput" @onkeyup="OnCode" type="password" placeholder="Code">
+                <form @onsubmit="OnCode">
+                    <input @bind="_codeInput" type="password" placeholder="Code">
+                </form>
             </div>
         </div>
     </div>
@@ -41,13 +43,10 @@ else
     public List<Binding> Bindings { get; set; } = new();
     public List<string> Outputs { get; set; } = new();
 
-    public void OnCode(KeyboardEventArgs e)
+    public void OnCode(EventArgs e)
     {
-        if (e.Code == "Enter" || e.Code == "NumpadEnter")
-        {
-            _code = _codeInput;
-            Task.Run(GetFeed);
-        }
+        _code = _codeInput;
+        Task.Run(GetFeed);
     }
 
     private async Task GetFeed()
