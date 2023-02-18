@@ -1,0 +1,90 @@
+{
+	"info": {
+		"_postman_id": "ec22bcef-21e3-41bd-902a-99d0c8eda727",
+		"name": "rce2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetFeed",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7113/api/agent/2252b584-4314-43e6-b8e8-6fc8bb41f24c",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7113",
+					"path": [
+						"api",
+						"agent",
+						"2252b584-4314-43e6-b8e8-6fc8bb41f24c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "WhoIs",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"type\": \"whois\",\r\n    \"payload\": {\r\n        \"id\": \"2252b584-4314-43e6-b8e8-6fc8bb41f24c\",\r\n        \"name\": \"Postman Agent\",\r\n        \"ins\": {\r\n            \"get_number\": \"number\"\r\n        },\r\n        \"outs\": {\r\n            \"send_number\": \"number\"\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7113/api/agent/2252b584-4314-43e6-b8e8-6fc8bb41f24c",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7113",
+					"path": [
+						"api",
+						"agent",
+						"2252b584-4314-43e6-b8e8-6fc8bb41f24c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SendNumber",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"type\": \"number\",\r\n    \"contact\": \"send_number\",\r\n    \"payload\": {\r\n        \"data\": 1\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7113/api/agent/2252b584-4314-43e6-b8e8-6fc8bb41f24c",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7113",
+					"path": [
+						"api",
+						"agent",
+						"2252b584-4314-43e6-b8e8-6fc8bb41f24c"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
