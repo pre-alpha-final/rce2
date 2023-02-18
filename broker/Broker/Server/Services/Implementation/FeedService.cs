@@ -24,13 +24,17 @@ public class FeedService<T> : IFeedService<T>, IDisposable where T : class
         await PubSub.Hub.Default.PublishAsync(new FeedUpdate
         {
             Id = id,
+            Type = typeof(T),
         });
     }
 
     public async Task BroadcastItem(T item)
     {
         _feedRepository.BroadcastItem(item);
-        await PubSub.Hub.Default.PublishAsync(new FeedUpdate());
+        await PubSub.Hub.Default.PublishAsync(new FeedUpdate
+        {
+            Type = typeof(T),
+        });
     }
 
     public async Task<List<T>> GetNext(Guid id)
@@ -53,7 +57,7 @@ public class FeedService<T> : IFeedService<T>, IDisposable where T : class
 
     public void OnFeedUpdate(FeedUpdate feedUpdate)
     {
-        if (feedUpdate.Id == null || feedUpdate.Id == _requestId)
+        if (feedUpdate.Type == typeof(T) && (feedUpdate.Id == null || feedUpdate.Id == _requestId))
         {
             _getSync.Release();
         }

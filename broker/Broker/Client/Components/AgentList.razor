@@ -1,6 +1,7 @@
 ﻿@using Broker.Shared.Model
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq
+@using System.Text
 @inject HttpClient HttpClient
 
 <h1>Agents</h1>
@@ -65,15 +66,16 @@
         }
         StateHasChanged();
 
-        var response = await HttpClient.PostAsJsonAsync($"/api/broker/simulateIn/{agent.Id}", new Rce2Message
-        {
-            Type = agentIn.Value,
-            Contact = agentIn.Key,
-            Payload = JObject.Parse(modalResult),
-        });
+        var response = await HttpClient.PostAsync($"/api/broker/simulateIn/{agent.Id}",
+            new StringContent(JsonConvert.SerializeObject(new Rce2Message
+            {
+                Type = agentIn.Value,
+                Contact = agentIn.Key,
+                Payload = JToken.Parse(modalResult),
+            }), Encoding.UTF8, "application/json"));
     }
 
-    public async Task OnSimulateOut(Agent agent, KeyValuePair<string, string> agentIn)
+    public async Task OnSimulateOut(Agent agent, KeyValuePair<string, string> agentOut)
     {
         var modalResult = await _simulateModalRef.Open();
         if (string.IsNullOrWhiteSpace(modalResult))
@@ -82,11 +84,12 @@
         }
         StateHasChanged();
 
-        var response = await HttpClient.PostAsJsonAsync($"/api/broker/simulateOut/{agent.Id}", new Rce2Message
-        {
-            Type = agentIn.Value,
-            Contact = agentIn.Key,
-            Payload = JToken.Parse(modalResult),
-        });
+        var response = await HttpClient.PostAsync($"/api/broker/simulateOut/{agent.Id}",
+            new StringContent(JsonConvert.SerializeObject(new Rce2Message
+            {
+                Type = agentOut.Value,
+                Contact = agentOut.Key,
+                Payload = JToken.Parse(modalResult),
+            }), Encoding.UTF8, "application/json"));
     }
 }

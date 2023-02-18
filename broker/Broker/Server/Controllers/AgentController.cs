@@ -51,7 +51,7 @@ namespace Broker.Server.Controllers
             {
                 return BadRequest();
             }
-            var bindings = _bindingRepository.GetBindingsFrom(id);
+            var bindings = _bindingRepository.GetBindingsFrom(id, rce2Message.Contact);
             foreach(var binding in bindings)
             {
                 rce2Message.Contact = binding.InContact;
@@ -60,6 +60,7 @@ namespace Broker.Server.Controllers
             await _brokerFeedService.BroadcastItem(new AgentOutputEvent
             {
                 AgentId = id,
+                Contact = rce2Message.Contact,
                 Payload = rce2Message.Payload,
             });
 

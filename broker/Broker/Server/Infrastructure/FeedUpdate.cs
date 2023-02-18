@@ -3,4 +3,5 @@
 public class FeedUpdate
 {
     public Guid? Id { get; set; }
+    public Type Type { get; set; }
 }

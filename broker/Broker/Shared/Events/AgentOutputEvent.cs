@@ -9,5 +9,6 @@ public class AgentOutputEvent : BrokerEventBase
     }
 
     public Guid AgentId { get; set; }
+    public string Contact { get; set; }
     public JToken Payload { get; set; }
 }

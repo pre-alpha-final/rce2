@@ -11,9 +11,12 @@ public class BindingRepository : IBindingRepository
         return Bindings.ToList();
     }
 
-    public List<Binding> GetBindingsFrom(Guid id)
+    public List<Binding> GetBindingsFrom(Guid id, string contact)
     {
-        return Bindings.Where(e => e.OutId == id).ToList();
+        return Bindings
+            .Where(e => e.OutId == id)
+            .Where(e => e.OutContact == contact)
+            .ToList();
     }
 
     public bool AddBinding(Binding binding)

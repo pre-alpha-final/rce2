@@ -128,13 +128,13 @@ else
 
     private void Handle(AgentOutputEvent agentOutputEvent)
     {
-        Outputs.Insert(0, $"{agentOutputEvent.AgentId} - {agentOutputEvent.Payload}");
+        Outputs.Insert(0, $"{agentOutputEvent.AgentId} - {agentOutputEvent.Contact} -  {agentOutputEvent.Payload}");
         Outputs = Outputs.Take(100).ToList();
 
         var agent = Agents.FirstOrDefault(e => e.Id == agentOutputEvent.AgentId);
         if (agent != null)
         {
-            agent.LastOut = agentOutputEvent.Payload.ToString();
+            agent.LastOut = $"{agentOutputEvent.Contact} - {agentOutputEvent.Payload}";
         }
     }
 
