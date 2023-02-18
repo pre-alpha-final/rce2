@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Diagnostics;
 
 namespace Broker.Server.Pages
 {
@@ -21,7 +20,7 @@ namespace Broker.Server.Pages
 
         public void OnGet()
         {
-            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+            RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier;
         }
     }
 }

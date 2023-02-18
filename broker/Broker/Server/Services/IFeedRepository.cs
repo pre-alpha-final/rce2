@@ -6,4 +6,5 @@ public interface IFeedRepository<T> where T : class
     void AddItem(Guid id, T item);
     void BroadcastItem(T item);
     T GetNext(Guid id);
+    void Delete(Guid id);
 }

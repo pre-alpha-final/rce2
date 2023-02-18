@@ -17,8 +17,11 @@ builder.Services.AddSingleton<IFeedRepository<Rce2Message>, FeedRepository<Rce2M
 builder.Services.AddScoped<IFeedService<BrokerEventBase>, FeedService<BrokerEventBase>>();
 builder.Services.AddSingleton<IFeedRepository<BrokerEventBase>, FeedRepository<BrokerEventBase>>();
 builder.Services.AddSingleton<IBindingRepository, BindingRepository>();
+builder.Services.AddSingleton<IJanitorService, JanitorService>();
 
 var app = builder.Build();
+
+_ = Task.Run(app.Services.GetService<IJanitorService>().Run);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

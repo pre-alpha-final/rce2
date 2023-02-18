@@ -33,4 +33,9 @@ public class FeedRepository<T> : IFeedRepository<T> where T : class
 
         return next;
     }
+
+    public void Delete(Guid id)
+    {
+        _feeds.TryRemove(id, out var feed);
+    }
 }

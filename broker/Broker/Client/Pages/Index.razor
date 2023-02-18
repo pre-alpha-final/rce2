@@ -104,6 +104,10 @@ else
                     Handle(brokerEvent.ToObject<AgentOutputEvent>());
                     break;
 
+                case nameof(AgentDeletedEvent):
+                    Handle(brokerEvent.ToObject<AgentDeletedEvent>());
+                    break;
+
                 case nameof(BindingAddedEvent):
                     Handle(brokerEvent.ToObject<BindingAddedEvent>());
                     break;
@@ -135,6 +139,15 @@ else
         if (agent != null)
         {
             agent.LastOut = $"{agentOutputEvent.Contact} - {agentOutputEvent.Payload}";
+        }
+    }
+
+    private void Handle(AgentDeletedEvent agentDeletedEvent)
+    {
+        var agent = Agents.FirstOrDefault(e => e.Id == agentDeletedEvent.Id);
+        if (agent != null)
+        {
+            Agents.Remove(agent);
         }
     }
 

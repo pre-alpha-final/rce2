@@ -1,6 +1,4 @@
 ﻿using Broker.Server.Infrastructure;
-using Broker.Shared.Events;
-using Broker.Shared.Model;
 
 namespace Broker.Server.Services.Implementation;
 
@@ -40,6 +38,7 @@ public class FeedService<T> : IFeedService<T>, IDisposable where T : class
     public async Task<List<T>> GetNext(Guid id)
     {
         _requestId = id;
+        await PubSub.Hub.Default.PublishAsync(new Activity { Id = id });
 
         var feed = GetFeed(id);
         if (feed.Any() == false)
