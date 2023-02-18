@@ -18,3 +18,7 @@
 .not-black {
     color: rgba(0, 0, 0, 0.7);
 }
+
+.btn-small {
+    padding: 0px 6px;
+}

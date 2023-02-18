@@ -1,11 +1,14 @@
 ﻿@using Broker.Shared.Model
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@inject HttpClient HttpClient
 
 <h1>Agents</h1>
 <div class="container container-max-width">
     <div class="row">
         @foreach (var agent in Agents)
         {
-            <div class="col-12 col-sm-8 col-md-6 col-lg-4 col-xl-3 agent-min-width">
+            <div class="col-12 col-sm-8 col-md-6 col-lg-6 col-xxl-4 agent-min-width">
                 <div class="mb-3 card border-primary not-black">
                     <div class="card-header">
                         <h4>@agent.Name</h4>
@@ -18,14 +21,20 @@
                                     <div class="larger">Ins</div>
                                     @foreach (var agentIn in agent.Ins)
                                     {
-                                        <div>@agentIn.Key : @agentIn.Value</div>
+                                        <div class="d-flex align-items-center mb-1">
+                                            @agentIn.Key&nbsp;:&nbsp;@agentIn.Value&nbsp;
+                                            <button type="button" class="btn btn-outline-danger btn-small" @onclick="@(_ => OnSimulateIn(agent, agentIn))">&gt;</button>
+                                        </div>
                                     }
                                 </div>
                                 <div class="col">
                                     <div class="larger">Outs</div>
                                     @foreach (var agentOut in agent.Outs)
                                     {
-                                        <div>@agentOut.Key : @agentOut.Value</div>
+                                        <div class="d-flex align-items-center mb-1">
+                                            @agentOut.Key&nbsp;:&nbsp;@agentOut.Value&nbsp;
+                                            <button type="button" class="btn btn-outline-danger btn-small" @onclick="@(_ => OnSimulateOut(agent, agentOut))">&gt;</button>
+                                        </div>
                                     }
                                 </div>
                             </div>
@@ -39,8 +48,45 @@
         }
     </div>
 </div>
+<SimulateModal @ref="_simulateModalRef" />
 
 @code {
+    private SimulateModal _simulateModalRef;
+
     [Parameter]
     public List<Agent> Agents { get; set; }
+
+    public async Task OnSimulateIn(Agent agent, KeyValuePair<string, string> agentIn)
+    {
+        var modalResult = await _simulateModalRef.Open();
+        if (string.IsNullOrWhiteSpace(modalResult))
+        {
+            return;
+        }
+        StateHasChanged();
+
+        var response = await HttpClient.PostAsJsonAsync($"/api/broker/simulateIn/{agent.Id}", new Rce2Message
+        {
+            Type = agentIn.Value,
+            Contact = agentIn.Key,
+            Payload = JObject.Parse(modalResult),
+        });
+    }
+
+    public async Task OnSimulateOut(Agent agent, KeyValuePair<string, string> agentIn)
+    {
+        var modalResult = await _simulateModalRef.Open();
+        if (string.IsNullOrWhiteSpace(modalResult))
+        {
+            return;
+        }
+        StateHasChanged();
+
+        var response = await HttpClient.PostAsJsonAsync($"/api/broker/simulateOut/{agent.Id}", new Rce2Message
+        {
+            Type = agentIn.Value,
+            Contact = agentIn.Key,
+            Payload = JToken.Parse(modalResult),
+        });
+    }
 }

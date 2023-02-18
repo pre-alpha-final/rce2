@@ -1,0 +1,50 @@
+﻿@using Broker.Shared.Model
+
+@if (_show)
+{
+    <div class="modal-backdrop fade show" />
+    <div class="modal fade d-block show">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" @onclick=@(_ => OnClose()) />
+                    <div class="mt-up mb-2">
+                        <h5>Simulate payload</h5>
+                    </div>
+                    <textarea class="form-control" @bind="_payloadText" />
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-success w-75 mt-2" @onclick=@(_ => OnSend())>Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _show;
+    private string _payloadText = "{\n}";
+    private TaskCompletionSource<string> _tcs;
+
+    public Task<string> Open()
+    {
+        _tcs?.TrySetResult("");
+        _tcs = new();
+        _show = true;
+        StateHasChanged();
+
+        return _tcs.Task;
+    }
+
+    private async Task OnClose()
+    {
+        _tcs.TrySetResult(null);
+        _show = false;
+    }
+
+    private async Task OnSend()
+    {
+        _tcs.TrySetResult(_payloadText);
+        _show = false;
+    }
+}
