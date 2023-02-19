@@ -13,3 +13,7 @@
 .binding-contact {
     color: grey;
 }
+
+.btn-small {
+    padding: 0px 6px;
+}
