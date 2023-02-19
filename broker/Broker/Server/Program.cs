@@ -18,6 +18,10 @@ builder.Services.AddScoped<IFeedService<BrokerEventBase>, FeedService<BrokerEven
 builder.Services.AddSingleton<IFeedRepository<BrokerEventBase>, FeedRepository<BrokerEventBase>>();
 builder.Services.AddSingleton<IBindingRepository, BindingRepository>();
 builder.Services.AddSingleton<IJanitorService, JanitorService>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("All", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
 
 var app = builder.Build();
 
@@ -42,6 +46,7 @@ app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseRouting();
+app.UseCors("All");
 app.UseAuthorization();
 
 app.MapRazorPages();
