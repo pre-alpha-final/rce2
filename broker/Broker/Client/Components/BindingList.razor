@@ -106,24 +106,28 @@
 
     public void OnFromAgentFocus()
     {
+        FromAgentResult = string.Empty;
         FromAgentList = Agents.Select(e => $"{e.Name} - {e.Id}").ToList();
         StateHasChanged();
     }
 
     public void OnOutFocus()
     {
+        OutResult = string.Empty;
         OutList = Agents.First(e => FromAgentResult == $"{e.Name} - {e.Id}").Outs.Select(e => e.Key).ToList();
         StateHasChanged();
     }
 
     public void OnToAgentFocus()
     {
+        ToAgentResult = string.Empty;
         ToAgentList = Agents.Select(e => $"{e.Name} - {e.Id}").ToList();
         StateHasChanged();
     }
 
     public void OnInFocus()
     {
+        InResult = string.Empty;
         InList = Agents.First(e => ToAgentResult == $"{e.Name} - {e.Id}").Ins.Select(e => e.Key).ToList();
         StateHasChanged();
     }
