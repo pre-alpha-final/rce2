@@ -32,13 +32,13 @@ internal class Program
                     switch (rce2Message.Contact)
                     {
                         case "input_number":
-                            await HandleFibanacciMessage(rce2Message.Payload);
+                            await TryRun(() => HandleFibanacciMessage(rce2Message.Payload));
                             break;
 
                         default:
                             if (rce2Message.Type == Rce2Types.WhoIs)
                             {
-                                await HandleWhoIsMessage();
+                                await TryRun(HandleWhoIsMessage);
                             }
                             break;
                     }
@@ -88,5 +88,17 @@ internal class Program
             Contact = "output_number",
             Payload = JObject.FromObject(new { data = nextNumber })
         }), Encoding.UTF8, "application/json"));
+    }
+
+    private static async Task TryRun(Func<Task> taskFunc)
+    {
+        try
+        {
+            await taskFunc();
+        }
+        catch
+        {
+            // Ignore
+        }
     }
 }

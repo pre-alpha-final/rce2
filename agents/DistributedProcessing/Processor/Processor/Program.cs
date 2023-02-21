@@ -32,17 +32,17 @@ internal class Program
                     switch (rce2Message.Contact)
                     {
                         case "start":
-                            await HandleStart();
+                            await TryRun(HandleStart);
                             break;
 
                         case "data_received":
-                            await HandleDataReceived(rce2Message.Payload);
+                            await TryRun(() => HandleDataReceived(rce2Message.Payload));
                             break;
 
                         default:
                             if (rce2Message.Type == Rce2Types.WhoIs)
                             {
-                                await HandleWhoIsMessage();
+                                await TryRun(HandleWhoIsMessage);
                             }
                             break;
                     }
@@ -121,5 +121,17 @@ internal class Program
             Contact = "data_processed",
             Payload = JObject.FromObject(new { data = $"Processed {chunk}" })
         }), Encoding.UTF8, "application/json"));
+    }
+
+    private static async Task TryRun(Func<Task> taskFunc)
+    {
+        try
+        {
+            await taskFunc();
+        }
+        catch
+        {
+            // Ignore
+        }
     }
 }

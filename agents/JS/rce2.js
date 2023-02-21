@@ -14,15 +14,7 @@ var rce2 = {};
     }
 
     async function handleMessage(message) {
-        switch (message.contact) {
-            case "setColor":
-                setColor(message.payload.data);
-                break;
 
-            default:
-                await sendWhoIs();
-                break;
-        }
     }
 
     async function sendWhoIs() {
@@ -55,10 +47,29 @@ var rce2 = {};
         );
     }
 
+    async function tryRun(f) {
+        try {
+            await f();
+        } catch (e) {}
+    }
+
     while (true) {
-        let feedResponse = await getFeed();
-        for (let message of await feedResponse.json()) {
-            await handleMessage(message);
+        try {
+            let feedResponse = await getFeed();
+            for (let message of await feedResponse.json()) {
+                switch (message.contact) {
+                    case "setColor":
+                        await tryRun(() => setColor(message.payload.data));
+                        break;
+
+                    default:
+                        await tryRun(() => sendWhoIs());
+                        break;
+                }
+            }
+
+        } catch (e) {
+            // ignore
         }
     }
 })(rce2);

@@ -7,15 +7,6 @@ function GetFeed() {
     return $response | ConvertFrom-Json
 }
 
-function HandleMessage($message) {
-    if ($message) {
-        switch ($message.contact) {
-            "count" { StartCounting $message; break }
-            default { SendWhoIs; break }
-        }
-    }
-}
-
 function SendWhoIs() {
     $payload = @{
         type = 'whois'
@@ -42,8 +33,23 @@ function StartCounting($message) {
 }
 
 while ($true) {
-    $feed = GetFeed
-    foreach ($message in $feed) {
-        HandleMessage $message
+    Try {
+        $feed = GetFeed
+        foreach ($message in $feed) {
+            if ($message) {
+                switch ($message.contact) {
+                    "count" {
+                        Try { StartCounting $message; } Catch {}
+                        break
+                    }
+                    default {
+                        Try { SendWhoIs; } Catch {}
+                        break
+                    }
+                }
+            }
+        }
+    }
+    Catch {
     }
 }

@@ -41,7 +41,7 @@ namespace Rpzw
                                 default:
                                     if (rce2Message.Type == Rce2Types.WhoIs)
                                     {
-                                        await HandleWhoIsMessage();
+                                        await TryRun(HandleWhoIsMessage);
                                     }
                                     break;
                             }
@@ -105,6 +105,18 @@ namespace Rpzw
             catch (Exception e)
             {
                 // ignore
+            }
+        }
+
+        private static async Task TryRun(Func<Task> taskFunc)
+        {
+            try
+            {
+                await taskFunc();
+            }
+            catch
+            {
+                // Ignore
             }
         }
     }

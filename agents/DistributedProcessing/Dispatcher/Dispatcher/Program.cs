@@ -32,13 +32,13 @@ internal class Program
                     switch (rce2Message.Contact)
                     {
                         case "chunk_request":
-                            await HandleChunkRequest(rce2Message.Payload);
+                            await TryRun(() => HandleChunkRequest(rce2Message.Payload));
                             break;
 
                         default:
                             if (rce2Message.Type == Rce2Types.WhoIs)
                             {
-                                await HandleWhoIsMessage();
+                                await TryRun(HandleWhoIsMessage);
                             }
                             break;
                     }
@@ -87,5 +87,17 @@ internal class Program
             Contact = "data_chunk",
             Payload = JObject.FromObject(new { data = new[] { $"{chunkRequestId}", chunk } })
         }), Encoding.UTF8, "application/json"));
+    }
+
+    private static async Task TryRun(Func<Task> taskFunc)
+    {
+        try
+        {
+            await taskFunc();
+        }
+        catch
+        {
+            // Ignore
+        }
     }
 }
