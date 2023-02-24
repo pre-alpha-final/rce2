@@ -8,6 +8,7 @@ namespace ChangeSpotter;
 
 internal class Program
 {
+    private static int _x, _y;
     private static Guid AgentId = Guid.NewGuid();
     private static string Address = $"https://localhost:7113/api/agent/{AgentId}";
     private static bool IsActive = false;
@@ -20,8 +21,7 @@ internal class Program
         var oldColor = Color.Empty;
         while (true)
         {
-            var (x, y) = Win32.GetCursorPosition();
-            var color = Win32.GetPixelColor(x, y);
+            var color = Win32.GetPixelColor(_x, _y);
             if (IsActive && color != oldColor)
             {
                 await TryRun(ChangeFound);
@@ -46,6 +46,7 @@ internal class Program
                     switch (rce2Message.Contact)
                     {
                         case "start":
+                            (_x, _y) = Win32.GetCursorPosition();
                             IsActive = true;
                             break;
 
