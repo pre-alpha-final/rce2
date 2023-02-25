@@ -5,6 +5,12 @@ namespace Broker.Server.Services.Implementation;
 public class FeedRepository<T> : IFeedRepository<T> where T : class
 {
     private readonly ConcurrentDictionary<Guid, ConcurrentQueue<T>> _feeds = new();
+    private readonly IEchoFeedRepository<T> _echoFeedRepository;
+
+    public FeedRepository(IEchoFeedRepository<T> echoFeedRepository)
+    {
+        _echoFeedRepository = echoFeedRepository;
+    }
 
     public bool Exists(Guid id)
     {
@@ -15,6 +21,15 @@ public class FeedRepository<T> : IFeedRepository<T> where T : class
     {
         var feed = _feeds.GetOrAdd(id, new ConcurrentQueue<T>());
         feed.Enqueue(item);
+        _echoFeedRepository.AddItem(item);
+    }
+
+    public void AddItems(Guid id, IEnumerable<T> items)
+    {
+        foreach (var item in items)
+        {
+            AddItem(id, item);
+        }
     }
 
     public void BroadcastItem(T item)
@@ -24,6 +39,7 @@ public class FeedRepository<T> : IFeedRepository<T> where T : class
         {
             feed.Value.Enqueue(item);
         }
+        _echoFeedRepository.AddItem(item);
     }
 
     public T GetNext(Guid id)

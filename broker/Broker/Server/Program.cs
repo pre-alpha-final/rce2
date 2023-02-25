@@ -12,10 +12,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews().AddNewtonsoftJson();
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, AuthHandler>();
+
 builder.Services.AddScoped<IFeedService<Rce2Message>, FeedService<Rce2Message>>();
 builder.Services.AddSingleton<IFeedRepository<Rce2Message>, FeedRepository<Rce2Message>>();
+builder.Services.AddSingleton<IEchoFeedRepository<Rce2Message>, EchoFeedRepositoryDummy<Rce2Message>>();
+
 builder.Services.AddScoped<IFeedService<BrokerEventBase>, FeedService<BrokerEventBase>>();
 builder.Services.AddSingleton<IFeedRepository<BrokerEventBase>, FeedRepository<BrokerEventBase>>();
+builder.Services.AddSingleton<IEchoFeedRepository<BrokerEventBase>, EchoFeedRepository<BrokerEventBase>>();
+
 builder.Services.AddSingleton<IBindingRepository, BindingRepository>();
 builder.Services.AddSingleton<IJanitorService, JanitorService>();
 builder.Services.AddCors(options =>

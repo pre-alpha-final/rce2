@@ -13,6 +13,7 @@ public class FeedService<T> : IFeedService<T>, IDisposable where T : class
     public FeedService(IFeedRepository<T> feedRepository)
     {
         _feedRepository = feedRepository;
+
         PubSub.Hub.Default.Subscribe<FeedUpdate>(this, OnFeedUpdate);
     }
 
@@ -24,6 +25,12 @@ public class FeedService<T> : IFeedService<T>, IDisposable where T : class
             Id = id,
             Type = typeof(T),
         });
+    }
+
+    public Task AddItems(Guid id, IEnumerable<T> items)
+    {
+        _feedRepository.AddItems(id, items);
+        return Task.CompletedTask;
     }
 
     public async Task BroadcastItem(T item)
