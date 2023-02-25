@@ -64,7 +64,7 @@ public class AgentController : ControllerBase
         foreach(var binding in bindings)
         {
             rce2Message.Contact = binding.InContact;
-            await _agentFeedService.AddItem(binding.InId, rce2Message);
+            await _agentFeedService.AddItem(binding.InId, rce2Message.Clone());
         }
 
         return Ok();
