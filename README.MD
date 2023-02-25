@@ -8,7 +8,8 @@ A solution to connect and control any device supporting HTTP connections. PC, la
 # Not in brief
 The design goal is to enable creation of simple software driving various devices. Or more precisely providing a messaging layer that allows said software to remain simple.
 "Agents" as they are known in the system need only to support outgoing HTTP requests. One URL - GET it (long polling) to receive your message feed, POST it to send out your outputs, that is it. 
-The communication is handled via a message broker that agents use to exchange messages between each other. Protocol-wise agents are completely separated (they don't see each other). So how do they communicate? Each agent has a list of inputs and a list of outputs. The broker creates bindings between them. If you've seen Unreal Engine design flow, that is basically the same concept. In other words, agents, from their point of view, send their outputs into the void and the broker, based on the bindings, makes sure that the messages end up in correct message feeds.
+The communication is handled via a message broker that agents use to exchange messages between each other.  
+Protocol-wise agents are completely separated (they don't see each other). So how do they communicate? Each agent has a list of inputs and a list of outputs. The broker creates bindings between them. If you've seen Unreal Engine design flow, that is basically the same concept. In other words, agents, from their point of view, send their outputs into the void and the broker, based on the bindings, makes sure that the messages end up in correct message feeds.
 
 # Feature summary
 - Message broker
