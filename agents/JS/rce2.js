@@ -29,7 +29,8 @@ var rce2 = {};
                     'id': agentId,
                     'name': 'JS',
                     'ins': {
-                        'setColor': 'string'
+                        'setColorNumber': 'number',
+                        'setColorString': 'string'
                     },
                     'outs': {}
                 }
@@ -37,8 +38,22 @@ var rce2 = {};
         });
     }
 
-    function setColor(color) {
+    function setColorNumber(number) {
+        document.body.style.backgroundColor = toColor(number);
+    }
+
+    function setColorString(color) {
         document.body.style.backgroundColor = color;
+    }
+	
+    function toColor(number) {
+        number >>>= 0;
+        var b = number & 0xFF,
+            g = (number & 0xFF00) >>> 8,
+            r = (number & 0xFF0000) >>> 16,
+            a = ((number & 0xFF000000) >>> 24) / 255;
+        //return "rgba(" + [r, g, b, a].join(",") + ")";
+		return "rgba(" + [r, g, b, 1].join(",") + ")";
     }
 
     function uuidv4() {
@@ -58,8 +73,12 @@ var rce2 = {};
             let feedResponse = await getFeed();
             for (let message of await feedResponse.json()) {
                 switch (message.contact) {
-                    case "setColor":
-                        await tryRun(() => setColor(message.payload.data));
+                    case "setColorNumber":
+                        await tryRun(() => setColorNumber(message.payload.data));
+                        break;
+
+                    case "setColorString":
+                        await tryRun(() => setColorString(message.payload.data));
                         break;
 
                     default:
