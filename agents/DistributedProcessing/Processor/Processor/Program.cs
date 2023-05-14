@@ -1,6 +1,6 @@
-﻿using Fibonacci;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Processor.Rce2;
 using System.Text;
 
 namespace Processor;
@@ -31,11 +31,11 @@ internal class Program
                 {
                     switch (rce2Message.Contact)
                     {
-                        case "start":
+                        case Rce2Contacts.Ins.Start:
                             await TryRun(HandleStart);
                             break;
 
-                        case "data_received":
+                        case Rce2Contacts.Ins.DataReceived:
                             await TryRun(() => HandleDataReceived(rce2Message.Payload));
                             break;
 
@@ -62,19 +62,19 @@ internal class Program
         await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = Rce2Types.WhoIs,
-            Payload = JObject.FromObject(new Agent
+            Payload = JObject.FromObject(new Rce2Agent
             {
                 Id = AgentId,
                 Name = "Processor",
                 Ins = new()
                 {
-                    { "start", Rce2Types.Void },
-                    { "data_received", Rce2Types.StringList }
+                    { Rce2Contacts.Ins.Start, Rce2Types.Void },
+                    { Rce2Contacts.Ins.DataReceived, Rce2Types.StringList }
                 },
                 Outs = new()
                 {
-                    { "request_data", Rce2Types.String },
-                    { "data_processed", Rce2Types.String }
+                    { Rce2Contacts.Outs.RequestData, Rce2Types.String },
+                    { Rce2Contacts.Outs.DataProcessed, Rce2Types.String }
                 }
             }),
         }), Encoding.UTF8, "application/json"));
@@ -107,7 +107,7 @@ internal class Program
         await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = Rce2Types.StringList,
-            Contact = "request_data",
+            Contact = Rce2Contacts.Outs.RequestData,
             Payload = JObject.FromObject(new { data = $"{RequestId}" })
         }), Encoding.UTF8, "application/json"));
     }
@@ -118,7 +118,7 @@ internal class Program
         await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = Rce2Types.StringList,
-            Contact = "data_processed",
+            Contact = Rce2Contacts.Outs.DataProcessed,
             Payload = JObject.FromObject(new { data = $"Processed {chunk}" })
         }), Encoding.UTF8, "application/json"));
     }

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System;
 using System.Threading.Tasks;
+using Rpzw.Rce2;
 
 namespace Rpzw
 {
@@ -63,7 +64,7 @@ namespace Rpzw
                 await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
                 {
                     Type = Rce2Types.WhoIs,
-                    Payload = JObject.FromObject(new Agent
+                    Payload = JObject.FromObject(new Rce2Agent
                     {
                         Id = AgentId,
                         Name = "Rpzw",
@@ -72,7 +73,7 @@ namespace Rpzw
                         },
                         Outs = new Dictionary<string, string>()
                         {
-                            { "button_pressed", Rce2Types.Void }
+                            { Rce2Contacts.Outs.ButtonPressed, Rce2Types.Void }
                         }
                     }),
                 }), Encoding.UTF8, "application/json"));
@@ -95,7 +96,7 @@ namespace Rpzw
                         await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
                         {
                             Type = Rce2Types.StringList,
-                            Contact = "button_pressed",
+                            Contact = Rce2Contacts.Outs.ButtonPressed,
                             Payload = JToken.Parse("{}"),
                         }), Encoding.UTF8, "application/json"));
                     }

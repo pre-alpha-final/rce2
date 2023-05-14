@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Dispatcher.Rce2;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 
@@ -31,7 +32,7 @@ internal class Program
                 {
                     switch (rce2Message.Contact)
                     {
-                        case "chunk_request":
+                        case Rce2Contacts.Ins.ChunkRequest:
                             await TryRun(() => HandleChunkRequest(rce2Message.Payload));
                             break;
 
@@ -58,17 +59,17 @@ internal class Program
         await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = Rce2Types.WhoIs,
-            Payload = JObject.FromObject(new Agent
+            Payload = JObject.FromObject(new Rce2Agent
             {
                 Id = AgentId,
                 Name = "Dispatcher",
                 Ins = new()
                 {
-                    { "chunk_request", Rce2Types.String }
+                    { Rce2Contacts.Ins.ChunkRequest, Rce2Types.String }
                 },
                 Outs = new()
                 {
-                    { "data_chunk", Rce2Types.StringList }
+                    { Rce2Contacts.Outs.DataChunk, Rce2Types.StringList }
                 }
             }),
         }), Encoding.UTF8, "application/json"));
@@ -84,7 +85,7 @@ internal class Program
         await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = Rce2Types.StringList,
-            Contact = "data_chunk",
+            Contact = Rce2Contacts.Outs.DataChunk,
             Payload = JObject.FromObject(new { data = new[] { $"{chunkRequestId}", chunk } })
         }), Encoding.UTF8, "application/json"));
     }

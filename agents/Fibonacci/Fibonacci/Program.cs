@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Fibonacci.Rce2;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 
@@ -31,7 +32,7 @@ internal class Program
                 {
                     switch (rce2Message.Contact)
                     {
-                        case "input_number":
+                        case Rce2Contacts.Ins.InputNumber:
                             await TryRun(() => HandleFibanacciMessage(rce2Message.Payload));
                             break;
 
@@ -58,17 +59,17 @@ internal class Program
         await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = Rce2Types.WhoIs,
-            Payload = JObject.FromObject(new Agent
+            Payload = JObject.FromObject(new Rce2Agent
             {
                 Id = AgentId,
                 Name = "Fibanacci",
                 Ins = new()
                 {
-                    { "input_number", Rce2Types.Number }
+                    { Rce2Contacts.Ins.InputNumber, Rce2Types.Number }
                 },
                 Outs = new()
                 {
-                    { "output_number", Rce2Types.Number }
+                    { Rce2Contacts.Outs.OutputNumber, Rce2Types.Number }
                 }
             }),
         }), Encoding.UTF8, "application/json"));
@@ -85,7 +86,7 @@ internal class Program
         await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = Rce2Types.Number,
-            Contact = "output_number",
+            Contact = Rce2Contacts.Outs.OutputNumber,
             Payload = JObject.FromObject(new { data = nextNumber })
         }), Encoding.UTF8, "application/json"));
     }

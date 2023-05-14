@@ -76,9 +76,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Agent.cs" />
-    <Compile Include="Rce2Message.cs" />
-    <Compile Include="Rce2Types.cs" />
+    <Compile Include="Rce2\Rce2Agent.cs" />
+    <Compile Include="Rce2\Rce2Contacts.cs" />
+    <Compile Include="Rce2\Rce2Message.cs" />
+    <Compile Include="Rce2\Rce2Types.cs" />
     <Compile Include="GpioService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

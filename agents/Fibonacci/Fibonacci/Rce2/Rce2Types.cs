@@ -1,4 +1,4 @@
-﻿namespace Fibonacci;
+﻿namespace Fibonacci.Rce2;
 
 public static class Rce2Types
 {

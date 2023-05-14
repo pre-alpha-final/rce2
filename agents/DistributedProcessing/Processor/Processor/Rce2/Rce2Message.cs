@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace ChangeSpotter;
+namespace Processor.Rce2;
 
 public class Rce2Message
 {

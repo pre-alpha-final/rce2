@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ChangeSpotter.Rce2;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -45,12 +46,12 @@ internal class Program
                 {
                     switch (rce2Message.Contact)
                     {
-                        case "start":
+                        case Rce2Contacts.Ins.Start:
                             (_x, _y) = Win32.GetCursorPosition();
                             IsActive = true;
                             break;
 
-                        case "stop":
+                        case Rce2Contacts.Ins.Stop:
                             IsActive = false;
                             break;
 
@@ -77,18 +78,18 @@ internal class Program
         await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = Rce2Types.WhoIs,
-            Payload = JObject.FromObject(new Agent
+            Payload = JObject.FromObject(new Rce2Agent
             {
                 Id = AgentId,
                 Name = "Change Spotter",
                 Ins = new()
                 {
-                    { "start", Rce2Types.Void },
-                    { "stop", Rce2Types.Void }
+                    { Rce2Contacts.Ins.Start, Rce2Types.Void },
+                    { Rce2Contacts.Ins.Stop, Rce2Types.Void }
                 },
                 Outs = new()
                 {
-                    { "change_found", Rce2Types.String }
+                    { Rce2Contacts.Outs.ChangeFound, Rce2Types.String }
                 }
             }),
         }), Encoding.UTF8, "application/json"));
@@ -111,7 +112,7 @@ internal class Program
         await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = Rce2Types.String,
-            Contact = "change_found",
+            Contact = Rce2Contacts.Outs.ChangeFound,
             Payload = JObject.FromObject(new { data = $"Pixel color changed - {DateTimeOffset.Now}" })
         }), Encoding.UTF8, "application/json"));
     }

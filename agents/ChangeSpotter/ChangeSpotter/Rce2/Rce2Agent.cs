@@ -1,6 +1,6 @@
-﻿namespace Fibonacci;
+﻿namespace ChangeSpotter.Rce2;
 
-public class Agent
+public class Rce2Agent
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
