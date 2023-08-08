@@ -1,12 +1,12 @@
 ﻿@using Broker.Shared.Model
 
-<h1>Outputs</h1>
+<h1>Data Flow</h1>
 <table class="table table-hover">
     <tbody>
-        @foreach (var output in Outputs)
+        @foreach (var data in DataFlow)
        {
             <tr class="table-light">
-                <td>@output</td>
+                <td>@data</td>
             </tr>
         }
     </tbody>
@@ -14,5 +14,5 @@
 
 @code {
     [Parameter]
-    public List<string> Outputs { get; set; }
+    public List<string> DataFlow { get; set; }
 }

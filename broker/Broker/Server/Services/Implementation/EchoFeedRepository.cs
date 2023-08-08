@@ -1,4 +1,6 @@
-﻿namespace Broker.Server.Services.Implementation;
+﻿using Broker.Shared.Events;
+
+namespace Broker.Server.Services.Implementation;
 
 public class EchoFeedRepository<T> : IEchoFeedRepository<T>
 {
@@ -10,6 +12,14 @@ public class EchoFeedRepository<T> : IEchoFeedRepository<T>
     {
         lock (_lock)
         {
+            if (((item is AgentInputEvent) == false) &&
+                ((item is AgentSimulatedInputEvent) == false) &&
+                ((item is AgentOutputEvent) == false) &&
+                ((item is AgentSimulatedOutputEvent) == false))
+            {
+                return;
+            }
+
             if (_queue.Count >= MaxSize)
             {
                 _queue.Dequeue();

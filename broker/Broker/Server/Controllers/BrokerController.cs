@@ -75,6 +75,13 @@ public class BrokerController : ControllerBase
     [HttpPost("simulateIn/{id:Guid}")]
     public async Task<OkResult> SimulateIn(Guid id, [FromBody] Rce2Message rce2Message)
     {
+        await _brokerFeedService.BroadcastItem(new AgentSimulatedInputEvent
+        {
+            AgentId = id,
+            Contact = rce2Message.Contact,
+            Payload = rce2Message.Payload,
+        });
+
         await _agentFeedService.AddItem(id, rce2Message);
 
         return Ok();
@@ -83,7 +90,7 @@ public class BrokerController : ControllerBase
     [HttpPost("simulateOut/{id:Guid}")]
     public async Task<OkResult> SimulateOut(Guid id, [FromBody] Rce2Message rce2Message)
     {
-        await _brokerFeedService.BroadcastItem(new AgentOutputEvent
+        await _brokerFeedService.BroadcastItem(new AgentSimulatedOutputEvent
         {
             AgentId = id,
             Contact = rce2Message.Contact,

@@ -30,7 +30,7 @@ else
         <div><Authorization AuthorizationFailure=AuthorizationFailure /></div>
         <div><AgentList Agents="Agents" /></div>
         <div class="mt-5"><BindingList Agents="Agents" Bindings="Bindings" /></div>
-        <div class="mt-5"><OutputList Outputs="Outputs" /></div>
+        <div class="mt-5"><DataFlowList DataFlow="DataFlow" /></div>
     </div>
 }
 
@@ -41,7 +41,7 @@ else
     public bool AuthorizationFailure { get; set; }
     public List<Agent> Agents { get; set; } = new();
     public List<Binding> Bindings { get; set; } = new();
-    public List<string> Outputs { get; set; } = new();
+    public List<string> DataFlow { get; set; } = new();
 
     public void OnCode(EventArgs e)
     {
@@ -99,8 +99,20 @@ else
                     Handle(brokerEvent.ToObject<AgentUpdatedEvent>());
                     break;
 
+                case nameof(AgentInputEvent):
+                    Handle(brokerEvent.ToObject<AgentInputEvent>());
+                    break;
+
+                case nameof(AgentSimulatedInputEvent):
+                    Handle(brokerEvent.ToObject<AgentSimulatedInputEvent>());
+                    break;
+
                 case nameof(AgentOutputEvent):
                     Handle(brokerEvent.ToObject<AgentOutputEvent>());
+                    break;
+
+                case nameof(AgentSimulatedOutputEvent):
+                    Handle(brokerEvent.ToObject<AgentSimulatedOutputEvent>());
                     break;
 
                 case nameof(AgentDeletedEvent):
@@ -129,16 +141,34 @@ else
         Agents?.Add(agentUpdatedEvent.Agent);
     }
 
+    private void Handle(AgentInputEvent agentInputEvent)
+    {
+        DataFlow.Insert(0, $"[Input] {agentInputEvent.AgentId} - {agentInputEvent.Contact} -  {agentInputEvent.Payload}");
+        DataFlow = DataFlow.Take(100).ToList();
+    }
+
+    private void Handle(AgentSimulatedInputEvent agentSimulatedInputEvent)
+    {
+        DataFlow.Insert(0, $"[Simulated input] {agentSimulatedInputEvent.AgentId} - {agentSimulatedInputEvent.Contact} -  {agentSimulatedInputEvent.Payload}");
+        DataFlow = DataFlow.Take(100).ToList();
+    }
+
     private void Handle(AgentOutputEvent agentOutputEvent)
     {
-        Outputs.Insert(0, $"{agentOutputEvent.AgentId} - {agentOutputEvent.Contact} -  {agentOutputEvent.Payload}");
-        Outputs = Outputs.Take(100).ToList();
+        DataFlow.Insert(0, $"[Output] {agentOutputEvent.AgentId} - {agentOutputEvent.Contact} -  {agentOutputEvent.Payload}");
+        DataFlow = DataFlow.Take(100).ToList();
 
         var agent = Agents.FirstOrDefault(e => e.Id == agentOutputEvent.AgentId);
         if (agent != null)
         {
             agent.LastOut = $"{agentOutputEvent.Contact} - {agentOutputEvent.Payload}";
         }
+    }
+
+    private void Handle(AgentSimulatedOutputEvent agentSimulatedOutputEvent)
+    {
+        DataFlow.Insert(0, $"[Simulated output] {agentSimulatedOutputEvent.AgentId} - {agentSimulatedOutputEvent.Contact} -  {agentSimulatedOutputEvent.Payload}");
+        DataFlow = DataFlow.Take(100).ToList();
     }
 
     private void Handle(AgentDeletedEvent agentDeletedEvent)

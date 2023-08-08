@@ -1,6 +1,4 @@
-﻿using Broker.Shared.Model;
-
-namespace Broker.Shared.Events;
+﻿namespace Broker.Shared.Events;
 
 public class AgentDeletedEvent : BrokerEventBase
 {

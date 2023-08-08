@@ -65,6 +65,13 @@ public class AgentController : ControllerBase
         {
             rce2Message.Contact = binding.InContact;
             await _agentFeedService.AddItem(binding.InId, rce2Message.Clone());
+
+            await _brokerFeedService.BroadcastItem(new AgentInputEvent
+            {
+                AgentId = binding.InId,
+                Contact = rce2Message.Contact,
+                Payload = rce2Message.Payload,
+            });
         }
 
         return Ok();
