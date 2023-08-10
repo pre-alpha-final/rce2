@@ -1,0 +1,45 @@
+﻿@page "/"
+@using Newtonsoft.Json;
+@using PubSub;
+@using PushNotificationAgent.Client.Infrastructure;
+@inject IJSRuntime JSRuntime
+@inject HttpClient HttpClient
+
+<h1>Rce2Push</h1>
+@foreach(var push in _pushes)
+{
+    <div>@push</div>
+}
+
+@code {
+    private List<string> _pushes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Hub.Default.Subscribe<PushMessage>(e =>
+        {
+            _pushes.Add(e.Data);
+            StateHasChanged();
+        });
+        _ = Task.Run(() => RequestNotificationSubscriptionAsync());
+    }
+
+    private async Task RequestNotificationSubscriptionAsync()
+    {
+        var subscription = await JSRuntime.InvokeAsync<NotificationSubscription>("blazorPushNotifications.requestSubscription");
+        if (subscription != null)
+        {
+            try
+            {
+                subscription.UserId = "rce2User";
+                var response = await HttpClient.PutAsJsonAsync("notifications/subscribe", subscription);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception e)
+            {
+                // ignore
+            }
+        }
+    }
+}
