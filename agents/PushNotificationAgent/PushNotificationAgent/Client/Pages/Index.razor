@@ -1,13 +1,27 @@
 ﻿@page "/"
+@using Newtonsoft.Json;
+@using PubSub;
+@using PushNotificationAgent.Client.Infrastructure;
 @inject IJSRuntime JSRuntime
 @inject HttpClient HttpClient
 
-<h1>Hello, world!</h1>
+<h1>Rce2Push</h1>
+@foreach(var push in _pushes)
+{
+    <div>@push</div>
+}
 
 @code {
+    private List<string> _pushes = new();
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        Hub.Default.Subscribe<PushMessage>(e =>
+        {
+            _pushes.Add(e.Data);
+            StateHasChanged();
+        });
         _ = Task.Run(() => RequestNotificationSubscriptionAsync());
     }
 

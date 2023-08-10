@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PushNotificationAgent.Client;
+using PushNotificationAgent.Client.Infrastructure;
 using PushNotificationAgent.Server.Services;
 
 namespace PushNotificationAgent.Server.Controllers;

@@ -1,4 +1,4 @@
-﻿using PushNotificationAgent.Client;
+﻿using PushNotificationAgent.Client.Infrastructure;
 using System.Collections.Concurrent;
 
 namespace PushNotificationAgent.Server.Services.Implementation;

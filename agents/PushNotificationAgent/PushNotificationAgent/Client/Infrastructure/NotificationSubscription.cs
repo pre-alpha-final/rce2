@@ -1,4 +1,4 @@
-﻿namespace PushNotificationAgent.Client;
+﻿namespace PushNotificationAgent.Client.Infrastructure;
 
 public class NotificationSubscription
 {

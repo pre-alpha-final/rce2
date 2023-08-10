@@ -6,13 +6,18 @@ self.addEventListener('fetch', () => { });
 self.addEventListener('push', event => {
     const payload = event.data.json();
     event.waitUntil(
-        self.registration.showNotification('Blazing Pizza1', {
+        self.registration.showNotification('Rce2Push', {
             body: payload.message,
             icon: 'icon-512.png',
             vibrate: [100, 50, 100],
             data: { url: payload.url }
         })
     );
+});
+
+const onPushBroadcastChannel = new BroadcastChannel('on-push-also-js-is-for-stupid-people');
+self.addEventListener('push', event => {
+    onPushBroadcastChannel.postMessage(event.data.text());
 });
 
 //self.addEventListener('notificationclick', event => {
