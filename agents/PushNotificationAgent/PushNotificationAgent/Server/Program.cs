@@ -1,3 +1,8 @@
+using PushNotificationAgent.Server.Services;
+using PushNotificationAgent.Server.Services.Implementation;
+
+namespace PushNotificationAgent.Server;
+
 internal class Program
 {
     private static void Main(string[] args)
@@ -7,7 +12,12 @@ internal class Program
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
 
+        builder.Services.AddSingleton<IRce2Service, Rce2Service>();
+        builder.Services.AddSingleton<INotificationsService, NotificationsService>();
+
         var app = builder.Build();
+
+        _ = Task.Run(() => app.Services.GetService<IRce2Service>()?.Run());
 
         if (app.Environment.IsDevelopment())
         {

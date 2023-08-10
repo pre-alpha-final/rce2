@@ -1,3 +1,31 @@
 ﻿@page "/"
+@inject IJSRuntime JSRuntime
+@inject HttpClient HttpClient
 
 <h1>Hello, world!</h1>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _ = Task.Run(() => RequestNotificationSubscriptionAsync());
+    }
+
+    private async Task RequestNotificationSubscriptionAsync()
+    {
+        var subscription = await JSRuntime.InvokeAsync<NotificationSubscription>("blazorPushNotifications.requestSubscription");
+        if (subscription != null)
+        {
+            try
+            {
+                subscription.UserId = "rce2User";
+                var response = await HttpClient.PutAsJsonAsync("notifications/subscribe", subscription);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception e)
+            {
+                // ignore
+            }
+        }
+    }
+}

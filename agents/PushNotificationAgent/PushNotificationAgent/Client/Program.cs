@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using PushNotificationAgent.Client;
+
+namespace PushNotificationAgent.Client;
 
 internal class Program
 {
