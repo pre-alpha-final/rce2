@@ -17,3 +17,7 @@
 .btn-small {
     padding: 0px 6px;
 }
+
+.inactive {
+    background: yellow;
+}

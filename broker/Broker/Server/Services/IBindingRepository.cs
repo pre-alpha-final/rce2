@@ -7,5 +7,6 @@ public interface IBindingRepository
     List<Binding> GetAll();
     List<Binding> GetBindingsFrom(Guid id, string contact);
     bool AddBinding(Binding binding);
+    bool UpdateBinding(Binding binding);
     bool DeleteBinding(Binding binding);
 }

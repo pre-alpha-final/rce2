@@ -1,3 +1,4 @@
+using Broker.Server.Infrastructure;
 using Broker.Server.Services;
 using Broker.Shared.Events;
 using Broker.Shared.Model;
@@ -38,12 +39,21 @@ public class AgentController : ControllerBase
     [HttpPost("{id:Guid}")]
     public async Task<StatusCodeResult> PostOutput(Guid id, [FromBody] Rce2Message rce2Message)
     {
+        if (_agentFeedService.Exists(id) == false)
+        {
+            await _agentFeedService.AddItem(id, new Rce2Message
+            {
+                Type = Rce2Types.WhoIs,
+            });
+        }
+
         if (rce2Message.Type == Rce2Types.WhoIs)
         {
             await _brokerFeedService.BroadcastItem(new AgentUpdatedEvent
             {
                 Agent = rce2Message.Payload.ToObject<Agent>(),
             });
+            await RecheckBindings();
 
             return Ok();
         }
@@ -75,5 +85,37 @@ public class AgentController : ControllerBase
         }
 
         return Ok();
+    }
+
+    private async Task RecheckBindings()
+    {
+        var bindings = _bindingRepository.GetAll();
+        foreach (var binding in bindings)
+        {
+            if (_agentFeedService.Exists(binding.OutId) && _agentFeedService.Exists(binding.InId))
+            {
+                if (binding.IsActive == false)
+                {
+                    binding.IsActive = true;
+                    _bindingRepository.UpdateBinding(binding);
+                    await _brokerFeedService.BroadcastItem(new BindingUpdatedEvent
+                    {
+                        Binding = binding,
+                    });
+                }
+            }
+            else
+            {
+                if (binding.IsActive)
+                {
+                    binding.IsActive = false;
+                    _bindingRepository.UpdateBinding(binding);
+                    await _brokerFeedService.BroadcastItem(new BindingUpdatedEvent
+                    {
+                        Binding = binding,
+                    });
+                }
+            }
+        }
     }
 }

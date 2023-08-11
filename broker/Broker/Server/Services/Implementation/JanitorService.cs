@@ -54,8 +54,9 @@ public class JanitorService : IJanitorService
         {
             if (binding.InId == inactiveEntity.Key || binding.OutId == inactiveEntity.Key)
             {
-                _bindingRepository.DeleteBinding(binding);
-                await BrokerBroadcast(new BindingDeletedEvent
+                binding.IsActive = false;
+                _bindingRepository.UpdateBinding(binding);
+                await BrokerBroadcast(new BindingUpdatedEvent
                 {
                     Binding = binding,
                 });

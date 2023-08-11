@@ -123,6 +123,10 @@ else
                     Handle(brokerEvent.ToObject<BindingAddedEvent>());
                     break;
 
+                case nameof(BindingUpdatedEvent):
+                    Handle(brokerEvent.ToObject<BindingUpdatedEvent>());
+                    break;
+
                 case nameof(BindingDeletedEvent):
                     Handle(brokerEvent.ToObject<BindingDeletedEvent>());
                     break;
@@ -183,6 +187,18 @@ else
     private void Handle(BindingAddedEvent bindingAddedEvent)
     {
         Bindings.Add(bindingAddedEvent.Binding);
+    }
+
+    private void Handle(BindingUpdatedEvent bindingUpdatedEvent)
+    {
+        var binding = Bindings.FirstOrDefault(e => e.Equals(bindingUpdatedEvent.Binding));
+        if (binding == null)
+        {
+            return;
+        }
+        binding.OutName = bindingUpdatedEvent.Binding.OutName;
+        binding.InName = bindingUpdatedEvent.Binding.InName;
+        binding.IsActive = bindingUpdatedEvent.Binding.IsActive;
     }
 
     private void Handle(BindingDeletedEvent bindingDeletedEvent)

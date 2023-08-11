@@ -24,6 +24,12 @@ public class BindingRepository : IBindingRepository
         return Bindings.Add(binding);
     }
 
+    public bool UpdateBinding(Binding binding)
+    {
+        Bindings.Remove(binding);
+        return Bindings.Add(binding);
+    }
+
     public bool DeleteBinding(Binding binding)
     {
         return Bindings.Remove(binding);
