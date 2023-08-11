@@ -60,5 +60,5 @@ self.addEventListener('push', event => {
 
 const onPushBroadcastChannel = new BroadcastChannel('on-push-also-js-is-for-stupid-people');
 self.addEventListener('push', event => {
-    onPushBroadcastChannel.postMessage(event.data.text());
+    setTimeout(() => onPushBroadcastChannel.postMessage(event.data.text()), 1000);
 });
