@@ -1,6 +1,6 @@
 {
-  "name": "PushNotificationAgent",
-  "short_name": "PushNotificationAgent",
+  "name": "Rce2Push",
+  "short_name": "Rce2Push",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

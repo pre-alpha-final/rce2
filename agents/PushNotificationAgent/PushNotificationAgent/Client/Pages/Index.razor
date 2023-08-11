@@ -5,23 +5,43 @@
 @inject IJSRuntime JSRuntime
 @inject HttpClient HttpClient
 
+<PageTitle>@_title</PageTitle>
+
 <h1>Rce2Push</h1>
-@foreach(var push in _pushes)
+@foreach (var push in _pushes)
 {
     <div>@push</div>
 }
 
 @code {
+    private bool _hasFocus;
     private List<string> _pushes = new();
+    private string _title = "Rce2Push";
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        Hub.Default.Subscribe<PushMessage>(e =>
+
+        Hub.Default.Subscribe<PushReceived>(e =>
         {
             _pushes.Add(e.Data);
+            if (_hasFocus == false)
+            {
+                _title = "Rce2Push *NEW*";
+            }
             StateHasChanged();
         });
+        Hub.Default.Subscribe<FocusReceived>(e =>
+        {
+            _hasFocus = true;
+            _title = "Rce2Push";
+            StateHasChanged();
+        });
+        Hub.Default.Subscribe<FocusLost>(e =>
+        {
+            _hasFocus = false;
+        });
+
         _ = Task.Run(() => RequestNotificationSubscriptionAsync());
     }
 

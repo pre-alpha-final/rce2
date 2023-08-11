@@ -18,6 +18,18 @@
     [JSInvokable]
     public static async Task OnPush(string json)
     {
-        await Hub.Default.PublishAsync(new PushMessage { Data = json });
+        await Hub.Default.PublishAsync(new PushReceived { Data = json });
+    }
+
+    [JSInvokable]
+    public static async Task OnBlur()
+    {
+        await Hub.Default.PublishAsync(new FocusLost());
+    }
+
+    [JSInvokable]
+    public static async Task OnFocus()
+    {
+        await Hub.Default.PublishAsync(new FocusReceived());
     }
 }

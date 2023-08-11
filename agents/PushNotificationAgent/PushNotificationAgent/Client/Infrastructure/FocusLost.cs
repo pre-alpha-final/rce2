@@ -1,6 +1,5 @@
 ﻿namespace PushNotificationAgent.Client.Infrastructure;
 
-public class PushMessage
+public class FocusLost
 {
-    public string Data { get; set; }
 }

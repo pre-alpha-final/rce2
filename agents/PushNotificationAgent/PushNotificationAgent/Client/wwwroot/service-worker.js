@@ -19,8 +19,3 @@ const onPushBroadcastChannel = new BroadcastChannel('on-push-also-js-is-for-stup
 self.addEventListener('push', event => {
     onPushBroadcastChannel.postMessage(event.data.text());
 });
-
-//self.addEventListener('notificationclick', event => {
-//    event.notification.close();
-//    event.waitUntil(clients.openWindow(event.notification.data.url));
-//});
