@@ -37,13 +37,13 @@ public class Rce2Service : IRce2Service
                     switch (rce2Message.Contact)
                     {
                         case Rce2Contacts.Ins.Push:
-                            await HandlePush(rce2Message.Payload);
+                            await TryRun(() => HandlePush(rce2Message.Payload));
                             break;
 
                         default:
                             if (rce2Message.Type == Rce2Types.WhoIs)
                             {
-                                await HandleWhoIsMessage();
+                                await TryRun(HandleWhoIsMessage);
                             }
                             break;
                     }
@@ -103,6 +103,18 @@ public class Rce2Service : IRce2Service
         catch (Exception e)
         {
             // ignore
+        }
+    }
+
+    private static async Task TryRun(Func<Task> taskFunc)
+    {
+        try
+        {
+            await taskFunc();
+        }
+        catch
+        {
+            // Ignore
         }
     }
 }

@@ -35,7 +35,7 @@ internal class Program
                         default:
                             if (rce2Message.Type == Rce2Types.WhoIs)
                             {
-                                await HandleWhoIsMessage();
+                                await TryRun(HandleWhoIsMessage);
                             }
                             break;
                     }
@@ -87,7 +87,7 @@ internal class Program
             catch (Exception e)
             {
             }
-            await Task.Delay(5000);
+            await Task.Delay(TimeSpan.FromMinutes(1));
         }
     }
 
@@ -103,5 +103,17 @@ internal class Program
                 data = alert,
             }),
         }), Encoding.UTF8, "application/json"));
+    }
+
+    private static async Task TryRun(Func<Task> taskFunc)
+    {
+        try
+        {
+            await taskFunc();
+        }
+        catch
+        {
+            // Ignore
+        }
     }
 }

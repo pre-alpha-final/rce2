@@ -1,5 +1,4 @@
-﻿using Fibonacci.Rce2;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PopupAgent.Rce2;
 using System;
@@ -78,13 +77,13 @@ namespace PopupAgent
                             switch (rce2Message.Contact)
                             {
                                 case Rce2Contacts.Ins.PopupText:
-                                    await DisplayToast(rce2Message.Payload["data"].ToObject<string>());
+                                    await TryRun(() => DisplayToast(rce2Message.Payload["data"].ToObject<string>()));
                                     break;
 
                                 default:
                                     if (rce2Message.Type == Rce2Types.WhoIs)
                                     {
-                                        await HandleWhoIsMessage();
+                                        await TryRun(HandleWhoIsMessage);
                                     }
                                     break;
                             }
@@ -119,6 +118,18 @@ namespace PopupAgent
                         }
                     }),
                 }), Encoding.UTF8, "application/json"));
+            }
+        }
+
+        private static async Task TryRun(Func<Task> taskFunc)
+        {
+            try
+            {
+                await taskFunc();
+            }
+            catch
+            {
+                // Ignore
             }
         }
     }
