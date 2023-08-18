@@ -44,7 +44,7 @@
     <div class="row">
         <div class="col-12 col-md-6 col-xl-3">
             <label class="form-label mt-2">From agent</label>
-            <select class="form-select" @bind="FromAgentResult" @onfocus="OnFromAgentFocus">
+            <select class="form-select" @bind="FromAgentResult" @onmousedown="OnFromAgentMouseDown">
                 <option></option>
                 @foreach (var value in FromAgentList)
                 {
@@ -54,7 +54,7 @@
         </div>
         <div class="col-12 col-md-6 col-xl-3">
             <label class="form-label mt-2">Out</label>
-            <select class="form-select" @bind="OutResult" @onfocus="OnOutFocus">
+            <select class="form-select" @bind="OutResult" @onmousedown="OnOutMouseDown">
                 <option></option>
                 @foreach (var value in OutList)
                 {
@@ -64,7 +64,7 @@
         </div>
         <div class="col-12 col-md-6 col-xl-3">
             <label class="form-label mt-2">To agent</label>
-            <select class="form-select" @bind="ToAgentResult" @onfocus="OnToAgentFocus">
+            <select class="form-select" @bind="ToAgentResult" @onmousedown="OnToAgentMouseDown">
                 <option></option>
                 @foreach (var value in ToAgentList)
                 {
@@ -74,7 +74,7 @@
         </div>
         <div class="col-12 col-md-6 col-xl-3">
             <label class="form-label mt-2">In</label>
-            <select class="form-select" @bind="InResult" @onfocus="OnInFocus">
+            <select class="form-select" @bind="InResult" @onmousedown="OnInMouseDown">
                 <option></option>
                 @foreach (var value in InList)
                 {
@@ -104,28 +104,28 @@
     public string ToAgentResult { get; set; }
     public string InResult { get; set; }
 
-    public void OnFromAgentFocus()
+    public void OnFromAgentMouseDown()
     {
         FromAgentResult = string.Empty;
         FromAgentList = Agents.Select(e => $"{e.Name} - {e.Id}").ToList();
         StateHasChanged();
     }
 
-    public void OnOutFocus()
+    public void OnOutMouseDown()
     {
         OutResult = string.Empty;
         OutList = Agents.First(e => FromAgentResult == $"{e.Name} - {e.Id}").Outs.Select(e => e.Key).ToList();
         StateHasChanged();
     }
 
-    public void OnToAgentFocus()
+    public void OnToAgentMouseDown()
     {
         ToAgentResult = string.Empty;
         ToAgentList = Agents.Select(e => $"{e.Name} - {e.Id}").ToList();
         StateHasChanged();
     }
 
-    public void OnInFocus()
+    public void OnInMouseDown()
     {
         InResult = string.Empty;
         InList = Agents.First(e => ToAgentResult == $"{e.Name} - {e.Id}").Ins.Select(e => e.Key).ToList();
