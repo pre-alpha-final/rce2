@@ -53,11 +53,19 @@ else
     {
         var id = Guid.NewGuid();
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Code", _code);
+        var lastFeed = DateTime.UtcNow;
 
         while(true)
         {
             try
             {
+                if ((DateTime.UtcNow - lastFeed) > TimeSpan.FromMinutes(3))
+                {
+                    NavigationManager.NavigateTo(NavigationManager.Uri, true);
+                    break;
+                }
+                lastFeed = DateTime.UtcNow;
+
                 var response = await HttpClient.GetAsync($"/api/broker/{id}");
                 if (IsValid(response) == false)
                 {
@@ -147,19 +155,19 @@ else
 
     private void Handle(AgentInputEvent agentInputEvent)
     {
-        DataFlow.Insert(0, $"[Input] {agentInputEvent.AgentId} - {agentInputEvent.Contact} -  {agentInputEvent.Payload}");
+        DataFlow.Insert(0, $"[{agentInputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Input] {agentInputEvent.AgentId} - {agentInputEvent.Contact} -  {agentInputEvent.Payload}");
         DataFlow = DataFlow.Take(100).ToList();
     }
 
     private void Handle(AgentSimulatedInputEvent agentSimulatedInputEvent)
     {
-        DataFlow.Insert(0, $"[Simulated input] {agentSimulatedInputEvent.AgentId} - {agentSimulatedInputEvent.Contact} -  {agentSimulatedInputEvent.Payload}");
+        DataFlow.Insert(0, $"[{agentSimulatedInputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Simulated input] {agentSimulatedInputEvent.AgentId} - {agentSimulatedInputEvent.Contact} -  {agentSimulatedInputEvent.Payload}");
         DataFlow = DataFlow.Take(100).ToList();
     }
 
     private void Handle(AgentOutputEvent agentOutputEvent)
     {
-        DataFlow.Insert(0, $"[Output] {agentOutputEvent.AgentId} - {agentOutputEvent.Contact} -  {agentOutputEvent.Payload}");
+        DataFlow.Insert(0, $"[{agentOutputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Output] {agentOutputEvent.AgentId} - {agentOutputEvent.Contact} -  {agentOutputEvent.Payload}");
         DataFlow = DataFlow.Take(100).ToList();
 
         var agent = Agents.FirstOrDefault(e => e.Id == agentOutputEvent.AgentId);
@@ -171,7 +179,7 @@ else
 
     private void Handle(AgentSimulatedOutputEvent agentSimulatedOutputEvent)
     {
-        DataFlow.Insert(0, $"[Simulated output] {agentSimulatedOutputEvent.AgentId} - {agentSimulatedOutputEvent.Contact} -  {agentSimulatedOutputEvent.Payload}");
+        DataFlow.Insert(0, $"[{agentSimulatedOutputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Simulated output] {agentSimulatedOutputEvent.AgentId} - {agentSimulatedOutputEvent.Contact} -  {agentSimulatedOutputEvent.Payload}");
         DataFlow = DataFlow.Take(100).ToList();
     }
 
@@ -186,6 +194,11 @@ else
 
     private void Handle(BindingAddedEvent bindingAddedEvent)
     {
+        var binding = Bindings.FirstOrDefault(e => e.Equals(bindingAddedEvent.Binding));
+        if (binding != null)
+        {
+            Bindings.Remove(binding);
+        }
         Bindings.Add(bindingAddedEvent.Binding);
     }
 
