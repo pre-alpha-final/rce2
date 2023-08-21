@@ -73,14 +73,15 @@ public class AgentController : ControllerBase
         var bindings = _bindingRepository.GetBindingsFrom(id, rce2Message.Contact);
         foreach(var binding in bindings)
         {
-            rce2Message.Contact = binding.InContact;
-            await _agentFeedService.AddItem(binding.InId, rce2Message.Clone());
+            var rce2MessageClone = rce2Message.Clone();
+            rce2MessageClone.Contact = binding.InContact;
+            await _agentFeedService.AddItem(binding.InId, rce2MessageClone);
 
             await _brokerFeedService.BroadcastItem(new AgentInputEvent
             {
                 AgentId = binding.InId,
-                Contact = rce2Message.Contact,
-                Payload = rce2Message.Payload,
+                Contact = rce2MessageClone.Contact,
+                Payload = rce2MessageClone.Payload,
             });
         }
 
