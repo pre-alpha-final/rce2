@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTriggerAgent", "WebTriggerAgent\WebTriggerAgent.csproj", "{183AE3D8-A395-4B24-8611-7A73B0675D2D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{183AE3D8-A395-4B24-8611-7A73B0675D2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{183AE3D8-A395-4B24-8611-7A73B0675D2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{183AE3D8-A395-4B24-8611-7A73B0675D2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{183AE3D8-A395-4B24-8611-7A73B0675D2D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D15610A0-3E02-49AA-A28D-2A9A005964FB}
+	EndGlobalSection
+EndGlobal
