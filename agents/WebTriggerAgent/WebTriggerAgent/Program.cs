@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Text;
 using WebTriggerAgent.Rce2;
+using System.Text.RegularExpressions;
 
 namespace WebTriggerAgent
 {
@@ -25,17 +26,53 @@ namespace WebTriggerAgent
                 }
                 var query = request.QueryString.Value;
 
-                using var httpClient = new HttpClient();
-                await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
-                {
-                    Type = Rce2Types.String,
-                    Contact = Rce2Contacts.Outs.Trigger,
-                    Payload = JObject.FromObject(new { data = query.Substring(1, query.Length - 1) })
-                }), Encoding.UTF8, "application/json"));
+                await HandleChannel(query);
+                await HandleAll(query);
 
                 return $"Triggered with '{query.Substring(1, query.Length - 1)}'";
             });
             app.Run();
+        }
+
+        private static async Task HandleChannel(string? query)
+        {
+            var channelMatch = new Regex(@"channel=(\d+)").Match(query);
+            if (channelMatch.Groups.Count <= 1)
+            {
+                return;
+            }
+
+            var httpClient = new HttpClient();
+            await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
+            {
+                Type = Rce2Types.String,
+                Contact = channelMatch.Groups[1].Value switch
+                {
+                    "0" => Rce2Contacts.Outs.Channel0,
+                    "1" => Rce2Contacts.Outs.Channel1,
+                    "2" => Rce2Contacts.Outs.Channel2,
+                    "3" => Rce2Contacts.Outs.Channel3,
+                    "4" => Rce2Contacts.Outs.Channel4,
+                    "5" => Rce2Contacts.Outs.Channel5,
+                    "6" => Rce2Contacts.Outs.Channel6,
+                    "7" => Rce2Contacts.Outs.Channel7,
+                    "8" => Rce2Contacts.Outs.Channel8,
+                    "9" => Rce2Contacts.Outs.Channel9,
+                    _ => throw new NotImplementedException(),
+                },
+                Payload = JObject.FromObject(new { data = query.Substring(1, query.Length - 1) })
+            }), Encoding.UTF8, "application/json"));
+        }
+
+        private static async Task HandleAll(string? query)
+        {
+            var httpClient = new HttpClient();
+            await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
+            {
+                Type = Rce2Types.String,
+                Contact = Rce2Contacts.Outs.All,
+                Payload = JObject.FromObject(new { data = query.Substring(1, query.Length - 1) })
+            }), Encoding.UTF8, "application/json"));
         }
 
         private static async Task FeedHandler()
@@ -84,7 +121,17 @@ namespace WebTriggerAgent
                     },
                     Outs = new()
                     {
-                        { Rce2Contacts.Outs.Trigger, Rce2Types.String }
+                        { Rce2Contacts.Outs.Channel0, Rce2Types.String },
+                        { Rce2Contacts.Outs.Channel1, Rce2Types.String },
+                        { Rce2Contacts.Outs.Channel2, Rce2Types.String },
+                        { Rce2Contacts.Outs.Channel3, Rce2Types.String },
+                        { Rce2Contacts.Outs.Channel4, Rce2Types.String },
+                        { Rce2Contacts.Outs.Channel5, Rce2Types.String },
+                        { Rce2Contacts.Outs.Channel6, Rce2Types.String },
+                        { Rce2Contacts.Outs.Channel7, Rce2Types.String },
+                        { Rce2Contacts.Outs.Channel8, Rce2Types.String },
+                        { Rce2Contacts.Outs.Channel9, Rce2Types.String },
+                        { Rce2Contacts.Outs.All, Rce2Types.String },
                     }
                 }),
             }), Encoding.UTF8, "application/json"));
