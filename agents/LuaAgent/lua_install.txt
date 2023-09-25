@@ -1,0 +1,29 @@
+1. Get MSYS2
+ - https://www.msys2.org
+2. Switch to mingw64 console
+3. Update
+ - pacman -Syu
+4. Install compile toolchain
+ - https://packages.msys2.org/package/mingw-w64-x86_64-gcc
+ - pacman -S mingw-w64-x86_64-gcc
+5. Install lua
+ - https://packages.msys2.org/package/mingw-w64-x86_64-lua
+ - pacman -S mingw-w64-x86_64-lua
+6. Install luarocks
+ - https://packages.msys2.org/package/mingw-w64-x86_64-lua-luarocks
+ - pacman -S mingw-w64-x86_64-lua-luarocks
+7. Install lunajson
+ - luarocks install lunajson
+ - in case of "failed making directory" error, create the directory
+8. Install luasocket
+ - luarocks install luasocket
+ - in case of "failed making directory" error, create the directory
+9. Install openssl devel
+ - https://packages.msys2.org/package/openssl-devel
+ - pacman -S openssl-devel
+10. Install openssl binaries
+ - https://packages.msys2.org/package/mingw-w64-x86_64-openssl
+ - pacman -S mingw-w64-x86_64-openssl
+11. Install luasec
+ - luarocks OPENSSL_INCDIR=/usr/include install luasec
+ - in case of "failed making directory" error, create the directory
