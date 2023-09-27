@@ -18,14 +18,14 @@ function handle_whois()
     {
       "type":"whois",
       "payload":{
-         "id":"]] .. app_settings.agent_id .. [[",
-         "Name":"Lua Agent",
-         "ins":{
-            "]] .. rce2_contacts.ins.input_text .. [[":"string"
-         },
-         "outs":{
-            "]] .. rce2_contacts.outs.output_text .. [[":"string"
-         }
+        "id":"]] .. app_settings.agent_id .. [[",
+        "Name":"Lua Agent",
+        "ins":{
+          "]] .. rce2_contacts.ins.input_text .. [[":"string"
+        },
+        "outs":{
+          "]] .. rce2_contacts.outs.output_text .. [[":"string"
+        }
       }
    }
   ]]
@@ -46,7 +46,7 @@ function handle_output_text(text)
       "type":"string",
       "contact":"]] .. rce2_contacts.outs.output_text .. [[",
       "payload":{
-         "data":"]] .. text .. [["
+        "data":"]] .. text .. [["
       }
    }
   ]]
