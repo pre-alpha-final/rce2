@@ -4,6 +4,7 @@
     {
         public class Ins
         {
+            public const string Trigger1 = "trigger1";
         }
 
         public class Outs

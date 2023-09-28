@@ -9,10 +9,11 @@ namespace RpzwAgent
     public class GpioService
     {
         private static object _pinValueChangedLock = new object();
-        private List<int> _pins = new List<int>() { 23, 24, 5, 6, 13 };
+        private List<int> _inPins = new List<int>() { 23, 24, 5, 6, 13 };
+        private List<int> _outPins = new List<int>() { 18 };
         private DateTimeOffset[] _pinStateLastChangeUp = new DateTimeOffset[5];
         private DateTimeOffset[] _pinStateLastChangeDown = new DateTimeOffset[5];
-        private Action<int, bool> _risen;
+        private Action<int, bool> _onPinStateChange;
         private CancellationTokenSource _monitorCts = new CancellationTokenSource();
 
         public GpioController GpioController { get; }
@@ -22,12 +23,16 @@ namespace RpzwAgent
             GpioController = new GpioController();
         }
 
-        public void Run(Action<int, bool> risen)
+        public void Run(Action<int, bool> onPinStateChange)
         {
-            _risen = risen;
-            foreach (var pin in _pins)
+            _onPinStateChange = onPinStateChange;
+            foreach (var outPin in _inPins)
             {
-                OpenPin(pin);
+                OpenInPin(outPin);
+            }
+            foreach (var outPin in _outPins)
+            {
+                OpenOutPin(outPin);
             }
 
             Task.Run(async () =>
@@ -43,19 +48,24 @@ namespace RpzwAgent
                     }
 
                     Console.WriteLine();
-                    Console.WriteLine(string.Join("\t", _pins));
+                    Console.WriteLine(string.Join("\t", _inPins));
                     Console.WriteLine(string.Join("\t",
-                        GpioController.Read(_pins[0]) == PinValue.High,
-                        GpioController.Read(_pins[1]) == PinValue.High,
-                        GpioController.Read(_pins[2]) == PinValue.High,
-                        GpioController.Read(_pins[3]) == PinValue.High,
-                        GpioController.Read(_pins[4]) == PinValue.High));
+                        GpioController.Read(_inPins[0]) == PinValue.High,
+                        GpioController.Read(_inPins[1]) == PinValue.High,
+                        GpioController.Read(_inPins[2]) == PinValue.High,
+                        GpioController.Read(_inPins[3]) == PinValue.High,
+                        GpioController.Read(_inPins[4]) == PinValue.High));
                     await Task.Delay(250);
                 }
             });
         }
 
-        private void OpenPin(int pin)
+        public void SetPin(int pin, bool high)
+        {
+            GpioController.Write(18, high ? PinValue.High : PinValue.Low);
+        }
+
+        private void OpenInPin(int pin)
         {
             if (GpioController.IsPinOpen(pin))
             {
@@ -66,12 +76,21 @@ namespace RpzwAgent
             GpioController.RegisterCallbackForPinValueChangedEvent(pin, PinEventTypes.Falling, OnPinValueChanged);
         }
 
+        private void OpenOutPin(int pin)
+        {
+            if (GpioController.IsPinOpen(pin))
+            {
+                GpioController.ClosePin(pin);
+            }
+            GpioController.OpenPin(18, PinMode.Output);
+        }
+
         private void OnPinValueChanged(object sender, PinValueChangedEventArgs pinValueChangedEventArgs)
         {
             //Console.WriteLine($"{pinValueChangedEventArgs.PinNumber}: {pinValueChangedEventArgs.ChangeType}");
             lock (_pinValueChangedLock)
             {
-                var index = _pins.IndexOf(pinValueChangedEventArgs.PinNumber);
+                var index = _inPins.IndexOf(pinValueChangedEventArgs.PinNumber);
                 if (pinValueChangedEventArgs.ChangeType == PinEventTypes.Rising &&
                     _pinStateLastChangeUp[index] + TimeSpan.FromSeconds(1) < DateTimeOffset.UtcNow)
                 {
@@ -81,7 +100,7 @@ namespace RpzwAgent
                         await Task.Delay(33);
                         if (GpioController.Read(pinValueChangedEventArgs.PinNumber) == PinValue.High)
                         {
-                            _risen(pinValueChangedEventArgs.PinNumber, true);
+                            _onPinStateChange(pinValueChangedEventArgs.PinNumber, true);
                         }
                     });
                 }
@@ -94,7 +113,7 @@ namespace RpzwAgent
                         await Task.Delay(33);
                         if (GpioController.Read(pinValueChangedEventArgs.PinNumber) == PinValue.Low)
                         {
-                            _risen(pinValueChangedEventArgs.PinNumber, false);
+                            _onPinStateChange(pinValueChangedEventArgs.PinNumber, false);
                         }
                     });
                 }

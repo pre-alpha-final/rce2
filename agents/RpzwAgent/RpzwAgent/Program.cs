@@ -14,12 +14,14 @@ namespace RpzwAgent
         private static Guid AgentId = Guid.NewGuid();
         private static string Address = $"https://localhost:7113/api/agent/{AgentId}";
 
+        private static GpioService _gpioService;
+
         static void Main(string[] args)
         {
             _ = Task.Run(FeedHandler);
 
-            var gpioService = new GpioService();
-            gpioService.Run(Risen);
+            _gpioService = new GpioService();
+            _gpioService.Run(OnPinStateChange);
 
             Console.ReadKey(true);
         }
@@ -39,6 +41,10 @@ namespace RpzwAgent
                         {
                             switch (rce2Message.Contact)
                             {
+                                case Rce2Contacts.Ins.Trigger1:
+                                    await TryRun(() => HandleTrigger1(rce2Message.Payload));
+                                    break;
+
                                 default:
                                     if (rce2Message.Type == Rce2Types.WhoIs)
                                     {
@@ -57,6 +63,11 @@ namespace RpzwAgent
             }
         }
 
+        private static async Task HandleTrigger1(JToken payload)
+        {
+            _gpioService.SetPin(18, payload["data"].ToObject<bool>());
+        }
+
         private static async Task HandleWhoIsMessage()
         {
             using (var httpClient = new HttpClient())
@@ -70,19 +81,20 @@ namespace RpzwAgent
                         Name = "Rpzw",
                         Ins = new Dictionary<string, string>()
                         {
+                            { Rce2Contacts.Ins.Trigger1, Rce2Types.Boolean }
                         },
                         Outs = new Dictionary<string, string>()
                         {
-                            { Rce2Contacts.Outs.ButtonPressed, Rce2Types.Void }
+                            { Rce2Contacts.Outs.ButtonPressed, Rce2Types.Number }
                         }
                     }),
                 }), Encoding.UTF8, "application/json"));
             }
         }
 
-        private static void Risen(int pin, bool rising)
+        private static void OnPinStateChange(int pin, bool isRising)
         {
-            if ((pin == 13 && rising == true) == false)
+            if (isRising == false)
             {
                 return;
             }
@@ -95,9 +107,9 @@ namespace RpzwAgent
                     {
                         await httpClient.PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
                         {
-                            Type = Rce2Types.StringList,
+                            Type = Rce2Types.Number,
                             Contact = Rce2Contacts.Outs.ButtonPressed,
-                            Payload = JToken.Parse("{}"),
+                            Payload = JObject.FromObject(new { data = pin }),
                         }), Encoding.UTF8, "application/json"));
                     }
                 });
