@@ -5,7 +5,7 @@
 
 app_settings = {}
 app_settings.agent_id = '11111111-2222-3333-4444-000000000001'
-app_settings.address = 'http://localhost:5113/api/agent' .. app_settings.agent_id
+app_settings.address = 'http://localhost:5113/api/agent/' .. app_settings.agent_id
 
 rce2_contacts = {}
 rce2_contacts.ins = {}
