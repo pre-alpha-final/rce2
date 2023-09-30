@@ -1,18 +1,20 @@
 -- minecraft version 1.20.1
--- requires cc-tweaked mod (runs on advanced computer)
+-- requires cc-tweaked mod (runs on advanced turtle)
+-- requires turtlematic chest (for creative chest)
+-- requires unlimitedperipheralworks (for universal scanner)
 
 app_settings = {}
-app_settings.agent_id = '11111111-2222-3333-4444-000000000000'
-app_settings.address = 'http://localhost:5113/api/agent/' .. app_settings.agent_id
+app_settings.agent_id = '11111111-2222-3333-4444-000000000001'
+app_settings.address = 'http://localhost:5113/api/agent' .. app_settings.agent_id
 
 rce2_contacts = {}
 rce2_contacts.ins = {}
-rce2_contacts.ins.display_text = "display-text"
-rce2_contacts.outs = {}
-rce2_contacts.outs.trigger1 = "trigger1"
+rce2_contacts.ins.run_command = "run-command"
 
-function handle_display_text(rce2_message)
+function handle_run_command(rce2_message)
   print(rce2_message.payload.data)
+  local result = load(rce2_message.payload.data)()
+  print(result)
 end
 
 function handle_whois()
@@ -22,13 +24,12 @@ function handle_whois()
       "type":"whois",
       "payload":{
         "id":"]] .. app_settings.agent_id .. [[",
-        "Name":"Minecraft Agent",
+        "Name":"Turtle 3d Printer Agent",
         "ins":{
-          "]] .. rce2_contacts.ins.display_text .. [[":"string"
+          "]] .. rce2_contacts.ins.run_command .. [[":"string"
         },
         "outs":{
-          "]] .. rce2_contacts.outs.trigger1 .. [[":"bool"
-        }
+		}
       }
     }
   ]]
@@ -63,8 +64,8 @@ function feed_handler()
   local responseArray = textutils.unserializeJSON(responseJson)
   for _,value in pairs(responseArray) do
 
-    if value.contact == rce2_contacts.ins.display_text then
-      handle_display_text(value)
+    if value.contact == rce2_contacts.ins.run_command then
+      handle_run_command(value)
       --goto continue
     end
 
