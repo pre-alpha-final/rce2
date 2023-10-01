@@ -15,8 +15,9 @@ internal class Program
     static async Task Main(string[] args)
     {
         var blocks = JsonConvert.DeserializeObject<List<Block>>(ScanData);
-        var minCoordinates = GetMinCoordinates(blocks);
-        TransformOrigin(blocks, minCoordinates);
+        TransformOrigin(blocks);
+        blocks = GetVerticalSlice(blocks, 0, 0, int.MaxValue, int.MaxValue);
+        TransformOrigin(blocks);
         await GenerateBlueprints(blocks, new Dictionary<string, Rgba32>
         {
             { "minecraft:white_wool", new Rgba32(255, 255, 255) },
@@ -31,8 +32,9 @@ internal class Program
         return (blocks.Min(e => e.X), blocks.Min(e => e.Y), blocks.Min(e => e.Z));
     }
 
-    private static void TransformOrigin(List<Block> blocks, (int minX, int minY, int minZ) minCoordinates)
+    private static void TransformOrigin(List<Block> blocks)
     {
+        var minCoordinates = GetMinCoordinates(blocks);
         foreach (var block in blocks)
         {
             block.X -= minCoordinates.minX;
@@ -42,8 +44,19 @@ internal class Program
     }
 
     /*
+     * Imagine top down view of the structure, origin is bottom-left
+     * x is forward, y is up, z is right (because minecraft)
+     */
+    private static List<Block> GetVerticalSlice(List<Block> blocks, int startZ, int startX, int zDirectionBlocks, int xDirectionBlocks)
+    {
+        return blocks
+            .Where(e => e.X >= startX && e.Z >= startZ && e.X < (startX + xDirectionBlocks) && e.Z < (startZ + zDirectionBlocks))
+            .ToList();
+    }
+
+    /*
      * Based on turtle facing
-     * x is forward, y is up, z is right
+     * x is forward, y is up, z is right (because minecraft)
      */
     private static async Task GenerateBlueprints(List<Block> blocks, Dictionary<string, Rgba32> colorMappings)
     {
