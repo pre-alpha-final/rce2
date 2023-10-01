@@ -21,30 +21,35 @@ public class Program
             });
         var host = builder.Build();
 
-        _ = Task.Run(() => FeedHandler(host.Services.GetRequiredService<AppSettings>()));
-        _ = Task.Run(host.Services.GetRequiredService<Printer>().Run);
+        _ = Task.Run(() => FeedHandler(
+            host.Services.GetRequiredService<AppSettings>(),
+            host.Services.GetRequiredService<IHttpClientFactory>(),
+            host.Services.GetRequiredService<Printer>()));
 
         Console.ReadLine();
     }
 
-    private static async Task FeedHandler(AppSettings appSettings)
+    private static async Task FeedHandler(AppSettings appSettings, IHttpClientFactory httpClientFactory, Printer printer)
     {
-        using var httpClient = new HttpClient();
         while (true)
         {
             try
             {
-                var feed = await httpClient.GetAsync(appSettings.Address);
+                var feed = await httpClientFactory.CreateClient().GetAsync(appSettings.Address);
                 var content = await feed.Content.ReadAsStringAsync();
                 var rce2Messages = JsonConvert.DeserializeObject<List<Rce2Message>>(content);
                 foreach (var rce2Message in rce2Messages)
                 {
                     switch (rce2Message.Contact)
                     {
+                        case Rce2Contacts.Ins.Start:
+                            await TryRun(printer.Run);
+                            break;
+
                         default:
                             if (rce2Message.Type == Rce2Types.WhoIs)
                             {
-                                await TryRun(() => HandleWhoIsMessage(appSettings.AgentId, appSettings.Address));
+                                await TryRun(() => HandleWhoIsMessage(httpClientFactory, appSettings.AgentId, appSettings.Address));
                             }
                             break;
                     }
@@ -58,10 +63,9 @@ public class Program
         }
     }
 
-    private static async Task HandleWhoIsMessage(Guid agentId, string address)
+    private static async Task HandleWhoIsMessage(IHttpClientFactory httpClientFactory, Guid agentId, string address)
     {
-        using var httpClient = new HttpClient();
-        await httpClient.PostAsync(address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
+        await httpClientFactory.CreateClient().PostAsync(address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = Rce2Types.WhoIs,
             Payload = JObject.FromObject(new Rce2Agent
@@ -70,6 +74,7 @@ public class Program
                 Name = "Turtle 3d Printer Controller Agent",
                 Ins = new()
                 {
+                    { Rce2Contacts.Ins.Start, Rce2Types.Void }
                 },
                 Outs = new()
                 {

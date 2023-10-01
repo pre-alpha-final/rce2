@@ -4,6 +4,7 @@ internal class Rce2Contacts
 {
     public class Ins
     {
+        public const string Start = "start";
     }
 
     public class Outs

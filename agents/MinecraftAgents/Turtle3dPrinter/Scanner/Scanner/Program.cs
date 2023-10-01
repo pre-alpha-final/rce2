@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace Scanner;
 
@@ -61,9 +61,17 @@ internal class Program
     private static async Task GenerateBlueprints(List<Block> blocks, Dictionary<string, Rgba32> colorMappings)
     {
         var index = 0;
-        var x = blocks.GroupBy(e => e.Y).OrderBy(e => e.Key);
         foreach (var layer in blocks.GroupBy(e => e.Y).OrderBy(e => e.Key))
         {
+            while (index != layer.First().Y)
+            {
+                var emptyLayerImage = new Image<Rgba32>(1, 1);
+                emptyLayerImage[0, 0] = TransparentColor;
+                await emptyLayerImage.SaveAsPngAsync($"{index}.png");
+                index++;
+                continue;
+            }
+
             var imageWidth = layer.Max(e => e.Z) + 1;
             var imageHeight = layer.Max(e => e.X) + 1;
 
