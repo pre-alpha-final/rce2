@@ -12,9 +12,9 @@ public class EchoFeedRepository<T> : IEchoFeedRepository<T>
     {
         lock (_lock)
         {
-            if (((item is AgentInputEvent) == false) &&
+            if (((item is AgentInputReceivedEvent) == false) &&
                 ((item is AgentSimulatedInputEvent) == false) &&
-                ((item is AgentOutputEvent) == false) &&
+                ((item is AgentOutputReceivedEvent) == false) &&
                 ((item is AgentSimulatedOutputEvent) == false))
             {
                 return;

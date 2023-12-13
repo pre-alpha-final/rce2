@@ -112,16 +112,16 @@ else
                     Handle(brokerEvent.ToObject<AgentUpdatedEvent>());
                     break;
 
-                case nameof(AgentInputEvent):
-                    Handle(brokerEvent.ToObject<AgentInputEvent>());
+                case nameof(AgentInputReceivedEvent):
+                    Handle(brokerEvent.ToObject<AgentInputReceivedEvent>());
                     break;
 
                 case nameof(AgentSimulatedInputEvent):
                     Handle(brokerEvent.ToObject<AgentSimulatedInputEvent>());
                     break;
 
-                case nameof(AgentOutputEvent):
-                    Handle(brokerEvent.ToObject<AgentOutputEvent>());
+                case nameof(AgentOutputReceivedEvent):
+                    Handle(brokerEvent.ToObject<AgentOutputReceivedEvent>());
                     break;
 
                 case nameof(AgentSimulatedOutputEvent):
@@ -158,9 +158,9 @@ else
         Agents?.Add(agentUpdatedEvent.Agent);
     }
 
-    private void Handle(AgentInputEvent agentInputEvent)
+    private void Handle(AgentInputReceivedEvent agentInputReceivedEvent)
     {
-        DataFlow.Insert(0, $"[{agentInputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Input] {agentInputEvent.AgentId} - {agentInputEvent.Contact} -  {agentInputEvent.Payload}");
+        DataFlow.Insert(0, $"[{agentInputReceivedEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Input] {agentInputReceivedEvent.AgentId} - {agentInputReceivedEvent.Contact} -  {agentInputReceivedEvent.Payload}");
         DataFlow = DataFlow.Take(DataFlowLength).ToList();
     }
 
@@ -170,15 +170,15 @@ else
         DataFlow = DataFlow.Take(DataFlowLength).ToList();
     }
 
-    private void Handle(AgentOutputEvent agentOutputEvent)
+    private void Handle(AgentOutputReceivedEvent agentOutputReceivedEvent)
     {
-        DataFlow.Insert(0, $"[{agentOutputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Output] {agentOutputEvent.AgentId} - {agentOutputEvent.Contact} -  {agentOutputEvent.Payload}");
+        DataFlow.Insert(0, $"[{agentOutputReceivedEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Output] {agentOutputReceivedEvent.AgentId} - {agentOutputReceivedEvent.Contact} -  {agentOutputReceivedEvent.Payload}");
         DataFlow = DataFlow.Take(DataFlowLength).ToList();
 
-        var agent = Agents.FirstOrDefault(e => e.Id == agentOutputEvent.AgentId);
+        var agent = Agents.FirstOrDefault(e => e.Id == agentOutputReceivedEvent.AgentId);
         if (agent != null)
         {
-            agent.LastOut = $"{agentOutputEvent.Contact} - {agentOutputEvent.Payload}";
+            agent.LastOut = $"{agentOutputReceivedEvent.Contact} - {agentOutputReceivedEvent.Payload}";
         }
     }
 

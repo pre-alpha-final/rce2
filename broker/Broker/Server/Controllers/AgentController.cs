@@ -63,7 +63,7 @@ public class AgentController : ControllerBase
             return BadRequest();
         }
 
-        await _brokerFeedService.BroadcastItem(new AgentOutputEvent
+        await _brokerFeedService.BroadcastItem(new AgentOutputReceivedEvent
         {
             AgentId = id,
             Contact = rce2Message.Contact,
@@ -77,7 +77,7 @@ public class AgentController : ControllerBase
             rce2MessageClone.Contact = binding.InContact;
             await _agentFeedService.AddItem(binding.InId, rce2MessageClone);
 
-            await _brokerFeedService.BroadcastItem(new AgentInputEvent
+            await _brokerFeedService.BroadcastItem(new AgentInputReceivedEvent
             {
                 AgentId = binding.InId,
                 Contact = rce2MessageClone.Contact,
