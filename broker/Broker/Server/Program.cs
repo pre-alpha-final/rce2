@@ -18,7 +18,8 @@ builder.Services.AddScoped<IBrokerFeedService, BrokerFeedService>();
 builder.Services.AddSingleton<IBrokerFeedRepository, BrokerFeedRepository>();
 builder.Services.AddSingleton<IRecentMessagesRepository, RecentMessagesRepository>();
 
-builder.Services.AddSingleton<IBindingRepository, BindingRepository>();
+//builder.Services.AddSingleton<IBindingRepository, BindingRepository>();
+builder.Services.AddSingleton<IBindingRepository, BindingFileCacheRepository>();
 builder.Services.AddSingleton<IJanitorService, JanitorService>();
 builder.Services.AddCors(options =>
 {
