@@ -1,8 +1,9 @@
-﻿@using Broker.Shared.Model
+﻿@using Broker.Client.Infrastructure
+@using Broker.Shared.Model
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq
 @using System.Text
-@inject HttpClient HttpClient
+@inject AuthorizedHttpClientFactory AuthorizedHttpClientFactory
 
 <h1>Agents</h1>
 <div class="container container-max-width">
@@ -66,7 +67,7 @@
         }
         StateHasChanged();
 
-        var response = await HttpClient.PostAsync($"/api/broker/simulateIn/{agent.Id}",
+        var response = await AuthorizedHttpClientFactory.CreateClient("Default").PostAsync($"/api/broker/simulateIn/{agent.Id}",
             new StringContent(JsonConvert.SerializeObject(new Rce2Message
             {
                 Type = agentIn.Value,
@@ -84,7 +85,7 @@
         }
         StateHasChanged();
 
-        var response = await HttpClient.PostAsync($"/api/broker/simulateOut/{agent.Id}",
+        var response = await AuthorizedHttpClientFactory.CreateClient("Default").PostAsync($"/api/broker/simulateOut/{agent.Id}",
             new StringContent(JsonConvert.SerializeObject(new Rce2Message
             {
                 Type = agentOut.Value,

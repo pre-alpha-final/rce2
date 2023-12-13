@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Broker.Client.Infrastructure
 @using Broker.Shared
 @using System.Net.Http.Headers
 @using System.Net
@@ -8,7 +9,7 @@
 @using Newtonsoft.Json.Linq
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
-@inject HttpClient HttpClient
+@inject AuthorizedHttpClientFactory AuthorizedHttpClientFactory
 
 <PageTitle>Rce2 Message Broker</PageTitle>
 
@@ -52,7 +53,7 @@ else
     private async Task GetFeed()
     {
         var id = Guid.NewGuid();
-        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Code", _code);
+        AuthorizedHttpClientFactory.Authorize(_code);
         var lastFeed = DateTime.UtcNow;
 
         while(true)
@@ -66,7 +67,7 @@ else
                 }
                 lastFeed = DateTime.UtcNow;
 
-                var response = await HttpClient.GetAsync($"/api/broker/{id}");
+                var response = await AuthorizedHttpClientFactory.CreateClient("Default").GetAsync($"/api/broker/{id}");
                 if (IsValid(response) == false)
                 {
                     await Task.Delay(5000);
