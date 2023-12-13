@@ -2,9 +2,9 @@
 
 namespace Broker.Shared.Events;
 
-public class AgentOutputEvent : BrokerEventBase
+public class AgentOutputReceivedEvent : BrokerEventBase
 {
-    public AgentOutputEvent() : base(nameof(AgentOutputEvent))
+    public AgentOutputReceivedEvent() : base(nameof(AgentOutputReceivedEvent))
     {
     }
 

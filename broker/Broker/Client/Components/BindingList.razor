@@ -1,5 +1,6 @@
-﻿@using Broker.Shared.Model
-@inject HttpClient HttpClient
+﻿@using Broker.Client.Infrastructure
+@using Broker.Shared.Model
+@inject AuthorizedHttpClientFactory AuthorizedHttpClientFactory
 
 <h1>Bindings</h1>
 <div class="container container-max-width">
@@ -134,7 +135,7 @@
 
     public async Task OnCreateBinding(MouseEventArgs _)
     {
-        var response = await HttpClient.PostAsJsonAsync($"/api/broker/createBinding", new Binding
+        var response = await AuthorizedHttpClientFactory.CreateClient("Default").PostAsJsonAsync($"/api/broker/createBinding", new Binding
         {
             OutId = Guid.Parse(FromAgentResult.Split(" - ").Last()),
             OutName = string.Join(" - ", FromAgentResult.Split(" - ").Take(FromAgentResult.Split(" - ").Length - 1)),
@@ -148,6 +149,6 @@
 
     public async Task OnDeleteBinding(Binding binding)
     {
-        var response = await HttpClient.PostAsJsonAsync($"/api/broker/deleteBinding", binding);
+        var response = await AuthorizedHttpClientFactory.CreateClient("Default").PostAsJsonAsync($"/api/broker/deleteBinding", binding);
     }
 }

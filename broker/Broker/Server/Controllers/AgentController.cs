@@ -1,4 +1,3 @@
-using Broker.Server.Infrastructure;
 using Broker.Server.Services;
 using Broker.Shared.Events;
 using Broker.Shared.Model;
@@ -10,11 +9,11 @@ namespace Broker.Server.Controllers;
 [Route("api/agent")]
 public class AgentController : ControllerBase
 {
-    private readonly IFeedService<Rce2Message> _agentFeedService;
-    private readonly IFeedService<BrokerEventBase> _brokerFeedService;
+    private readonly IAgentFeedService _agentFeedService;
+    private readonly IBrokerFeedService _brokerFeedService;
     private readonly IBindingRepository _bindingRepository;
 
-    public AgentController(IFeedService<Rce2Message> agentFeedService, IFeedService<BrokerEventBase> brokerFeedService,
+    public AgentController(IAgentFeedService agentFeedService, IBrokerFeedService brokerFeedService,
         IBindingRepository bindingRepository)
     {
         _agentFeedService = agentFeedService;
@@ -63,7 +62,7 @@ public class AgentController : ControllerBase
             return BadRequest();
         }
 
-        await _brokerFeedService.BroadcastItem(new AgentOutputEvent
+        await _brokerFeedService.BroadcastItem(new AgentOutputReceivedEvent
         {
             AgentId = id,
             Contact = rce2Message.Contact,
@@ -77,7 +76,7 @@ public class AgentController : ControllerBase
             rce2MessageClone.Contact = binding.InContact;
             await _agentFeedService.AddItem(binding.InId, rce2MessageClone);
 
-            await _brokerFeedService.BroadcastItem(new AgentInputEvent
+            await _brokerFeedService.BroadcastItem(new AgentInputReceivedEvent
             {
                 AgentId = binding.InId,
                 Contact = rce2MessageClone.Contact,

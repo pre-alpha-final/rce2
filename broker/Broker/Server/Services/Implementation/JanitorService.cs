@@ -1,16 +1,16 @@
 ﻿using Broker.Server.Infrastructure;
 using Broker.Shared.Events;
-using Broker.Shared.Model;
 
 namespace Broker.Server.Services.Implementation;
 
 public class JanitorService : IJanitorService
 {
-    private readonly IFeedRepository<Rce2Message> _agentFeedRepository;
-    private readonly IFeedRepository<BrokerEventBase> _brokerFeedRepository;
+    private readonly IAgentFeedRepository _agentFeedRepository;
+    private readonly IBrokerFeedRepository _brokerFeedRepository;
     private readonly IBindingRepository _bindingRepository;
 
-    public JanitorService(IFeedRepository<Rce2Message> agentFeedRepository, IFeedRepository<BrokerEventBase> brokerFeedRepository,
+    // TODO Activity is just an Id now, consider adding a type so that it is immediately clear what to clean up
+    public JanitorService(IAgentFeedRepository agentFeedRepository, IBrokerFeedRepository brokerFeedRepository,
         IBindingRepository bindingRepository)
     {
         _agentFeedRepository = agentFeedRepository;
@@ -66,11 +66,13 @@ public class JanitorService : IJanitorService
 
     private async Task HandleAgents(KeyValuePair<Guid, DateTimeOffset> inactiveEntity)
     {
-        _agentFeedRepository.Delete(inactiveEntity.Key);
-        await BrokerBroadcast(new AgentDeletedEvent
+        if (_agentFeedRepository.Delete(inactiveEntity.Key))
         {
-            Id = inactiveEntity.Key,
-        });
+            await BrokerBroadcast(new AgentDeletedEvent
+            {
+                Id = inactiveEntity.Key,
+            });
+        }
     }
 
     private void HandleBrokers(KeyValuePair<Guid, DateTimeOffset> inactiveEntity)
@@ -91,9 +93,6 @@ public class JanitorService : IJanitorService
     private async Task BrokerBroadcast(BrokerEventBase item)
     {
         _brokerFeedRepository.BroadcastItem(item);
-        await PubSub.Hub.Default.PublishAsync(new FeedUpdate
-        {
-            Type = typeof(BrokerEventBase),
-        });
+        await PubSub.Hub.Default.PublishAsync(new BrokerFeedUpdate());
     }
 }

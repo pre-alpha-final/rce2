@@ -2,19 +2,19 @@
 
 namespace Broker.Server.Services.Implementation;
 
-public class EchoFeedRepository<T> : IEchoFeedRepository<T>
+public class RecentMessagesRepository : IRecentMessagesRepository
 {
     private const int MaxSize = 100;
     private static object _lock = new object();
-    private Queue<T> _queue = new Queue<T>();
+    private Queue<BrokerEventBase> _queue = new Queue<BrokerEventBase>();
 
-    public void AddItem(T item)
+    public void AddItem(BrokerEventBase item)
     {
         lock (_lock)
         {
-            if (((item is AgentInputEvent) == false) &&
+            if (((item is AgentInputReceivedEvent) == false) &&
                 ((item is AgentSimulatedInputEvent) == false) &&
-                ((item is AgentOutputEvent) == false) &&
+                ((item is AgentOutputReceivedEvent) == false) &&
                 ((item is AgentSimulatedOutputEvent) == false))
             {
                 return;
@@ -28,7 +28,7 @@ public class EchoFeedRepository<T> : IEchoFeedRepository<T>
         }
     }
 
-    public List<T> GetAll()
+    public List<BrokerEventBase> GetAll()
     {
         lock (_lock)
         {

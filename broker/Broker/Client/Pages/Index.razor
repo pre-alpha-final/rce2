@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Broker.Client.Infrastructure
 @using Broker.Shared
 @using System.Net.Http.Headers
 @using System.Net
@@ -8,7 +9,7 @@
 @using Newtonsoft.Json.Linq
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
-@inject HttpClient HttpClient
+@inject AuthorizedHttpClientFactory AuthorizedHttpClientFactory
 
 <PageTitle>Rce2 Message Broker</PageTitle>
 
@@ -35,6 +36,10 @@ else
 }
 
 @code {
+    private const int InactivityDelay = 3;
+    private const int AntiFloodDelay = 5000;
+    private const int DataFlowLength = 100;
+
     private string _code;
     private string _codeInput;
 
@@ -52,31 +57,31 @@ else
     private async Task GetFeed()
     {
         var id = Guid.NewGuid();
-        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Code", _code);
+        AuthorizedHttpClientFactory.Authorize(_code);
         var lastFeed = DateTime.UtcNow;
 
         while(true)
         {
             try
             {
-                if ((DateTime.UtcNow - lastFeed) > TimeSpan.FromMinutes(3))
+                if ((DateTime.UtcNow - lastFeed) > TimeSpan.FromMinutes(InactivityDelay))
                 {
                     NavigationManager.NavigateTo(NavigationManager.Uri, true);
                     break;
                 }
                 lastFeed = DateTime.UtcNow;
 
-                var response = await HttpClient.GetAsync($"/api/broker/{id}");
+                var response = await AuthorizedHttpClientFactory.CreateClient("Default").GetAsync($"/api/broker/{id}");
                 if (IsValid(response) == false)
                 {
-                    await Task.Delay(5000);
+                    await Task.Delay(AntiFloodDelay);
                     continue;
                 }
                 await HandleFeed(response);
             }
             catch (Exception e)
             {
-                await Task.Delay(5000);
+                await Task.Delay(AntiFloodDelay);
             }
         }
     }
@@ -107,16 +112,16 @@ else
                     Handle(brokerEvent.ToObject<AgentUpdatedEvent>());
                     break;
 
-                case nameof(AgentInputEvent):
-                    Handle(brokerEvent.ToObject<AgentInputEvent>());
+                case nameof(AgentInputReceivedEvent):
+                    Handle(brokerEvent.ToObject<AgentInputReceivedEvent>());
                     break;
 
                 case nameof(AgentSimulatedInputEvent):
                     Handle(brokerEvent.ToObject<AgentSimulatedInputEvent>());
                     break;
 
-                case nameof(AgentOutputEvent):
-                    Handle(brokerEvent.ToObject<AgentOutputEvent>());
+                case nameof(AgentOutputReceivedEvent):
+                    Handle(brokerEvent.ToObject<AgentOutputReceivedEvent>());
                     break;
 
                 case nameof(AgentSimulatedOutputEvent):
@@ -153,34 +158,34 @@ else
         Agents?.Add(agentUpdatedEvent.Agent);
     }
 
-    private void Handle(AgentInputEvent agentInputEvent)
+    private void Handle(AgentInputReceivedEvent agentInputReceivedEvent)
     {
-        DataFlow.Insert(0, $"[{agentInputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Input] {agentInputEvent.AgentId} - {agentInputEvent.Contact} -  {agentInputEvent.Payload}");
-        DataFlow = DataFlow.Take(100).ToList();
+        DataFlow.Insert(0, $"[{agentInputReceivedEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Input] {agentInputReceivedEvent.AgentId} - {agentInputReceivedEvent.Contact} -  {agentInputReceivedEvent.Payload}");
+        DataFlow = DataFlow.Take(DataFlowLength).ToList();
     }
 
     private void Handle(AgentSimulatedInputEvent agentSimulatedInputEvent)
     {
         DataFlow.Insert(0, $"[{agentSimulatedInputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Simulated input] {agentSimulatedInputEvent.AgentId} - {agentSimulatedInputEvent.Contact} -  {agentSimulatedInputEvent.Payload}");
-        DataFlow = DataFlow.Take(100).ToList();
+        DataFlow = DataFlow.Take(DataFlowLength).ToList();
     }
 
-    private void Handle(AgentOutputEvent agentOutputEvent)
+    private void Handle(AgentOutputReceivedEvent agentOutputReceivedEvent)
     {
-        DataFlow.Insert(0, $"[{agentOutputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Output] {agentOutputEvent.AgentId} - {agentOutputEvent.Contact} -  {agentOutputEvent.Payload}");
-        DataFlow = DataFlow.Take(100).ToList();
+        DataFlow.Insert(0, $"[{agentOutputReceivedEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Output] {agentOutputReceivedEvent.AgentId} - {agentOutputReceivedEvent.Contact} -  {agentOutputReceivedEvent.Payload}");
+        DataFlow = DataFlow.Take(DataFlowLength).ToList();
 
-        var agent = Agents.FirstOrDefault(e => e.Id == agentOutputEvent.AgentId);
+        var agent = Agents.FirstOrDefault(e => e.Id == agentOutputReceivedEvent.AgentId);
         if (agent != null)
         {
-            agent.LastOut = $"{agentOutputEvent.Contact} - {agentOutputEvent.Payload}";
+            agent.LastOut = $"{agentOutputReceivedEvent.Contact} - {agentOutputReceivedEvent.Payload}";
         }
     }
 
     private void Handle(AgentSimulatedOutputEvent agentSimulatedOutputEvent)
     {
         DataFlow.Insert(0, $"[{agentSimulatedOutputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Simulated output] {agentSimulatedOutputEvent.AgentId} - {agentSimulatedOutputEvent.Contact} -  {agentSimulatedOutputEvent.Payload}");
-        DataFlow = DataFlow.Take(100).ToList();
+        DataFlow = DataFlow.Take(DataFlowLength).ToList();
     }
 
     private void Handle(AgentDeletedEvent agentDeletedEvent)
