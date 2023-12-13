@@ -36,6 +36,10 @@ else
 }
 
 @code {
+    private const int InactivityDelay = 3;
+    private const int AntiFloodDelay = 5000;
+    private const int DataFlowLength = 100;
+
     private string _code;
     private string _codeInput;
 
@@ -60,7 +64,7 @@ else
         {
             try
             {
-                if ((DateTime.UtcNow - lastFeed) > TimeSpan.FromMinutes(3))
+                if ((DateTime.UtcNow - lastFeed) > TimeSpan.FromMinutes(InactivityDelay))
                 {
                     NavigationManager.NavigateTo(NavigationManager.Uri, true);
                     break;
@@ -70,14 +74,14 @@ else
                 var response = await AuthorizedHttpClientFactory.CreateClient("Default").GetAsync($"/api/broker/{id}");
                 if (IsValid(response) == false)
                 {
-                    await Task.Delay(5000);
+                    await Task.Delay(AntiFloodDelay);
                     continue;
                 }
                 await HandleFeed(response);
             }
             catch (Exception e)
             {
-                await Task.Delay(5000);
+                await Task.Delay(AntiFloodDelay);
             }
         }
     }
@@ -157,19 +161,19 @@ else
     private void Handle(AgentInputEvent agentInputEvent)
     {
         DataFlow.Insert(0, $"[{agentInputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Input] {agentInputEvent.AgentId} - {agentInputEvent.Contact} -  {agentInputEvent.Payload}");
-        DataFlow = DataFlow.Take(100).ToList();
+        DataFlow = DataFlow.Take(DataFlowLength).ToList();
     }
 
     private void Handle(AgentSimulatedInputEvent agentSimulatedInputEvent)
     {
         DataFlow.Insert(0, $"[{agentSimulatedInputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Simulated input] {agentSimulatedInputEvent.AgentId} - {agentSimulatedInputEvent.Contact} -  {agentSimulatedInputEvent.Payload}");
-        DataFlow = DataFlow.Take(100).ToList();
+        DataFlow = DataFlow.Take(DataFlowLength).ToList();
     }
 
     private void Handle(AgentOutputEvent agentOutputEvent)
     {
         DataFlow.Insert(0, $"[{agentOutputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Output] {agentOutputEvent.AgentId} - {agentOutputEvent.Contact} -  {agentOutputEvent.Payload}");
-        DataFlow = DataFlow.Take(100).ToList();
+        DataFlow = DataFlow.Take(DataFlowLength).ToList();
 
         var agent = Agents.FirstOrDefault(e => e.Id == agentOutputEvent.AgentId);
         if (agent != null)
@@ -181,7 +185,7 @@ else
     private void Handle(AgentSimulatedOutputEvent agentSimulatedOutputEvent)
     {
         DataFlow.Insert(0, $"[{agentSimulatedOutputEvent.TimestampUtc.ToLocalTime().ToString("G")}] [Simulated output] {agentSimulatedOutputEvent.AgentId} - {agentSimulatedOutputEvent.Contact} -  {agentSimulatedOutputEvent.Payload}");
-        DataFlow = DataFlow.Take(100).ToList();
+        DataFlow = DataFlow.Take(DataFlowLength).ToList();
     }
 
     private void Handle(AgentDeletedEvent agentDeletedEvent)
