@@ -11,18 +11,18 @@ namespace Broker.Server.Controllers;
 [Authorize]
 public class BrokerController : ControllerBase
 {
-    private readonly IFeedService<BrokerEventBase> _brokerFeedService;
-    private readonly IFeedService<Rce2Message> _agentFeedService;
+    private readonly IBrokerFeedService _brokerFeedService;
+    private readonly IAgentFeedService _agentFeedService;
     private readonly IBindingRepository _bindingRepository;
-    private readonly IEchoFeedRepository<BrokerEventBase> _echoFeedRepository;
+    private readonly IRecentMessagesRepository _recentMessagesRepository;
 
-    public BrokerController(IFeedService<BrokerEventBase> brokerFeedService, IFeedService<Rce2Message> agentFeedService,
-        IBindingRepository bindingRepository, IEchoFeedRepository<BrokerEventBase> echoFeedRepository)
+    public BrokerController(IBrokerFeedService brokerFeedService, IAgentFeedService agentFeedService,
+        IBindingRepository bindingRepository, IRecentMessagesRepository recentMessagesRepository)
     {
         _brokerFeedService = brokerFeedService;
         _agentFeedService = agentFeedService;
         _bindingRepository = bindingRepository;
-        _echoFeedRepository = echoFeedRepository;
+        _recentMessagesRepository = recentMessagesRepository;
     }
 
     [HttpGet("{id:Guid}")]
@@ -30,7 +30,7 @@ public class BrokerController : ControllerBase
     {
         if (_brokerFeedService.Exists(id) == false)
         {
-            await _brokerFeedService.AddItems(id, _echoFeedRepository.GetAll());
+            await _brokerFeedService.AddItems(id, _recentMessagesRepository.GetAll());
             await _brokerFeedService.AddItems(id, _bindingRepository.GetAll().Select(e => new BindingAddedEvent
             {
                 Binding = e,
