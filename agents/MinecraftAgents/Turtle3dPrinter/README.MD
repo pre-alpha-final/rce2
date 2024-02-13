@@ -9,6 +9,9 @@ For versions these are the ones I ran it on. Could work with older.
 	- turtlematic - turtlematic-forge-1.20.1-1.2.4.jar
 	- unlimitedperipheralworks - peripheralworks-forge-1.20.1-1.4.0.jar
 
-# Example
+# Examples
 Scanned the strucure to the left, created png-based layer blueprints and recreated it to the right.
 <p align="center"><img src="/docs/minecraft_scanner.jpg" width="600"/></p>
+
+Scanned an arbitrary piece of terrain, recreated on another world.
+<p align="center"><img src="/docs/minecraft_scanner2.jpg" width="600"/></p>
