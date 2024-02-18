@@ -62,11 +62,10 @@ public class AgentController : ControllerBase
             return BadRequest();
         }
 
-        await _brokerFeedService.BroadcastItem(new AgentOutputReceivedEvent
+        await _brokerFeedService.BroadcastItem(new AgentOutputReceivedEvent(rce2Message.Payload)
         {
             AgentId = id,
             Contact = rce2Message.Contact,
-            Payload = rce2Message.Payload,
         });
 
         var bindings = _bindingRepository.GetBindingsFrom(id, rce2Message.Contact);
@@ -76,11 +75,10 @@ public class AgentController : ControllerBase
             rce2MessageClone.Contact = binding.InContact;
             await _agentFeedService.AddItem(binding.InId, rce2MessageClone);
 
-            await _brokerFeedService.BroadcastItem(new AgentInputReceivedEvent
+            await _brokerFeedService.BroadcastItem(new AgentInputReceivedEvent(rce2MessageClone.Payload)
             {
                 AgentId = binding.InId,
                 Contact = rce2MessageClone.Contact,
-                Payload = rce2MessageClone.Payload,
             });
         }
 
