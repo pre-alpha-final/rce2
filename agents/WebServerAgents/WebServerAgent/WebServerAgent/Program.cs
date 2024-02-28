@@ -10,6 +10,8 @@ namespace WebServerAgent
 
             builder.Services.AddControllers();
 
+            builder.Services.AddMvc();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

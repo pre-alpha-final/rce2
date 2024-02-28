@@ -1,4 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace WebServerAgent.Controllers
 {
@@ -12,22 +16,41 @@ namespace WebServerAgent.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ICompositeViewEngine _viewEngine;
+        private readonly ITempDataProvider _tempDataProvider;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, ICompositeViewEngine viewEngine,
+            ITempDataProvider tempDataProvider)
         {
             _logger = logger;
+            _viewEngine = viewEngine;
+            _tempDataProvider = tempDataProvider;
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IActionResult> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            ViewEngineResult viewResult = _viewEngine.FindView(ControllerContext, "Component1", false);
+
+            using (var output = new StringWriter())
             {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+                var viewContext = new ViewContext(
+                    ControllerContext,
+                    viewResult.View,
+                    new ViewDataDictionary(
+                        new EmptyModelMetadataProvider(),
+                        new ModelStateDictionary())
+                    {
+                        Model = null
+                    },
+                    new TempDataDictionary(HttpContext, _tempDataProvider),
+                    output,
+                    new HtmlHelperOptions());
+
+                await viewResult.View.RenderAsync(viewContext);
+
+                return Ok(output.ToString());
+            }
         }
     }
 }
