@@ -1,6 +1,0 @@
-@WebServerAgent_HostAddress = http://localhost:5041
-
-GET {{WebServerAgent_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

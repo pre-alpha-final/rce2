@@ -1,29 +1,18 @@
-namespace WebServerAgent
+namespace WebServerAgent;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddControllers();
+        builder.Services.AddHttpContextAccessor();
 
-            // Add services to the container.
+        var app = builder.Build();
 
-            builder.Services.AddControllers();
-
-            builder.Services.AddMvc();
-
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.Run();
-        }
+        app.UseHttpsRedirection();
+        app.UseAuthorization();
+        app.MapControllers();
+        app.Run();
     }
 }
