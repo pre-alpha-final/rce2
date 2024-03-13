@@ -4,7 +4,7 @@ namespace Broker.Server.Services.Implementation;
 
 public class RecentMessagesRepository : IRecentMessagesRepository
 {
-    private const int MaxSize = 100;
+    private const int MaxSize = 10;
     private static object _lock = new object();
     private Queue<BrokerEventBase> _queue = new Queue<BrokerEventBase>();
 
