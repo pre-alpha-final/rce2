@@ -31,15 +31,15 @@ internal class Program
                     switch (rce2Message.Contact)
                     {
                         case Rce2Contacts.Ins.Back:
-                            await TryRun(() => PressNTimes(rce2Message, Keyboard.ScanCodes.J));
+                            await TryRun(() => PressNTimes(rce2Message, WinApi.ScanCodes.J));
                             break;
 
                         case Rce2Contacts.Ins.PauseResume:
-                            await TryRun(() => Keyboard.CustomPressKey(Keyboard.ScanCodes.K));
+                            await TryRun(() => WinApi.KeyboardPress(WinApi.ScanCodes.K));
                             break;
 
                         case Rce2Contacts.Ins.Forward:
-                            await TryRun(() => PressNTimes(rce2Message, Keyboard.ScanCodes.L));
+                            await TryRun(() => PressNTimes(rce2Message, WinApi.ScanCodes.L));
                             break;
 
                         default:
@@ -59,11 +59,11 @@ internal class Program
         }
     }
 
-    private static async Task PressNTimes(Rce2Message rce2Message, Keyboard.ScanCodes scanCode)
+    private static async Task PressNTimes(Rce2Message rce2Message, WinApi.ScanCodes scanCode)
     {
         for (var i = 0; i < rce2Message.Payload["data"].ToObject<int>(); i++)
         {
-            await Keyboard.CustomPressKey(scanCode);
+            await WinApi.KeyboardPress(scanCode);
         }
     }
 
