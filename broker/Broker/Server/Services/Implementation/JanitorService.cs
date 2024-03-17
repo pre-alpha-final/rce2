@@ -30,7 +30,7 @@ public class JanitorService : IJanitorService
             {
                 await Task.Delay(TimeSpan.FromMinutes(1));
                 var inactiveEntities = ActivityDictionary
-                    .Where(e => e.Value < DateTimeOffset.UtcNow - TimeSpan.FromMinutes(1))
+                    .Where(e => e.Value < DateTimeOffset.UtcNow - TimeSpan.FromHours(1))
                     .ToList();
                 foreach (var inactiveEntity in inactiveEntities)
                 {

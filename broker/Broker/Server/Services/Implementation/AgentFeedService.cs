@@ -28,6 +28,8 @@ public class AgentFeedService : IAgentFeedService, IDisposable
 
     public async Task AddItem(Guid feedId, Rce2Message item)
     {
+        await PubSub.Hub.Default.PublishAsync(new Activity { Id = feedId });
+
         _agentFeedRepository.AddItem(feedId, item);
         await PubSub.Hub.Default.PublishAsync(new AgentFeedUpdate
         {
