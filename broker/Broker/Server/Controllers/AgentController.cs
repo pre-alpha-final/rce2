@@ -1,3 +1,4 @@
+using Broker.Server.Infrastructure;
 using Broker.Server.Services;
 using Broker.Shared.Events;
 using Broker.Shared.Model;
@@ -12,13 +13,15 @@ public class AgentController : ControllerBase
     private readonly IAgentFeedService _agentFeedService;
     private readonly IBrokerFeedService _brokerFeedService;
     private readonly IBindingRepository _bindingRepository;
+    private readonly IActiveAgentCache _activeAgentCache;
 
     public AgentController(IAgentFeedService agentFeedService, IBrokerFeedService brokerFeedService,
-        IBindingRepository bindingRepository)
+        IBindingRepository bindingRepository, IActiveAgentCache activeAgentCache)
     {
         _agentFeedService = agentFeedService;
         _brokerFeedService = brokerFeedService;
         _bindingRepository = bindingRepository;
+        _activeAgentCache = activeAgentCache;
     }
 
     [HttpGet("{id:Guid}")]
@@ -48,6 +51,10 @@ public class AgentController : ControllerBase
 
         if (rce2Message.Type == Rce2Types.WhoIs)
         {
+            await PubSub.Hub.Default.PublishAsync(new WhoIsReceived
+            {
+                Agent = rce2Message.Payload.ToObject<Agent>(),
+            });
             await _brokerFeedService.BroadcastItem(new AgentUpdatedEvent
             {
                 Agent = rce2Message.Payload.ToObject<Agent>(),
@@ -71,18 +78,29 @@ public class AgentController : ControllerBase
         var bindings = _bindingRepository.GetBindingsFrom(id, rce2Message.Contact);
         foreach(var binding in bindings)
         {
-            var rce2MessageClone = rce2Message.Clone();
-            rce2MessageClone.Contact = binding.InContact;
-            await _agentFeedService.AddItem(binding.InId, rce2MessageClone);
+            await SendMessage(rce2Message, binding.InContact, binding.InId);
+        }
 
-            await _brokerFeedService.BroadcastItem(new AgentInputReceivedEvent(rce2MessageClone.Payload)
-            {
-                AgentId = binding.InId,
-                Contact = rce2MessageClone.Contact,
-            });
+        var matchingChannelAgents = _activeAgentCache.GetMatchingChannelAgents(id, rce2Message.Contact);
+        foreach(var matchingChannelAgent in matchingChannelAgents)
+        {
+            await SendMessage(rce2Message, rce2Message.Contact, matchingChannelAgent.Id);
         }
 
         return Ok();
+    }
+
+    private async Task SendMessage(Rce2Message originalRce2Message, string inContact, Guid inId)
+    {
+        var rce2MessageClone = originalRce2Message.Clone();
+        rce2MessageClone.Contact = inContact;
+        await _agentFeedService.AddItem(inId, rce2MessageClone);
+
+        await _brokerFeedService.BroadcastItem(new AgentInputReceivedEvent(rce2MessageClone.Payload)
+        {
+            AgentId = inId,
+            Contact = rce2MessageClone.Contact,
+        });
     }
 
     private async Task RecheckBindings()

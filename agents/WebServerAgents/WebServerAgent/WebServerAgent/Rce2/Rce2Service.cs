@@ -95,6 +95,7 @@ public class Rce2Service
             Payload = JObject.FromObject(new Rce2Agent
             {
                 Id = AgentId,
+                Channel = "web-server",
                 Name = "Web Server Agent",
                 Ins = new()
                 {

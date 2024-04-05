@@ -15,14 +15,16 @@ public class BrokerController : ControllerBase
     private readonly IAgentFeedService _agentFeedService;
     private readonly IBindingRepository _bindingRepository;
     private readonly IRecentMessagesRepository _recentMessagesRepository;
+    private readonly IActiveAgentCache _activeAgentCache;
 
     public BrokerController(IBrokerFeedService brokerFeedService, IAgentFeedService agentFeedService,
-        IBindingRepository bindingRepository, IRecentMessagesRepository recentMessagesRepository)
+        IBindingRepository bindingRepository, IRecentMessagesRepository recentMessagesRepository, IActiveAgentCache activeAgentCache)
     {
         _brokerFeedService = brokerFeedService;
         _agentFeedService = agentFeedService;
         _bindingRepository = bindingRepository;
         _recentMessagesRepository = recentMessagesRepository;
+        _activeAgentCache = activeAgentCache;
     }
 
     [HttpGet("{id:Guid}")]
@@ -100,17 +102,28 @@ public class BrokerController : ControllerBase
         var bindings = _bindingRepository.GetBindingsFrom(id, rce2Message.Contact);
         foreach (var binding in bindings)
         {
-            var rce2MessageClone = rce2Message.Clone();
-            rce2MessageClone.Contact = binding.InContact;
-            await _agentFeedService.AddItem(binding.InId, rce2MessageClone);
+            await SendMessage(rce2Message, binding.InContact, binding.InId);
+        }
 
-            await _brokerFeedService.BroadcastItem(new AgentInputReceivedEvent(rce2MessageClone.Payload)
-            {
-                AgentId = binding.InId,
-                Contact = rce2MessageClone.Contact,
-            });
+        var matchingChannelAgents = _activeAgentCache.GetMatchingChannelAgents(id, rce2Message.Contact);
+        foreach (var matchingChannelAgent in matchingChannelAgents)
+        {
+            await SendMessage(rce2Message, rce2Message.Contact, matchingChannelAgent.Id);
         }
 
         return Ok();
+    }
+
+    private async Task SendMessage(Rce2Message originalRce2Message, string inContact, Guid inId)
+    {
+        var rce2MessageClone = originalRce2Message.Clone();
+        rce2MessageClone.Contact = inContact;
+        await _agentFeedService.AddItem(inId, rce2MessageClone);
+
+        await _brokerFeedService.BroadcastItem(new AgentInputReceivedEvent(rce2MessageClone.Payload)
+        {
+            AgentId = inId,
+            Contact = rce2MessageClone.Contact,
+        });
     }
 }

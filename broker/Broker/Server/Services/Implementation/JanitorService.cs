@@ -8,14 +8,16 @@ public class JanitorService : IJanitorService
     private readonly IAgentFeedRepository _agentFeedRepository;
     private readonly IBrokerFeedRepository _brokerFeedRepository;
     private readonly IBindingRepository _bindingRepository;
+    private readonly IActiveAgentCache _activeAgentCache;
 
     // TODO Activity is just an Id now, consider adding a type so that it is immediately clear what to clean up
     public JanitorService(IAgentFeedRepository agentFeedRepository, IBrokerFeedRepository brokerFeedRepository,
-        IBindingRepository bindingRepository)
+        IBindingRepository bindingRepository, IActiveAgentCache activeAgentCache)
     {
         _agentFeedRepository = agentFeedRepository;
         _brokerFeedRepository = brokerFeedRepository;
         _bindingRepository = bindingRepository;
+        _activeAgentCache = activeAgentCache;
 
         PubSub.Hub.Default.Subscribe<Activity>(this, OnActivity);
     }
@@ -36,6 +38,7 @@ public class JanitorService : IJanitorService
                 {
                     await HandleBindings(inactiveEntity);
                     await HandleAgents(inactiveEntity);
+                    HandleActiveAgentsCache(inactiveEntity);
                     HandleBrokers(inactiveEntity);
                     HandleActivityDictionary(inactiveEntity);
                 }
@@ -73,6 +76,11 @@ public class JanitorService : IJanitorService
                 Id = inactiveEntity.Key,
             });
         }
+    }
+
+    private void HandleActiveAgentsCache(KeyValuePair<Guid, DateTimeOffset> inactiveEntity)
+    {
+        _activeAgentCache.Remove(inactiveEntity.Key);
     }
 
     private void HandleBrokers(KeyValuePair<Guid, DateTimeOffset> inactiveEntity)

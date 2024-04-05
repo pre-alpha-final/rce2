@@ -14,7 +14,7 @@
                 <div class="mb-3 card border-primary not-black">
                     <div class="card-header">
                         <h4>@agent.Name</h4>
-                        <div class="agent-id">@agent.Id</div>
+                        <div class="agent-id">@agent.Id @(@agent.Channel != null ? "-" : "") @agent.Channel</div>
                     </div>
                     <div class="card-body">
                         <div class="container">
