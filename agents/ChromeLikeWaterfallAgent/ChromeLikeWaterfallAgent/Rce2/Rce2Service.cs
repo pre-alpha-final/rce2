@@ -1,6 +1,8 @@
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Text;
+using PubSub;
+using ChromeLikeWaterfallAgent;
 
 namespace Rce2;
 
@@ -29,13 +31,13 @@ public class Rce2Service
             {
                 var feed = await _httpClientFactory.CreateClient().GetAsync(Address);
                 var content = await feed.Content.ReadAsStringAsync();
-                var rce2Messages = JsonConvert.DeserializeObject<List<Rce2Message>>(content);
+                var rce2Messages = JsonConvert.DeserializeObject<List<Rce2Message>>(content)!;
                 foreach (var rce2Message in rce2Messages)
                 {
                     switch (rce2Message.Contact)
                     {
-                        case Rce2Contacts.Ins.ExampleInput:
-                            await TryRun(() => HandleExampleInput(rce2Message.Payload));
+                        case Rce2Contacts.Ins.NameStartStop:
+                            await TryRun(() => HandleNameStartStop(rce2Message.Payload));
                             break;
 
                         default:
@@ -55,22 +57,19 @@ public class Rce2Service
         }
     }
 
-    private async Task HandleExampleInput(JToken payload)
+    private async Task HandleNameStartStop(JToken? payload)
     {
-        await Task.Delay(1000);
-        await HandleExampleOutput(payload["data"]?.ToObject<string>());
-    }
-
-    private Task HandleExampleOutput(string output)
-    {
-        return TryRun(async () =>
+        var payloadData = payload?["data"]?.ToObject<List<string>>();
+        if (payloadData == null)
         {
-            await _httpClientFactory.CreateClient().PostAsync(Address, new StringContent(JsonConvert.SerializeObject(new Rce2Message
-            {
-                Type = Rce2Types.String,
-                Contact = Rce2Contacts.Outs.ExampleOutput,
-                Payload = JObject.FromObject(new { data = output })
-            }), Encoding.UTF8, "application/json"));
+            return;
+        }
+
+        await Hub.Default.PublishAsync(new NameStartStop
+        {
+            Name = payloadData.GetValue("name"),
+            Start = long.TryParse(payloadData.GetValue("start"), out var start) ? start : 0,
+            Stop = long.TryParse(payloadData.GetValue("stop"), out var stop) ? stop : 0,
         });
     }
 
@@ -82,14 +81,14 @@ public class Rce2Service
             Payload = JObject.FromObject(new Rce2Agent
             {
                 Id = AgentId,
-                Name = "Rce2 minimal boilerplate",
+                Channel = "waterfall",
+                Name = "Chrome-like Waterfall",
                 Ins = new()
                 {
-                    { Rce2Contacts.Ins.ExampleInput, Rce2Types.String },
+                    { Rce2Contacts.Ins.NameStartStop, Rce2Types.StringList },
                 },
                 Outs = new()
                 {
-                    { Rce2Contacts.Outs.ExampleOutput, Rce2Types.String },
                 }
             }),
         }), Encoding.UTF8, "application/json"));
