@@ -81,7 +81,7 @@ public class Rce2Service
             Payload = JObject.FromObject(new Rce2Agent
             {
                 Id = AgentId,
-                Channel = "waterfall",
+                Channels = new() { "waterfall" },
                 Name = "Chrome-like Waterfall",
                 Ins = new()
                 {

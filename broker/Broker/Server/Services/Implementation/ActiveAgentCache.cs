@@ -17,10 +17,10 @@ public class ActiveAgentCache : IActiveAgentCache
     {
         try
         {
-            var channel = _activeAgentCache.First(e => e.Key == id).Value.Channel;
+            var channels = _activeAgentCache.First(e => e.Key == id).Value.Channels;
 
             return _activeAgentCache.Values
-                .Where(e => e.Channel == channel)
+                .Where(e => e.Channels.Intersect(channels).Any())
                 .Where(e => e.Ins.Keys.Contains(contact))
                 .ToList();
         }
