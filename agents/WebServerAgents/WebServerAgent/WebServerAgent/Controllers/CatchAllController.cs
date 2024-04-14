@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using PubSub;
 using Rce2;
 using System.Text;
@@ -11,16 +12,13 @@ public class CatchAllController : ControllerBase, IDisposable
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly Rce2Service _rce2Service;
-    private readonly SemaphoreSlim _sync = new(0);
     private string? _rce2RequestId = null;
-    private RenderMessageReceived? _renderMessageReceived = null;
+    private Rce2Message? _rce2Response = null;
 
     public CatchAllController(IHttpContextAccessor httpContextAccessor, Rce2Service rce2Service)
     {
         _httpContextAccessor = httpContextAccessor;
         _rce2Service = rce2Service;
-
-        Hub.Default.Subscribe<RenderMessageReceived>(this, OnRenderMessageReceived);
     }
 
     public void Dispose()
@@ -50,8 +48,12 @@ public class CatchAllController : ControllerBase, IDisposable
             return;
         }
 
+        var rce2Sync = new Rce2Sync<List<string>>(async (e, _) => e.GetValue("rce2_request_id") == _rce2RequestId);
         await SendRce2Message(agentId);
-        if (await ResponseReceived() == false)
+        await rce2Sync.WaitAsync();
+        _rce2Response = rce2Sync.Result;
+
+        if (_rce2Response == null)
         {
             await SetErrorResponse("Agent timeout");
             return;
@@ -118,32 +120,17 @@ public class CatchAllController : ControllerBase, IDisposable
         await _rce2Service.HandleRequest(requestPayload);
     }
 
-    private async Task<bool> ResponseReceived()
-    {
-        var delay = Task.Delay(TimeSpan.FromSeconds(15));
-        await Task.WhenAny(delay, _sync.WaitAsync());
-
-        return delay.IsCompleted == false;
-    }
-
     private async Task SetResponse()
     {
-        if (_renderMessageReceived!.Body == null)
+        var payloadData = _rce2Response!.Payload?["data"]?.ToObject<List<string>>();
+        var body = GZipHelpers.GUnZip(JsonConvert.DeserializeObject<byte[]>(payloadData!.GetValue("body"))!);
+        if (body == null)
         {
             await SetErrorResponse("Malformed body");
             return;
         }
 
-        _httpContextAccessor.HttpContext!.Response.Headers["content-type"] = _renderMessageReceived!.ContentType;
-        await _httpContextAccessor.HttpContext.Response.Body.WriteAsync(_renderMessageReceived!.Body, 0, _renderMessageReceived!.Body.Length);
-    }
-
-    private void OnRenderMessageReceived(RenderMessageReceived renderMessageReceived)
-    {
-        if (renderMessageReceived.Rce2RequestId == _rce2RequestId)
-        {
-            _renderMessageReceived = renderMessageReceived;
-            _sync.Release();
-        }
+        _httpContextAccessor.HttpContext!.Response.Headers["content-type"] = payloadData.GetValue("content_type");
+        await _httpContextAccessor.HttpContext.Response.Body.WriteAsync(body, 0, body.Length);
     }
 }

@@ -38,7 +38,7 @@ public class Rce2Service
                     switch (rce2Message.Contact)
                     {
                         case Rce2Contacts.Ins.Render:
-                            await TryRun(() => HandleRender(rce2Message.Payload));
+                            await TryRun(() => HandleRender(rce2Message));
                             break;
 
                         default:
@@ -71,20 +71,15 @@ public class Rce2Service
         });
     }
 
-    private async Task HandleRender(JToken? payload)
+    private async Task HandleRender(Rce2Message rce2Message)
     {
-        var payloadData = payload?["data"]?.ToObject<List<string>>();
+        var payloadData = rce2Message.Payload?["data"]?.ToObject<List<string>>();
         if (payloadData == null)
         {
             return;
         }
 
-        await Hub.Default.PublishAsync(new RenderMessageReceived
-        {
-            Rce2RequestId = payloadData.GetValue("rce2_request_id"),
-            ContentType = payloadData.GetValue("content_type"),
-            Body = GZipHelpers.GUnZip(JsonConvert.DeserializeObject<byte[]>(payloadData.GetValue("body"))!),
-        });
+        await Hub.Default.PublishAsync(rce2Message);
     }
 
     private async Task HandleWhoIsMessage()
