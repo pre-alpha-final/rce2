@@ -62,11 +62,11 @@ public class Rce2Service
         Task.Run(FeedHandler);
     }
 
-    public async Task Send(string contact, string rce2Type, object payload)
+    public async Task Send(string contact, object payload)
     {
         await _httpClientFactory.CreateClient().PostAsync($"{_brokerAddress}/api/agent/{_agentId}", new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
-            Type = rce2Type,
+            Type = _outputDefinitions[contact],
             Contact = contact,
             Payload = JObject.FromObject(new { data = payload })
         }), Encoding.UTF8, "application/json"));

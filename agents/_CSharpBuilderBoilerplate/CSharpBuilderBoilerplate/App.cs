@@ -24,7 +24,7 @@ public class App : IHostedService
 
             var payload = e.Payload["data"]?.ToObject<string>();
             await Task.Delay(1000);
-            await _rce2Service.Send("echo-test", Rce2Types.String, payload!);
+            await _rce2Service.Send("echo-test", payload!);
         });
     }
 
