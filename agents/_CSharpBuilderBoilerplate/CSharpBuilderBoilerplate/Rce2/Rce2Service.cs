@@ -57,7 +57,7 @@ public class Rce2Service
         return this;
     }
 
-    public void Run()
+    public void Init()
     {
         Task.Run(FeedHandler);
     }

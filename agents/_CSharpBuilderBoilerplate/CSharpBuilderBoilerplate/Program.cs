@@ -16,21 +16,6 @@ public class Program
 
         var host = builder.Build();
 
-        host.Services.GetService<Rce2Service>()!
-            .SetBrokerAddress("https://localhost:7113")
-            .SetAgentId(Guid.NewGuid())
-            .SetAgentName("Boilerplate")
-            .SetChannels(new() { "boilerplate" })
-            .SetInputDefinitions(new()
-            {
-                { "echo-test", Rce2Types.String }
-            })
-            .SetOutputDefinitions(new()
-            {
-                { "echo-test", Rce2Types.String }
-            })
-            .Run();
-
         await host.RunAsync();
     }
 }

@@ -15,6 +15,21 @@ public class App : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        _rce2Service
+            .SetBrokerAddress("https://localhost:7113")
+            .SetAgentId(Guid.NewGuid())
+            .SetAgentName("Boilerplate")
+            .SetChannels(new() { "boilerplate" })
+            .SetInputDefinitions(new()
+            {
+                { "echo-test", Rce2Types.String }
+            })
+            .SetOutputDefinitions(new()
+            {
+                { "echo-test", Rce2Types.String }
+            })
+            .Init();
+
         Hub.Default.Subscribe<Rce2Message>(this, async e =>
         {
             if (e.Contact != "echo-test")
