@@ -100,7 +100,7 @@ internal class Program
         if (ImageCount < 100)
         {
             var (x, y) = Win32.GetScreenSize();
-            var captureBmp = new Bitmap(x, y, PixelFormat.Format32bppArgb);
+            using var captureBmp = new Bitmap(x, y, PixelFormat.Format32bppArgb);
             using var captureGraphic = Graphics.FromImage(captureBmp);
             captureGraphic.CopyFromScreen(0, 0, 0, 0, captureBmp.Size);
             var timestamp = DateTimeOffset.Now;
