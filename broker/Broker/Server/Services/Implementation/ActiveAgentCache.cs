@@ -17,9 +17,14 @@ public class ActiveAgentCache : IActiveAgentCache
     {
         try
         {
-            var channels = _activeAgentCache.First(e => e.Key == id).Value.Channels;
+            var channels = _activeAgentCache.First(e => e.Key == id)
+                .Value
+                .Channels
+                .Where(e => e != null)
+                .ToList();
 
             return _activeAgentCache.Values
+                .Where(e => e.Channels != null)
                 .Where(e => e.Channels.Intersect(channels).Any())
                 .Where(e => e.Ins.Keys.Contains(contact))
                 .ToList();
