@@ -23,8 +23,8 @@ public class OpenCvService
 
     private async Task MatchTemplates()
     {
-        var template = await LoadTemplate();
-        //CvInvoke.Imshow("x", template);
+        var templates = await LoadTemplates();
+        //CvInvoke.Imshow("x", templates[0]);
         //CvInvoke.WaitKey();
 
         var matches = new Mat();
@@ -36,17 +36,21 @@ public class OpenCvService
                 //CvInvoke.Imshow("x", screen);
                 //CvInvoke.WaitKey();
 
-                CvInvoke.MatchTemplate(screen, template, matches, Emgu.CV.CvEnum.TemplateMatchingType.SqdiffNormed);
-                var (matchValue, matchRect) = ProcessMatches(matches, template.Size);
-
-                if (matchValue < 0.1)
+                foreach (var template in templates)
                 {
-                    //CvInvoke.Rectangle(screen, matchRect, new MCvScalar(255, 0, 0));
-                    //CvInvoke.Imshow("x", screen);
-                    //CvInvoke.WaitKey();
+                    CvInvoke.MatchTemplate(screen, template, matches, Emgu.CV.CvEnum.TemplateMatchingType.SqdiffNormed);
+                    var (matchValue, matchRect) = ProcessMatches(matches, template.Size);
 
-                    await _rce2Service.Send("match-found", matchValue);
-                    await Task.Delay(5000);
+                    if (matchValue < 0.1)
+                    {
+                        //CvInvoke.Rectangle(screen, matchRect, new MCvScalar(255, 0, 0));
+                        //CvInvoke.Imshow("x", screen);
+                        //CvInvoke.WaitKey();
+
+                        await _rce2Service.Send("match-found", matchValue);
+                        await Task.Delay(5000);
+                        break;
+                    }
                 }
             }
             catch (Exception e)
@@ -54,7 +58,7 @@ public class OpenCvService
                 // ignore
             }
 
-            await Task.Delay(500);
+            await Task.Delay(333);
         }
     }
 
@@ -70,9 +74,13 @@ public class OpenCvService
         return (minVal, rectangle);
     }
 
-    private async Task<Mat> LoadTemplate()
+    private async Task<List<Mat>> LoadTemplates()
     {
-        return CvInvoke.Imread("C:\\Users\\User\\Desktop\\bin.png");
+        return new List<Mat>
+        {
+            CvInvoke.Imread("C:\\Users\\User\\Desktop\\bin.png"),
+            CvInvoke.Imread("C:\\Users\\User\\Desktop\\bin.png"),
+        };
     }
 
     [SupportedOSPlatform("windows")]
