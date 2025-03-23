@@ -13,13 +13,13 @@
 
 <PageTitle>Rce2 Message Broker</PageTitle>
 
-@if (string.IsNullOrWhiteSpace(_key))
+@if (string.IsNullOrWhiteSpace(_brokerKey))
 {
     <div class="p-4 vh-90">
         <div class="d-flex flex-column flex-grow-1 h-100 justify-content-center">
             <div class="mx-auto">
-                <form @onsubmit="OnKey">
-                    <input @bind="_keyInput" type="password" placeholder="Key">
+                <form @onsubmit="OnBrokerKey">
+                    <input @bind="_brokerKeyInput" type="password" placeholder="Key">
                 </form>
             </div>
         </div>
@@ -40,24 +40,24 @@ else
     private const int AntiFloodDelay = 5000;
     private const int DataFlowLength = 100;
 
-    private string _key = string.Empty;
-    private string _keyInput = string.Empty;
+    private string _brokerKey = string.Empty;
+    private string _brokerKeyInput = string.Empty;
 
     public bool AuthorizationFailure { get; set; }
     public List<Agent> Agents { get; set; } = new();
     public List<Binding> Bindings { get; set; } = new();
     public List<string> DataFlow { get; set; } = new();
 
-    public void OnKey(EventArgs e)
+    public void OnBrokerKey(EventArgs e)
     {
-        _key = _keyInput;
+        _brokerKey = _brokerKeyInput;
         Task.Run(GetFeed);
     }
 
     private async Task GetFeed()
     {
         var id = Guid.NewGuid();
-        AuthorizedHttpClientFactory.Authorize(_key);
+        AuthorizedHttpClientFactory.Authorize(_brokerKey);
         var lastFeed = DateTime.UtcNow;
 
         while(true)

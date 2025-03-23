@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews().AddNewtonsoftJson();
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, AuthHandler>();
+builder.Services.AddSingleton<IAgentKeyService, AgentKeyService>();
 
 builder.Services.AddScoped<IAgentFeedService, AgentFeedService>();
 builder.Services.AddSingleton<IAgentFeedRepository, AgentFeedRepository>();

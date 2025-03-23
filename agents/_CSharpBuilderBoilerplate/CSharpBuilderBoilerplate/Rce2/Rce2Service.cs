@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Text;
 using PubSub;
+using System.Net.Http.Headers;
 
 namespace Rce2;
 
@@ -9,6 +10,7 @@ public class Rce2Service
 {
     private string _brokerAddress;
     private Guid _agentId;
+    private string _agentKey;
     private string _agentName;
     private List<string> _channels;
     private Dictionary<string, string> _inputDefinitions = new();
@@ -30,6 +32,12 @@ public class Rce2Service
     public Rce2Service SetAgentId(Guid agentId)
     {
         _agentId = agentId;
+        return this;
+    }
+
+    public Rce2Service SetAgentKey(string agentKey)
+    {
+        _agentKey = agentKey;
         return this;
     }
 
@@ -64,7 +72,7 @@ public class Rce2Service
 
     public async Task Send(string contact, object payload)
     {
-        await _httpClientFactory.CreateClient().PostAsync($"{_brokerAddress}/api/agent/{_agentId}", new StringContent(JsonConvert.SerializeObject(new Rce2Message
+        await CreateHttpClient().PostAsync($"{_brokerAddress}/api/agent/{_agentId}", new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = _outputDefinitions[contact],
             Contact = contact,
@@ -78,7 +86,7 @@ public class Rce2Service
         {
             try
             {
-                var feed = await _httpClientFactory.CreateClient().GetAsync($"{_brokerAddress}/api/agent/{_agentId}");
+                var feed = await CreateHttpClient().GetAsync($"{_brokerAddress}/api/agent/{_agentId}");
                 var content = await feed.Content.ReadAsStringAsync();
                 var rce2Messages = JsonConvert.DeserializeObject<List<Rce2Message>>(content);
                 foreach (var rce2Message in rce2Messages)
@@ -102,7 +110,7 @@ public class Rce2Service
 
     private async Task HandleWhoIsMessage()
     {
-        await _httpClientFactory.CreateClient().PostAsync($"{_brokerAddress}/api/agent/{_agentId}", new StringContent(JsonConvert.SerializeObject(new Rce2Message
+        await CreateHttpClient().PostAsync($"{_brokerAddress}/api/agent/{_agentId}", new StringContent(JsonConvert.SerializeObject(new Rce2Message
         {
             Type = Rce2Types.WhoIs,
             Payload = JObject.FromObject(new Rce2Agent
@@ -114,6 +122,18 @@ public class Rce2Service
                 Outs = _outputDefinitions,
             }),
         }), Encoding.UTF8, "application/json"));
+    }
+
+    private HttpClient CreateHttpClient()
+    {
+        var httpClient = _httpClientFactory.CreateClient();
+        if (string.IsNullOrWhiteSpace(_agentKey) == false)
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(_agentKey)));
+        }
+
+        return httpClient;
     }
 
     private static async Task TryRun(Func<Task> taskFunc)

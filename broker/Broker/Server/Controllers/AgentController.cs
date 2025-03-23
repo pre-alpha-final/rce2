@@ -3,6 +3,7 @@ using Broker.Server.Services;
 using Broker.Shared.Events;
 using Broker.Shared.Model;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace Broker.Server.Controllers;
 
@@ -14,19 +15,27 @@ public class AgentController : ControllerBase
     private readonly IBrokerFeedService _brokerFeedService;
     private readonly IBindingRepository _bindingRepository;
     private readonly IActiveAgentCache _activeAgentCache;
+    private readonly IAgentKeyService _agentKeyService;
 
     public AgentController(IAgentFeedService agentFeedService, IBrokerFeedService brokerFeedService,
-        IBindingRepository bindingRepository, IActiveAgentCache activeAgentCache)
+        IBindingRepository bindingRepository, IActiveAgentCache activeAgentCache, IAgentKeyService agentKeyService)
     {
         _agentFeedService = agentFeedService;
         _brokerFeedService = brokerFeedService;
         _bindingRepository = bindingRepository;
         _activeAgentCache = activeAgentCache;
+        _agentKeyService = agentKeyService;
     }
 
     [HttpGet("{id:Guid}")]
-    public async Task<OkObjectResult> GetFeed(Guid id)
+    public async Task<ActionResult> GetFeed(Guid id)
     {
+        var agentKey = GetAgentKey(Request);
+        if (await _agentKeyService.Validate(id, agentKey) == false)
+        {
+            return Unauthorized();
+        }
+
         if (_agentFeedService.Exists(id) == false)
         {
             await _agentFeedService.AddItem(id, new Rce2Message
@@ -39,8 +48,14 @@ public class AgentController : ControllerBase
     }
 
     [HttpPost("{id:Guid}")]
-    public async Task<StatusCodeResult> PostOutput(Guid id, [FromBody] Rce2Message rce2Message)
+    public async Task<ActionResult> PostOutput(Guid id, [FromBody] Rce2Message rce2Message)
     {
+        var agentKey = GetAgentKey(Request);
+        if (await _agentKeyService.Validate(id, agentKey) == false)
+        {
+            return Unauthorized();
+        }
+
         if (_agentFeedService.Exists(id) == false)
         {
             await _agentFeedService.AddItem(id, new Rce2Message
@@ -133,5 +148,19 @@ public class AgentController : ControllerBase
                 }
             }
         }
+    }
+
+    private static string GetAgentKey(HttpRequest request)
+    {
+        try
+        {
+            return Encoding.UTF8.GetString(Convert.FromBase64String(request.Headers["Authorization"].FirstOrDefault()?.Substring(6)));
+        }
+        catch (Exception e)
+        {
+            // ignore
+        }
+
+        return string.Empty;
     }
 }

@@ -40,7 +40,7 @@ When I say any "device" that supports http connections, I do mean it.
 # Security considerations
 The concept of an "agent" came from an early draft, where agent and broker responsibilities were, sort of, reversed. The broker was stupid, just a message proxy, and the whole binding responsibility was with the agents. The network was shaped based on the agents' agendas (hence the name). This was obviously a security nightmare, as a single compromised agent compromised the entire network. In a system where devices can be God knows where this was not acceptable.
 In current implementation agents have no knowledge of the rest of the network. They get messages delivered to their message feed and send their own messages to the ether. Only on broker level you see the entire network and agent bindings.
-Still for a high security environment an additional challenge-response layer should be added. Another idea is a gatekeeper agent - inserted between two other agents, proxying communication, monitoring messages. Other than that not much more can be done. No password protection or authentication scheme can protect an agent on a remote device from getting compromised. The password/hash/key has to be in memory to allow communication, plus the harder we push authorization, the more situations will require human interaction - reentering the credentials.
+Additionally there is a key scheme available for the agents, where every agent gets a key assigned and is required to use it for all communication. This way if an agent is compromised it doesn't affect other agents on the network.
 
 License
 ----

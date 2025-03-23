@@ -18,6 +18,7 @@ public class App : IHostedService
         _rce2Service
             .SetBrokerAddress("https://localhost:7113")
             .SetAgentId(Guid.NewGuid())
+            .SetAgentKey(string.Empty)
             .SetAgentName("Boilerplate")
             .SetChannels(new() { "boilerplate" })
             .SetInputDefinitions(new()
