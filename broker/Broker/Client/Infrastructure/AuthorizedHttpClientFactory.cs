@@ -1,26 +1,27 @@
 ﻿using System.Net.Http.Headers;
+using System.Text;
 
 namespace Broker.Client.Infrastructure;
 
 public class AuthorizedHttpClientFactory
 {
     private readonly IHttpClientFactory _httpClientFactory;
-    private string _code;
+    private string _key;
 
     public AuthorizedHttpClientFactory(IHttpClientFactory httpClientFactory)
     {
         _httpClientFactory = httpClientFactory;
     }
 
-    public void Authorize(string code)
+    public void Authorize(string key)
     {
-        _code = code;
+        _key = key;
     }
 
     public HttpClient CreateClient(string name)
     {
         var httpClient = _httpClientFactory.CreateClient(name);
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Code", _code);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(_key)));
 
         return httpClient;
     }
