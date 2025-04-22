@@ -29,7 +29,8 @@ public class App : IHostedService
             })
             .Init();
 
-        await _mudslideService.Send("Connectivity test");
+        var output = await _mudslideService.Send("Connectivity test");
+        Console.WriteLine(Environment.NewLine + output);
 
         Hub.Default.Subscribe<Rce2Message>(this, async e =>
         {
@@ -38,7 +39,8 @@ public class App : IHostedService
                 return;
             }
 
-            await _mudslideService.Send(e.Payload["data"]?.ToObject<string>());
+            var output = await _mudslideService.Send(e.Payload["data"]?.ToObject<string>());
+            Console.WriteLine(Environment.NewLine + output);
         });
     }
 
