@@ -8,6 +8,10 @@ public class MudslideService
     {
         try
         {
+            message = message
+                .Replace("\r", "")
+                .Replace("\n", "\\n");
+
             var filename = $"{Guid.NewGuid()}.txt";
             var processStartInfo = new ProcessStartInfo
             {
