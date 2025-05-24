@@ -1,6 +1,6 @@
 {
-  "name": "TabletUIAgent",
-  "short_name": "TabletUIAgent",
+  "name": "Rce2UI",
+  "short_name": "Rce2UI",
   "id": "./",
   "start_url": "./",
   "display": "standalone",
