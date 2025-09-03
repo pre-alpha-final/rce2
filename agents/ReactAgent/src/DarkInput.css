@@ -1,0 +1,23 @@
+.dark-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid #444444;
+  background-color: #333333;
+  color: #f0f0f0;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease-in-out;
+}
+
+.dark-input::placeholder {
+  color: #bbbbbb;
+}
+
+.dark-input:focus {
+  border-color: #555555;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
