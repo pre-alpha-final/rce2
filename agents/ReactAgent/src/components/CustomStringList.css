@@ -1,26 +1,26 @@
-.string-list-container {
+.custom-string-list-container {
   max-width: 600px;
   margin: 2rem auto;
   padding: 1rem;
   font-family: sans-serif;
 }
 
-.string-list-title {
+.custom-string-list-title {
   text-align: center;
   font-size: 1.75rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: #ffffff; /* light text for dark theme */
+  color: #ffffff;
 }
 
-.string-list {
+.custom-string-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.string-list-item {
-  background-color: #333333; /* darker card */
+.custom-string-list-item {
+  background-color: #333333;
   padding: 1rem;
   margin-bottom: 0.75rem;
   border-radius: 1rem;
@@ -28,10 +28,10 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   transition: all 0.2s ease-in-out;
   cursor: pointer;
-  color: #f0f0f0; /* light text */
+  color: #f0f0f0;
 }
 
-.string-list-item:hover {
+.custom-string-list-item:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7);
 }

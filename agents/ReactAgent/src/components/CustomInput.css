@@ -1,4 +1,4 @@
-.dark-input {
+.custom-input {
   width: 100%;
   max-width: 400px;
   padding: 0.75rem 1rem;
@@ -13,11 +13,11 @@
   transition: all 0.2s ease-in-out;
 }
 
-.dark-input::placeholder {
+.custom-input::placeholder {
   color: #bbbbbb;
 }
 
-.dark-input:focus {
+.custom-input:focus {
   border-color: #555555;
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
 }
