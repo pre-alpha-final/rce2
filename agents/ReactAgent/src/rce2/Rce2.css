@@ -1,0 +1,38 @@
+.container {
+  min-height: 100vh;
+  background-color: #242424;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1000px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.list {
+  flex: 1;
+  min-width: 300px;
+}
+
+.input-section {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 100px;
+}
+
+.width-100 {
+  width: 100%;
+}
