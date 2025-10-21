@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 
-namespace FibonacciAgent.Rce2;
+namespace Rce2;
 
 public class Rce2Message
 {

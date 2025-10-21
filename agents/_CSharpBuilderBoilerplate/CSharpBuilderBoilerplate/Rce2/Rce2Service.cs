@@ -8,11 +8,11 @@ namespace Rce2;
 
 public class Rce2Service
 {
-    private string _brokerAddress;
-    private Guid _agentId;
-    private string _agentKey;
-    private string _agentName;
-    private List<string> _channels;
+    private string? _brokerAddress;
+    private Guid? _agentId;
+    private string? _agentKey;
+    private string? _agentName;
+    private List<string> _channels = new();
     private Dictionary<string, string> _inputDefinitions = new();
     private Dictionary<string, string> _outputDefinitions = new();
 
@@ -89,7 +89,7 @@ public class Rce2Service
                 var feed = await CreateHttpClient().GetAsync($"{_brokerAddress}/api/agent/{_agentId}");
                 var content = await feed.Content.ReadAsStringAsync();
                 var rce2Messages = JsonConvert.DeserializeObject<List<Rce2Message>>(content);
-                foreach (var rce2Message in rce2Messages)
+                foreach (var rce2Message in rce2Messages!)
                 {
                     if (rce2Message.Type == Rce2Types.WhoIs)
                     {
@@ -97,13 +97,13 @@ public class Rce2Service
                         continue;
                     }
 
-                    await Hub.Default.PublishAsync(rce2Message);
+                    await TryRun(() => Hub.Default.PublishAsync(rce2Message));
                 }
             }
             catch (Exception e)
             {
                 await Task.Delay(1000);
-                // ignore
+                // ignore feed errors
             }
         }
     }
@@ -115,9 +115,9 @@ public class Rce2Service
             Type = Rce2Types.WhoIs,
             Payload = JObject.FromObject(new Rce2Agent
             {
-                Id = _agentId,
+                Id = _agentId!.Value,
                 Channels = _channels,
-                Name = _agentName,
+                Name = _agentName!,
                 Ins = _inputDefinitions,
                 Outs = _outputDefinitions,
             }),

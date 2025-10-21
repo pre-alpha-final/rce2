@@ -29,7 +29,7 @@ public class App : IHostedService
             {
                 { "match-found", Rce2Types.Number }
             })
-            .Run();
+            .Init();
 
         _openCvService.Init();
     }
