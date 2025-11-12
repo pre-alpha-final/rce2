@@ -3,6 +3,8 @@
 }
 
 .alive {
+    left: -5px;
+    top: 3px;
     width: 60px;
     height: 40px;
     position: relative;
