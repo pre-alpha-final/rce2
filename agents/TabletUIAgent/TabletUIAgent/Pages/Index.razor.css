@@ -42,6 +42,15 @@
         animation: rotationBack 4s linear infinite reverse;
     }
 
+.back-link {
+    cursor: pointer;
+    font-size: 2rem;
+    margin-right: 20px;
+    font-weight: bold;
+    color: inherit;
+    user-select: none;
+}
+
 @keyframes rotationBack {
     0% {
         transform: rotate(0deg);

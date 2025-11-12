@@ -8,60 +8,34 @@
             </div>
             <div class="alive"></div>
         </div>
-        <div class="ms-auto bg-danger text-white p-2">Back button placeholder</div>
+        @if (SubPage != "")
+        {
+            <span class="back-link" @onclick="OnBack">&lt;&lt;&lt;</span>
+        }
     </div>
 </nav>
 
 <div class="m-3" style="display:flex; flex-wrap:wrap; justify-content:center; gap:20px;">
-    <div class="card border-light" style="max-width: 20rem;">
-        <div class="card-body">
-            <h4 class="card-title">Light card title</h4>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        </div>
-    </div>
-    <div class="card border-light" style="max-width: 20rem;">
-        <div class="card-body">
-            <h4 class="card-title">Light card title</h4>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        </div>
-    </div>
-    <div class="card border-light" style="max-width: 20rem;">
-        <div class="card-body">
-            <h4 class="card-title">Light card title</h4>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        </div>
-    </div>
-    <div class="card border-light" style="max-width: 20rem;">
-        <div class="card-body">
-            <h4 class="card-title">Light card title</h4>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        </div>
-    </div>
-    <div class="card border-light" style="max-width: 20rem;">
-        <div class="card-body">
-            <h4 class="card-title">Light card title</h4>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        </div>
-    </div>
-    <div class="card border-light" style="max-width: 20rem;">
-        <div class="card-body">
-            <h4 class="card-title">Light card title</h4>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        </div>
-    </div>
-    <div class="card border-light" style="max-width: 20rem;">
-        <div class="card-body">
-            <h4 class="card-title">Light card title</h4>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        </div>
-    </div>
-    <div class="card border-light" style="max-width: 20rem;">
-        <div class="card-body">
-            <h4 class="card-title">Light card title</h4>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        </div>
-    </div>
+    @if (SubPage == "")
+    {
+        <MainMenu OnClickCard="OnClickCard"/>
+    }
+    else if (SubPage == "youtube")
+    {
+        <Youtube />
+    }
 </div>
 
 @code {
+    private string SubPage = "";
+
+    private void OnBack(MouseEventArgs args)
+    {
+        SubPage = "";
+    }
+
+    private void OnClickCard(string card)
+    {
+        SubPage = card;
+    }
 }

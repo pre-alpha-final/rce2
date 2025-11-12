@@ -1,0 +1,57 @@
+﻿<div class="card clickable-card border-light" style="max-width: 20rem;" @onclick='() => OnClickCardHandler("youtube")'>
+    <div class="card-body">
+        <h4 class="card-title">Youtube</h4>
+        <p class="card-text">Youtube media control</p>
+    </div>
+</div>
+<div class="card border-light" style="max-width: 20rem;">
+    <div class="card-body">
+        <h4 class="card-title">Light card title</h4>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    </div>
+</div>
+<div class="card border-light" style="max-width: 20rem;">
+    <div class="card-body">
+        <h4 class="card-title">Light card title</h4>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    </div>
+</div>
+<div class="card border-light" style="max-width: 20rem;">
+    <div class="card-body">
+        <h4 class="card-title">Light card title</h4>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    </div>
+</div>
+<div class="card border-light" style="max-width: 20rem;">
+    <div class="card-body">
+        <h4 class="card-title">Light card title</h4>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    </div>
+</div>
+<div class="card border-light" style="max-width: 20rem;">
+    <div class="card-body">
+        <h4 class="card-title">Light card title</h4>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    </div>
+</div>
+<div class="card border-light" style="max-width: 20rem;">
+    <div class="card-body">
+        <h4 class="card-title">Light card title</h4>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    </div>
+</div>
+<div class="card border-light" style="max-width: 20rem;">
+    <div class="card-body">
+        <h4 class="card-title">Light card title</h4>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback<string> OnClickCard { get; set; }
+
+    private async Task OnClickCardHandler(string cardId)
+    {
+        await OnClickCard.InvokeAsync(cardId);
+    }
+}
