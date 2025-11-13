@@ -19,7 +19,6 @@ builder.Services.AddScoped<IBrokerFeedService, BrokerFeedService>();
 builder.Services.AddSingleton<IBrokerFeedRepository, BrokerFeedRepository>();
 
 builder.Services.AddSingleton<IRecentMessagesRepository, RecentMessagesRepository>();
-builder.Services.AddSingleton<IActiveAgentCache, ActiveAgentCache>();
 
 //builder.Services.AddSingleton<IBindingRepository, BindingRepository>();
 builder.Services.AddSingleton<IBindingRepository, BindingFileCacheRepository>();

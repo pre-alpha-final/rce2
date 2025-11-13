@@ -14,16 +14,14 @@ public class AgentController : ControllerBase
     private readonly IAgentFeedService _agentFeedService;
     private readonly IBrokerFeedService _brokerFeedService;
     private readonly IBindingRepository _bindingRepository;
-    private readonly IActiveAgentCache _activeAgentCache;
     private readonly IAgentKeyService _agentKeyService;
 
     public AgentController(IAgentFeedService agentFeedService, IBrokerFeedService brokerFeedService,
-        IBindingRepository bindingRepository, IActiveAgentCache activeAgentCache, IAgentKeyService agentKeyService)
+        IBindingRepository bindingRepository, IAgentKeyService agentKeyService)
     {
         _agentFeedService = agentFeedService;
         _brokerFeedService = brokerFeedService;
         _bindingRepository = bindingRepository;
-        _activeAgentCache = activeAgentCache;
         _agentKeyService = agentKeyService;
     }
 
@@ -94,12 +92,6 @@ public class AgentController : ControllerBase
         foreach(var binding in bindings)
         {
             await SendMessage(rce2Message, binding.InContact, binding.InId);
-        }
-
-        var matchingChannelAgents = _activeAgentCache.GetMatchingChannelAgents(id, rce2Message.Contact);
-        foreach(var matchingChannelAgent in matchingChannelAgents)
-        {
-            await SendMessage(rce2Message, rce2Message.Contact, matchingChannelAgent.Id);
         }
 
         return Ok();

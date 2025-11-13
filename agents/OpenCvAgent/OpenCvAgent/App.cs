@@ -21,7 +21,6 @@ public class App : IHostedService
             .SetBrokerAddress("https://localhost:7113")
             .SetAgentId(Guid.NewGuid())
             .SetAgentName("OpenCv")
-            //.SetChannels(new() { "" })
             .SetInputDefinitions(new()
             {
             })

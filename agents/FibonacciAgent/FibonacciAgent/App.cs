@@ -21,7 +21,6 @@ public class App : IHostedService
             .SetAgentId(Guid.NewGuid())
             .SetAgentKey(string.Empty)
             .SetAgentName("Fibonacci")
-            .SetChannels(new() { "fibonacci" })
             .SetInputDefinitions(new()
             {
                 { "fibonacci-data", Rce2Types.Number }
