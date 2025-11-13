@@ -23,7 +23,7 @@
                                     <div class="larger">Ins</div>
                                     @foreach (var agentIn in agent.Ins)
                                     {
-                                        <div class="d-flex align-items-center mb-1">
+                                        <div class="d-flex align-items-center mb-1" @ondragover:preventDefault @ondragover="(_ => {})" @ondrop:preventDefault @ondrop="(_ => OnDrop(agent.Id, agent.Name, agentIn.Key))">
                                             @agentIn.Key&nbsp;:&nbsp;@agentIn.Value&nbsp;
                                             <button type="button" class="btn btn-outline-danger btn-small" @onclick="@(_ => OnSimulateIn(agent, agentIn))">&gt;</button>
                                         </div>
@@ -33,7 +33,7 @@
                                     <div class="larger">Outs</div>
                                     @foreach (var agentOut in agent.Outs)
                                     {
-                                        <div class="d-flex align-items-center mb-1">
+                                        <div class="d-flex align-items-center mb-1 drag-source" draggable="true" @ondragstart="(_ => OnDragStart(agent.Id, agent.Name, agentOut.Key))">
                                             @agentOut.Key&nbsp;:&nbsp;@agentOut.Value&nbsp;
                                             <button type="button" class="btn btn-outline-danger btn-small" @onclick="@(_ => OnSimulateOut(agent, agentOut))">&gt;</button>
                                         </div>
@@ -53,14 +53,17 @@
 <SimulateModal @ref="_simulateModalRef" />
 
 @code {
-    private SimulateModal _simulateModalRef;
+    private SimulateModal? _simulateModalRef;
+    private Guid _draggedAgent = Guid.Empty;
+    private string _draggedSourceName = string.Empty;
+    private string _draggedContact = string.Empty;
 
     [Parameter]
     public List<Agent> Agents { get; set; }
 
     public async Task OnSimulateIn(Agent agent, KeyValuePair<string, string> agentIn)
     {
-        var modalResult = await _simulateModalRef.Open();
+        var modalResult = await _simulateModalRef!.Open();
         if (string.IsNullOrWhiteSpace(modalResult))
         {
             return;
@@ -78,7 +81,7 @@
 
     public async Task OnSimulateOut(Agent agent, KeyValuePair<string, string> agentOut)
     {
-        var modalResult = await _simulateModalRef.Open();
+        var modalResult = await _simulateModalRef!.Open();
         if (string.IsNullOrWhiteSpace(modalResult))
         {
             return;
@@ -92,5 +95,30 @@
                 Contact = agentOut.Key,
                 Payload = JToken.Parse(modalResult),
             }), Encoding.UTF8, "application/json"));
+    }
+
+    private void OnDragStart(Guid sourceAgentId, string sourceName, string sourceContact)
+    {
+        _draggedAgent = sourceAgentId;
+        _draggedSourceName = sourceName;
+        _draggedContact = sourceContact;
+    }
+
+    private async Task OnDrop(Guid targetAgentId, string targetName, string targetContact)
+    {
+        var response = await AuthorizedHttpClientFactory.CreateClient("Default").PostAsJsonAsync($"/api/broker/createBinding", new Binding
+        {
+            OutId = _draggedAgent,
+            OutName = _draggedSourceName,
+            OutContact = _draggedContact,
+            InId = targetAgentId,
+            InName = targetName,
+            InContact = targetContact,
+            IsActive = true,
+        });
+
+        _draggedAgent = Guid.Empty;
+        _draggedSourceName = string.Empty;
+        _draggedContact = string.Empty;
     }
 }

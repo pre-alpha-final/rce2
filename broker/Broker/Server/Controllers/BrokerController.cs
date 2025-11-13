@@ -72,6 +72,24 @@ public class BrokerController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("deleteAllBindings")]
+    public async Task<OkResult> DeleteAllBindings()
+    {
+        var bindings = _bindingRepository.GetAll();
+        foreach (var binding in bindings)
+        {
+            if (_bindingRepository.DeleteBinding(binding))
+            {
+                await _brokerFeedService.BroadcastItem(new BindingDeletedEvent
+                {
+                    Binding = binding,
+                });
+            }
+        }
+
+        return Ok();
+    }
+
     [HttpPost("simulateIn/{id:Guid}")]
     public async Task<OkResult> SimulateIn(Guid id, [FromBody] Rce2Message rce2Message)
     {

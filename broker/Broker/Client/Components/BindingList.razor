@@ -2,7 +2,10 @@
 @using Broker.Shared.Model
 @inject AuthorizedHttpClientFactory AuthorizedHttpClientFactory
 
-<h1>Explicit Bindings</h1>
+<div class="d-flex align-items-center">
+    <h1>Bindings</h1>
+    <button type="button" class="btn btn-outline-danger ms-2 mb-2" @onclick="@(_ => DeleteAllBindings())">Nuke all</button>
+</div>
 <div class="container container-max-width">
     <div class="row">
         @foreach (var binding in Bindings)
@@ -150,5 +153,10 @@
     public async Task OnDeleteBinding(Binding binding)
     {
         var response = await AuthorizedHttpClientFactory.CreateClient("Default").PostAsJsonAsync($"/api/broker/deleteBinding", binding);
+    }
+
+    public async Task DeleteAllBindings()
+    {
+        var response = await AuthorizedHttpClientFactory.CreateClient("Default").PostAsJsonAsync($"/api/broker/deleteAllBindings", string.Empty);
     }
 }

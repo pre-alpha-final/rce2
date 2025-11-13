@@ -23,3 +23,12 @@
 .btn-small {
     padding: 0px 6px;
 }
+
+.drag-source {
+    cursor: grab;
+    user-select: none;
+}
+
+    .drag-source:active {
+        cursor: grabbing;
+    }
