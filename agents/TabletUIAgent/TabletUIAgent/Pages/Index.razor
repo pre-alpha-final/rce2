@@ -1,29 +1,31 @@
 ﻿@page "/"
 
-<nav class="navbar navbar-expand-lg m-3">
-    <div class="container-fluid d-flex align-items-center px-3">
-        <div class="d-flex">
-            <div class="me-2">
-                <h1 class="display-3 my-1 ps-1">rce2</h1>
+<div class="view-wrapper">
+    <nav class="navbar navbar-expand-lg m-3">
+        <div class="container-fluid d-flex align-items-center px-3">
+            <div class="d-flex">
+                <div class="me-2">
+                    <h1 class="display-3 my-1 ps-1">rce2</h1>
+                </div>
+                <div class="alive"></div>
             </div>
-            <div class="alive"></div>
+            @if (SubPage != "")
+            {
+                <span class="back-link" @onclick="OnBack">&lt;&lt;&lt;</span>
+            }
         </div>
-        @if (SubPage != "")
+    </nav>
+
+    <div class="m-3 content">
+        @if (SubPage == "")
         {
-            <span class="back-link" @onclick="OnBack">&lt;&lt;&lt;</span>
+            <MainMenu OnClickCard="OnClickCard" />
+        }
+        else if (SubPage == "youtube")
+        {
+            <Youtube />
         }
     </div>
-</nav>
-
-<div class="m-3" style="display:flex; flex-wrap:wrap; justify-content:center; gap:20px;">
-    @if (SubPage == "")
-    {
-        <MainMenu OnClickCard="OnClickCard"/>
-    }
-    else if (SubPage == "youtube")
-    {
-        <Youtube />
-    }
 </div>
 
 @code {

@@ -1,1 +1,27 @@
-﻿
+﻿.media-controls-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.media-controls {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    width: 100%;
+}
+
+.mc-btn {
+    width: 100%;
+    height: 100%;
+    padding: 1rem 0;
+    font-size: 3rem;
+    font-weight: bold;
+    touch-action: manipulation;
+}
+
+    .mc-btn:active {
+        background-color: #222;
+    }
