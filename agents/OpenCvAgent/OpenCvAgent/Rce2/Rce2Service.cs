@@ -12,7 +12,6 @@ public class Rce2Service
     private Guid? _agentId;
     private string? _agentKey;
     private string? _agentName;
-    private List<string> _channels = new();
     private Dictionary<string, string> _inputDefinitions = new();
     private Dictionary<string, string> _outputDefinitions = new();
 
@@ -44,12 +43,6 @@ public class Rce2Service
     public Rce2Service SetAgentName(string agentName)
     {
         _agentName = agentName;
-        return this;
-    }
-
-    public Rce2Service SetChannels(List<string> channels)
-    {
-        _channels = channels;
         return this;
     }
 
@@ -116,7 +109,6 @@ public class Rce2Service
             Payload = JObject.FromObject(new Rce2Agent
             {
                 Id = _agentId!.Value,
-                Channels = _channels,
                 Name = _agentName!,
                 Ins = _inputDefinitions,
                 Outs = _outputDefinitions,

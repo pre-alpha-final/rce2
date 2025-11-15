@@ -15,16 +15,14 @@ public class BrokerController : ControllerBase
     private readonly IAgentFeedService _agentFeedService;
     private readonly IBindingRepository _bindingRepository;
     private readonly IRecentMessagesRepository _recentMessagesRepository;
-    private readonly IActiveAgentCache _activeAgentCache;
 
     public BrokerController(IBrokerFeedService brokerFeedService, IAgentFeedService agentFeedService,
-        IBindingRepository bindingRepository, IRecentMessagesRepository recentMessagesRepository, IActiveAgentCache activeAgentCache)
+        IBindingRepository bindingRepository, IRecentMessagesRepository recentMessagesRepository)
     {
         _brokerFeedService = brokerFeedService;
         _agentFeedService = agentFeedService;
         _bindingRepository = bindingRepository;
         _recentMessagesRepository = recentMessagesRepository;
-        _activeAgentCache = activeAgentCache;
     }
 
     [HttpGet("{id:Guid}")]
@@ -74,6 +72,24 @@ public class BrokerController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("deleteAllBindings")]
+    public async Task<OkResult> DeleteAllBindings()
+    {
+        var bindings = _bindingRepository.GetAll();
+        foreach (var binding in bindings)
+        {
+            if (_bindingRepository.DeleteBinding(binding))
+            {
+                await _brokerFeedService.BroadcastItem(new BindingDeletedEvent
+                {
+                    Binding = binding,
+                });
+            }
+        }
+
+        return Ok();
+    }
+
     [HttpPost("simulateIn/{id:Guid}")]
     public async Task<OkResult> SimulateIn(Guid id, [FromBody] Rce2Message rce2Message)
     {
@@ -103,12 +119,6 @@ public class BrokerController : ControllerBase
         foreach (var binding in bindings)
         {
             await SendMessage(rce2Message, binding.InContact, binding.InId);
-        }
-
-        var matchingChannelAgents = _activeAgentCache.GetMatchingChannelAgents(id, rce2Message.Contact);
-        foreach (var matchingChannelAgent in matchingChannelAgents)
-        {
-            await SendMessage(rce2Message, rce2Message.Contact, matchingChannelAgent.Id);
         }
 
         return Ok();

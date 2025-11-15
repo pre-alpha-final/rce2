@@ -22,7 +22,6 @@ public class App : IHostedService
             .SetAgentId(Guid.NewGuid())
             .SetAgentKey(string.Empty)
             .SetAgentName("Mudslide")
-            .SetChannels(new() { "mudslide" })
             .SetInputDefinitions(new()
             {
                 { "send", Rce2Types.String }

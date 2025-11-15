@@ -21,20 +21,19 @@ public class App : IHostedService
             .SetAgentId(Guid.NewGuid())
             .SetAgentKey(string.Empty)
             .SetAgentName("Fibonacci")
-            .SetChannels(new() { "fibonacci" })
             .SetInputDefinitions(new()
             {
-                { "fibonacci-data", Rce2Types.Number }
+                { "fibonacci-in", Rce2Types.Number }
             })
             .SetOutputDefinitions(new()
             {
-                { "fibonacci-data", Rce2Types.Number }
+                { "fibonacci-out", Rce2Types.Number }
             })
             .Init();
 
         Hub.Default.Subscribe<Rce2Message>(this, async e =>
         {
-            if (e.Contact == "fibonacci-data")
+            if (e.Contact == "fibonacci-in")
             {
                 await Task.Delay(1000);
 
@@ -42,7 +41,7 @@ public class App : IHostedService
                 var nextNumber = _previousNumber + payload;
                 _previousNumber = payload;
 
-                await _rce2Service.Send("fibonacci-data", nextNumber);
+                await _rce2Service.Send("fibonacci-out", nextNumber);
             }
         });
     }

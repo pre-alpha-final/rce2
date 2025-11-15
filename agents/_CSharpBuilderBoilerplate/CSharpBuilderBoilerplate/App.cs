@@ -20,7 +20,6 @@ public class App : IHostedService
             .SetAgentId(Guid.NewGuid())
             .SetAgentKey(string.Empty)
             .SetAgentName("Boilerplate")
-            .SetChannels(new() { "boilerplate" })
             .SetInputDefinitions(new()
             {
                 { "echo-test", Rce2Types.String }
