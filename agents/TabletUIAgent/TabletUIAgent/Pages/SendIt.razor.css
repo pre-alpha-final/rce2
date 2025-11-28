@@ -1,0 +1,41 @@
+﻿html, body, .container-fluid {
+    height: 100%;
+    margin: 0;
+}
+
+.sendit-component {
+    border-radius: 16px;
+    width: 95%;
+    max-width: 900px;
+}
+
+.control-block {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.big-select {
+    font-size: 1.4rem;
+    padding: 0.8rem;
+    height: 4rem;
+}
+
+.big-textarea {
+    font-size: 1.4rem;
+    padding: 1rem;
+    height: 7rem;
+}
+
+.big-button {
+    font-size: 1.6rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.bottom-section {
+    border-radius: 12px;
+    max-height: 180px;
+    overflow-y: auto;
+    font-size: 1.3rem;
+    scrollbar-width: thin;
+}
