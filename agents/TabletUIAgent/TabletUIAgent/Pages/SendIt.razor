@@ -1,14 +1,17 @@
 ﻿@page "/sendit"
+@using PubSub
+@using Rce2
+@implements IDisposable
+@inject Rce2Service Rce2Service
 
 <div class="sendit-wrapper">
     <div class="sendit-container">
-        <textarea class="sendit-input"
-                  placeholder="Enter message..."
-                  @bind="Message">
+        <textarea
+            class="sendit-input"
+            placeholder="Enter message..."
+            @bind="Message">
         </textarea>
-        <button class="btn btn-outline-primary sendit-btn" @onclick="Send">
-            Send
-        </button>
+        <button class="btn btn-outline-primary sendit-btn" @onclick="Send">Send</button>
         <div class="sendit-output">
             @foreach (var debugLine in DebugLines)
             {
@@ -22,12 +25,38 @@
     private string Message = "";
     private List<string> DebugLines = new();
 
-    private void Send()
+    public SendIt()
+    {
+        Hub.Default.Subscribe<Rce2Message>(this, async e =>
+        {
+            if (e.Contact != "sendit-input")
+            {
+                return;
+            }
+
+            var payload = e.Payload["data"]?.ToObject<string>();
+            AddDebugLine($"> {payload}");
+        });
+    }
+
+    public void Dispose()
+    {
+        Hub.Default.Unsubscribe<Rce2Message>(this);
+    }
+
+    private async Task Send()
     {
         if (string.IsNullOrWhiteSpace(Message) == false)
         {
-            DebugLines.Add($"> {Message}");
+            await Rce2Service.Send("sendit-output", Message);
+            AddDebugLine($"< {Message}");
             Message = "";
         }
+    }
+
+    private void AddDebugLine(string text)
+    {
+        DebugLines.Insert(0, text);
+        StateHasChanged();
     }
 }

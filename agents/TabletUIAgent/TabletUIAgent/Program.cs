@@ -32,11 +32,11 @@ public class Program
             .SetAgentName("TabletUI")
             .SetInputDefinitions(new()
             {
-                { "echo-test", Rce2Types.String }
+                { "sendit-input", Rce2Types.String }
             })
             .SetOutputDefinitions(new()
             {
-                { "echo-test", Rce2Types.String }
+                { "sendit-output", Rce2Types.String }
             })
             .Init();
     }
