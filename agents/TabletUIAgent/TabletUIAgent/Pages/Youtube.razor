@@ -1,17 +1,40 @@
-﻿<div class="media-controls-wrapper px-5">
+﻿@using PubSub
+@using Rce2
+@inject Rce2Service Rce2Service
+
+<div class="media-controls-wrapper px-5">
     <div class="media-controls">
         <button class="btn btn-outline-primary mc-btn" @onclick="BackwardFast">«</button>
         <button class="btn btn-outline-primary mc-btn" @onclick="Backward">‹</button>
-        <button class="btn btn-outline-primary mc-btn" @onclick="PlayPause">⏯</button>
+        <button class="btn btn-outline-primary mc-btn" @onclick="PauseResume">⏯</button>
         <button class="btn btn-outline-primary mc-btn" @onclick="Forward">›</button>
         <button class="btn btn-outline-primary mc-btn" @onclick="ForwardFast">»</button>
     </div>
 </div>
 
 @code {
-    void BackwardFast() => Console.WriteLine("<<");
-    void Backward() => Console.WriteLine("<");
-    void PlayPause() => Console.WriteLine("Play/Pause");
-    void Forward() => Console.WriteLine(">");
-    void ForwardFast() => Console.WriteLine(">>");
+    private async Task BackwardFast()
+    {
+        await Rce2Service.Send("yt-back-10", 10);
+    }
+
+    private async Task Backward()
+    {
+        await Rce2Service.Send("yt-back", 1);
+    }
+
+    private async Task PauseResume()
+    {
+        await Rce2Service.Send("yt-pause-resume", null);
+    }
+
+    private async Task Forward()
+    {
+        await Rce2Service.Send("yt-forward", 1);
+    }
+
+    private async Task ForwardFast()
+    {
+        await Rce2Service.Send("yt-forward-10", 10);
+    }
 }

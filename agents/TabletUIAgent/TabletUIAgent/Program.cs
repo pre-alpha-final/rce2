@@ -36,6 +36,11 @@ public class Program
             })
             .SetOutputDefinitions(new()
             {
+                { "yt-back-10", Rce2Types.Number },
+                { "yt-back", Rce2Types.Number },
+                { "yt-pause-resume", Rce2Types.Void },
+                { "yt-forward", Rce2Types.Number },
+                { "yt-forward-10", Rce2Types.Number },
                 { "sendit-output", Rce2Types.String }
             })
             .Init();
