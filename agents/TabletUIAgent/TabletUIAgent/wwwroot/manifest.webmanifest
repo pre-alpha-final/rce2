@@ -1,6 +1,6 @@
 {
-  "name": "Rce2UI",
-  "short_name": "Rce2UI",
+  "name": "TabletUI",
+  "short_name": "TabletUI",
   "id": "./",
   "start_url": "./",
   "display": "standalone",

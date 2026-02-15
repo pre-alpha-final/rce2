@@ -19,9 +19,4 @@
     padding: 1rem 0;
     font-size: 3rem;
     font-weight: bold;
-    touch-action: manipulation;
 }
-
-    .mc-btn:active {
-        background-color: #222;
-    }

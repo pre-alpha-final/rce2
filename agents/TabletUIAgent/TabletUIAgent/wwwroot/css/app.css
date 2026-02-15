@@ -129,3 +129,12 @@
 code {
     color: #c02d76;
 }
+
+/* disable bootstrap sticky :hover on mobile */
+@media (hover: none) {
+    .btn:hover {
+        color: inherit;
+        background-color: inherit;
+        border-color: inherit;
+    }
+}
