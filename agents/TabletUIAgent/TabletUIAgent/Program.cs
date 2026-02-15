@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using PubSub;
+using Rce2;
 
 namespace TabletUIAgent;
 
@@ -11,8 +13,31 @@ public class Program
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
+        builder.Services.AddHttpClient();
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+        builder.Services.AddSingleton<Rce2Service>();
 
-        await builder.Build().RunAsync();
+        var host = builder.Build();
+        SetUpRce2(host.Services.GetService<Rce2Service>()!);
+
+        await host.RunAsync();
+    }
+
+    private static void SetUpRce2(Rce2Service rce2Service)
+    {
+        rce2Service
+            .SetBrokerAddress("https://localhost:7113")
+            .SetAgentId(Guid.NewGuid())
+            .SetAgentKey(string.Empty)
+            .SetAgentName("TabletUI")
+            .SetInputDefinitions(new()
+            {
+                { "echo-test", Rce2Types.String }
+            })
+            .SetOutputDefinitions(new()
+            {
+                { "echo-test", Rce2Types.String }
+            })
+            .Init();
     }
 }
