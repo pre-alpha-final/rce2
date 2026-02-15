@@ -1,27 +1,33 @@
-﻿<div class="container-fluid h-100 d-flex justify-content-center align-items-center">
-    <div class="sendit-component d-flex flex-column p-4">
-        <div class="control-block w-100 mb-4">
-            <textarea class="form-control big-textarea mb-3" placeholder="Enter text…"></textarea>
-            <button class="btn btn-primary btn-lg big-button w-100">
-                Send
-            </button>
-        </div>
-        <div class="bottom-section p-3">
-            <p>Example output text...</p>
-            <p>More lines...</p>
-            <p>More lines...</p>
-            <p>More lines...</p>
-            <p>More lines...</p>
-            <p>More lines...</p>
-            <p>More lines...</p>
-            <p>More lines...</p>
-            <p>More lines...</p>
-            <p>More lines...</p>
-            <p>More lines...</p>
-            <p>More lines...</p>
+﻿@page "/sendit"
+
+<div class="sendit-wrapper">
+    <div class="sendit-container">
+        <textarea class="sendit-input"
+                  placeholder="Enter message..."
+                  @bind="Message">
+        </textarea>
+        <button class="btn btn-outline-primary sendit-btn" @onclick="Send">
+            Send
+        </button>
+        <div class="sendit-output">
+            @foreach (var debugLine in DebugLines)
+            {
+                <div>@debugLine</div>
+            }
         </div>
     </div>
 </div>
 
 @code {
+    private string Message = "";
+    private List<string> DebugLines = new();
+
+    private void Send()
+    {
+        if (string.IsNullOrWhiteSpace(Message) == false)
+        {
+            DebugLines.Add($"> {Message}");
+            Message = "";
+        }
+    }
 }
