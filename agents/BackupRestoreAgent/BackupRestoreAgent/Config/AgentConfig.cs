@@ -5,7 +5,7 @@ public class AgentConfig
     /// <summary>
     /// The folder that gets backed up / restored. Remembered between runs.
     /// </summary>
-    public string? SetPath { get; set; }
+    public string? Path { get; set; }
 
     /// <summary>
     /// Optional override for the full path to 7z.exe. When null, common

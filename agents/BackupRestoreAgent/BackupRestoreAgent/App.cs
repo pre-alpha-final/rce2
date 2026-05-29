@@ -78,7 +78,7 @@ public class App : IHostedService
             }
 
             var config = _configRepository.Load();
-            config.SetPath = path;
+            config.Path = path;
             _configRepository.Save(config);
 
             await Out($"path set to '{path}'");
@@ -93,7 +93,7 @@ public class App : IHostedService
     {
         try
         {
-            var path = _configRepository.Load().SetPath;
+            var path = _configRepository.Load().Path;
             var result = await Task.Run(() => _backupService.Backup(path!));
             await Out(result);
         }
@@ -107,7 +107,7 @@ public class App : IHostedService
     {
         try
         {
-            var path = _configRepository.Load().SetPath;
+            var path = _configRepository.Load().Path;
             var result = await Task.Run(() => _backupService.Restore(path!));
             await Out(result);
         }
