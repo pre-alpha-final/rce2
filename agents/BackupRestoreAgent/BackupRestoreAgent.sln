@@ -1,0 +1,25 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34701.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackupRestoreAgent", "BackupRestoreAgent\BackupRestoreAgent.csproj", "{A7E9C3B1-5F24-4C8D-9B6E-1D2F3A4B5C6D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A7E9C3B1-5F24-4C8D-9B6E-1D2F3A4B5C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7E9C3B1-5F24-4C8D-9B6E-1D2F3A4B5C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7E9C3B1-5F24-4C8D-9B6E-1D2F3A4B5C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7E9C3B1-5F24-4C8D-9B6E-1D2F3A4B5C6D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B8F0D4C2-6E35-4D9E-AC7F-2E3F4B5C6D7E}
+	EndGlobalSection
+EndGlobal

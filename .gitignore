@@ -213,6 +213,8 @@ Generated_Code/
 # because we have git ;-)
 _UpgradeReport_Files/
 Backup*/
+!agents/BackupRestoreAgent/
+!agents/BackupRestoreAgent/BackupRestoreAgent
 UpgradeLog*.XML
 UpgradeLog*.htm
 
