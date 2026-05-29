@@ -63,11 +63,13 @@ _rce2Service
 | Setter | Meaning |
 |--------|---------|
 | `SetBrokerAddress` | Base URL of the broker. The library appends `/api/agent/{id}`. |
-| `SetAgentId` | This agent's identity on the broker. Use a **stable** Guid in real deployments; `Guid.NewGuid()` only for throwaway/test agents. |
+| `SetAgentId` | This agent's identity on the broker. **In this repo keep `Guid.NewGuid()`** (see warning below). Swap in a static Guid only when deploying to production. |
 | `SetAgentKey` | Optional auth key. Empty string ⇒ no auth header. Non-empty ⇒ sent as HTTP Basic (`Authorization: Basic base64(key)`). |
 | `SetAgentName` | Human-readable name shown in the broker UI / `whois` reply. |
 | `SetInputDefinitions` | `{ contact → type }` map of messages this agent can **receive**. |
 | `SetOutputDefinitions` | `{ contact → type }` map of messages this agent can **send**. |
+
+> **Keep `SetAgentId(Guid.NewGuid())` in committed code.** This is a public repo. If you hardcode a static Guid here, two people running unmodified checkouts will register the *same* agent id on the broker and collide. A fresh random id per run keeps developer instances isolated. Hardcoded static ids are a **production-only** change, applied at deploy time — not something to commit into the boilerplate or example agents.
 
 Notes:
 - `SetInputDefinitions` / `SetOutputDefinitions` **replace** the dictionary; they don't merge.
@@ -157,7 +159,7 @@ Always dispose it (the `using` above) so it unsubscribes from the hub.
 - Every contact you pass to `Send(...)` exists in `SetOutputDefinitions`.
 - Every inbound `Contact` you act on exists in `SetInputDefinitions`.
 - Payloads are read defensively from `Payload?["data"]`.
-- `AgentId` is stable for anything long-lived.
+- `AgentId` stays `Guid.NewGuid()` in committed code; a static id is a production-only, deploy-time change (avoids collisions between developers' checkouts).
 - You `Hub.Default.Unsubscribe(this)` on shutdown.
 - Broker address / id / key / contacts live in config (env or appsettings), not hardcoded, for real deployments.
 - You did not modify anything under `Rce2/`.

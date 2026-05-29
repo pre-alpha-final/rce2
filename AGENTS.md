@@ -44,7 +44,7 @@ Dev URLs: `https://localhost:7113` (and `http://localhost:5113`). The Blazor cli
 - **Do not edit anything inside an agent's `Rce2/` folder.** It is vendored library code (the `Rce2Service` fluent builder + infra) copied in as-is. Integrate via host code (`Program.cs`, hosted services, config), not by changing library internals. See [`RCE2_INTEGRATION_GUIDE_FOR_AGENTS.md`](agents/_CSharpBuilderBoilerplate/CSharpBuilderBoilerplate/RCE2_INTEGRATION_GUIDE_FOR_AGENTS.md) and the [`_CSharpBuilderBoilerplate`](agents/_CSharpBuilderBoilerplate) project for the canonical C# template.
 - C# agent setup uses the `Rce2Service` builder chain: `SetBrokerAddress` → `SetAgentId` → `SetAgentKey` → `SetAgentName` → `SetInputDefinitions` → `SetOutputDefinitions` → `Init()`. Subscribe to `PubSub.Hub.Default` for incoming `Rce2Message` and route by `Contact`.
 - Keep `Send(contact, ...)` contacts inside the declared `outs`; handle only contacts present in `ins`. In/out contact names are independent maps and need not match.
-- Prefer a **stable** `AgentId` in real use; `Guid.NewGuid()` is for ephemeral/test agents only.
+- **Keep `AgentId` as `Guid.NewGuid()` in committed code.** This is a public repo — a hardcoded static id would make two developers' unmodified checkouts collide on the same agent on the broker. Static ids are a production-only change applied at deploy time.
 
 ## Conventions & gotchas
 

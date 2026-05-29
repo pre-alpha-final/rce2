@@ -9,7 +9,7 @@ namespace BackupRestoreAgent;
 public class App : IHostedService
 {
     // Stable identity for this long-lived agent.
-    private static readonly Guid AgentId = new("b1d4f6a2-7c3e-4d8a-9f10-2a6b5c8d7e90");
+    private static readonly Guid AgentId = Guid.NewGuid();
 
     private readonly Rce2Service _rce2Service;
     private readonly ConfigRepository _configRepository;
