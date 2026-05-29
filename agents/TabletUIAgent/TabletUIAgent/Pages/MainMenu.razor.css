@@ -1,9 +1,25 @@
-﻿.clickable-card {
-    cursor: pointer;
-    transition: transform 0.1s ease-in-out;
+.card {
+    width: 16rem;
+    border-radius: var(--r2-radius-lg);
 }
 
-    .clickable-card:hover {
+.clickable-card {
+    cursor: pointer;
+    transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out, border-color 0.1s ease-in-out, color 0.1s ease-in-out;
+}
+
+    .clickable-card:hover,
+    .clickable-card:focus-visible {
         transform: scale(1.02);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        box-shadow: var(--r2-shadow);
+        border-color: var(--bs-primary);
+        background-color: var(--bs-primary);
+        color: #fff;
+        outline: none;
     }
+
+/* Not-yet-implemented placeholders: visible but clearly inert. */
+.disabled-card {
+    cursor: default;
+    opacity: 0.45;
+}

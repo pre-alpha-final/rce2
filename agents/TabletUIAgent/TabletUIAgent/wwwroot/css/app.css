@@ -1,3 +1,28 @@
+:root {
+    --r2-radius: 12px;
+    --r2-radius-lg: 14px;
+    --r2-gap: 1rem;
+    --r2-grid-gap: 20px;
+    --r2-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Shared centering wrapper for a feature sub-page (fills the content area). */
+.feature-pane {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Shared large, full-width touch button. Pages override font-size as needed. */
+.touch-btn {
+    width: 100%;
+    padding: 1rem 0;
+    font-weight: bold;
+}
+
 .loader-wrapper {
     display: flex;
     justify-content: center;

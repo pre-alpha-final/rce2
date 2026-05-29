@@ -12,7 +12,7 @@
     flex-wrap: wrap;
     align-content: flex-start;
     justify-content: center;
-    gap: 20px;
+    gap: var(--r2-grid-gap);
 }
 
 h1:focus {
@@ -63,10 +63,16 @@ h1:focus {
     cursor: pointer;
     font-size: 2rem;
     margin-right: 20px;
+    padding: 0.25rem 0.75rem;
     font-weight: bold;
     color: inherit;
     user-select: none;
 }
+
+    .back-link:focus-visible {
+        outline: 2px solid var(--bs-primary);
+        border-radius: var(--r2-radius);
+    }
 
 @keyframes rotationBack {
     0% {

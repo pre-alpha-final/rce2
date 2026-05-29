@@ -2,13 +2,13 @@
 @using Rce2
 @inject Rce2Service Rce2Service
 
-<div class="media-controls-wrapper px-5">
+<div class="feature-pane px-5">
     <div class="media-controls">
-        <button class="btn btn-outline-primary mc-btn" @onclick="BackwardFast">«</button>
-        <button class="btn btn-outline-primary mc-btn" @onclick="Backward">‹</button>
-        <button class="btn btn-outline-primary mc-btn" @onclick="PauseResume">⏯</button>
-        <button class="btn btn-outline-primary mc-btn" @onclick="Forward">›</button>
-        <button class="btn btn-outline-primary mc-btn" @onclick="ForwardFast">»</button>
+        <button class="btn btn-outline-primary touch-btn mc-btn" aria-label="Rewind 10 seconds" @onclick="BackwardFast">«</button>
+        <button class="btn btn-outline-primary touch-btn mc-btn" aria-label="Rewind" @onclick="Backward">‹</button>
+        <button class="btn btn-outline-primary touch-btn mc-btn" aria-label="Play or pause" @onclick="PauseResume">⏯</button>
+        <button class="btn btn-outline-primary touch-btn mc-btn" aria-label="Forward" @onclick="Forward">›</button>
+        <button class="btn btn-outline-primary touch-btn mc-btn" aria-label="Forward 10 seconds" @onclick="ForwardFast">»</button>
     </div>
 </div>
 
