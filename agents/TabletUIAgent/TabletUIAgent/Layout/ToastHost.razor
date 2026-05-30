@@ -1,0 +1,53 @@
+@using PubSub
+@using TabletUIAgent.Models
+@implements IDisposable
+
+@* Bootstrap 5.3 toasts: top-center, no header, primary/danger background, auto-closed after 1s.
+   Lifecycle is driven from C# (the app only loads Bootstrap CSS, not its JS bundle), so each
+   toast is rendered with the `.show` class and removed by OnToast after the delay below. *@
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    @foreach (var toast in _toasts)
+    {
+        <div class="toast show border-0 text-white @toast.BackgroundClass"
+             role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body">@toast.Text</div>
+        </div>
+    }
+</div>
+
+@code {
+    private const int AutoCloseMs = 2000;
+
+    private readonly List<ToastInstance> _toasts = new();
+
+    public ToastHost()
+    {
+        Hub.Default.Subscribe<ToastMessage>(this, OnToast);
+    }
+
+    private async Task OnToast(ToastMessage message)
+    {
+        var toast = new ToastInstance(message);
+        _toasts.Add(toast);
+        await InvokeAsync(StateHasChanged);
+
+        await Task.Delay(AutoCloseMs);
+
+        _toasts.Remove(toast);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose() => Hub.Default.Unsubscribe<ToastMessage>(this);
+
+    private sealed class ToastInstance
+    {
+        public string Text { get; }
+        public string BackgroundClass { get; }
+
+        public ToastInstance(ToastMessage message)
+        {
+            Text = message.Text;
+            BackgroundClass = message.Level == ToastLevel.Error ? "bg-danger" : "bg-primary";
+        }
+    }
+}

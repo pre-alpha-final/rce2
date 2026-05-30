@@ -53,9 +53,17 @@
     {
         if (string.IsNullOrWhiteSpace(Message) == false)
         {
-            await Rce2Service.Send("sendit-output", Message);
-            AddDebugLine(Message, sent: true);
-            Message = "";
+            try
+            {
+                await Rce2Service.Send("sendit-output", Message);
+                AddDebugLine(Message, sent: true);
+                Message = "";
+                Toast.Show("Message sent");
+            }
+            catch (Exception ex)
+            {
+                Toast.Error($"Send failed: {ex.Message}");
+            }
         }
     }
 
