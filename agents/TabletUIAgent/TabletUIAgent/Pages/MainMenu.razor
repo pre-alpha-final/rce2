@@ -1,33 +1,28 @@
-﻿<div class="card clickable-card border-light px-4" @onclick='() => OnClickCardHandler("youtube")'>
-    <div class="card-body">
-        <h4 class="card-title">Youtube</h4>
-        <p class="card-text">Youtube media control</p>
-    </div>
-</div>
-<div class="card clickable-card border-light px-4" @onclick='() => OnClickCardHandler("placeholder")'>
-    <div class="card-body">
-        <h4 class="card-title">Placeholder</h4>
-        <p class="card-text">placeholder</p>
-    </div>
-</div>
-<div class="card clickable-card border-light px-4" @onclick='() => OnClickCardHandler("placeholder")'>
-    <div class="card-body">
-        <h4 class="card-title">Placeholder</h4>
-        <p class="card-text">placeholder</p>
-    </div>
-</div>
-<div class="card clickable-card border-light px-4" @onclick='() => OnClickCardHandler("placeholder")'>
-    <div class="card-body">
-        <h4 class="card-title">Placeholder</h4>
-        <p class="card-text">placeholder</p>
-    </div>
-</div>
-<div class="card clickable-card border-light px-4" @onclick='() => OnClickCardHandler("sendit")'>
-    <div class="card-body">
-        <h4 class="card-title">Send It!</h4>
-        <p class="card-text">Send debug signals</p>
-    </div>
-</div>
+@using TabletUIAgent.Models
+
+@foreach (var item in MenuCatalog.Items)
+{
+    if (item.Enabled)
+    {
+        <div class="card clickable-card border-light px-4" role="button" tabindex="0"
+             @onclick="() => OnClickCardHandler(item.Id)"
+             @onkeydown="e => OnKeyDownHandler(e, item.Id)">
+            <div class="card-body">
+                <h4 class="card-title">@item.Title</h4>
+                <p class="card-text">@item.Text</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card disabled-card border-light px-4" aria-disabled="true">
+            <div class="card-body">
+                <h4 class="card-title">@item.Title</h4>
+                <p class="card-text">@item.Text</p>
+            </div>
+        </div>
+    }
+}
 
 @code {
     [Parameter] public EventCallback<string> OnClickCard { get; set; }
@@ -35,5 +30,13 @@
     private async Task OnClickCardHandler(string cardId)
     {
         await OnClickCard.InvokeAsync(cardId);
+    }
+
+    private async Task OnKeyDownHandler(KeyboardEventArgs e, string cardId)
+    {
+        if (e.Key == "Enter" || e.Key == " " || e.Key == "Spacebar")
+        {
+            await OnClickCardHandler(cardId);
+        }
     }
 }
