@@ -1,27 +1,71 @@
-﻿namespace Broker.Server.Services;
+using Newtonsoft.Json;
+
+namespace Broker.Server.Services;
 
 public class AgentKeyService : IAgentKeyService
 {
-    private readonly IConfiguration _configuration;
+    private const string FileName = "agentKeys.txt";
+    private readonly object _lock = new object();
+
     private Dictionary<Guid, string> _agentKeys { get; set; } = new();
 
-    public AgentKeyService(IConfiguration configuration)
+    public AgentKeyService()
     {
-        _configuration = configuration;
+        LoadFromFile();
     }
 
     public async Task<bool> Validate(Guid agentId, string? agentKey)
     {
-        if (_agentKeys.ContainsKey(agentId) && agentKey == _agentKeys[agentId])
+        lock (_lock)
         {
+            if (_agentKeys.ContainsKey(agentId))
+            {
+                return agentKey == _agentKeys[agentId];
+            }
+
             return true;
         }
+    }
 
-        if (string.IsNullOrWhiteSpace(agentKey) && Convert.ToBoolean(_configuration["ForceAgentAuth"]) == false)
+    public Dictionary<Guid, string> GetAll()
+    {
+        lock (_lock)
         {
-            return true;
+            return new Dictionary<Guid, string>(_agentKeys);
         }
+    }
 
-        return false;
+    public void SetAll(Dictionary<Guid, string> agentKeys)
+    {
+        lock (_lock)
+        {
+            _agentKeys = agentKeys;
+            SaveToFile();
+        }
+    }
+
+    private void LoadFromFile()
+    {
+        try
+        {
+            var content = File.ReadAllText(FileName);
+            _agentKeys = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(content) ?? new Dictionary<Guid, string>();
+        }
+        catch (Exception e)
+        {
+            // ignore
+        }
+    }
+
+    private void SaveToFile()
+    {
+        try
+        {
+            File.WriteAllText(FileName, JsonConvert.SerializeObject(_agentKeys));
+        }
+        catch (Exception e)
+        {
+            // ignore
+        }
     }
 }

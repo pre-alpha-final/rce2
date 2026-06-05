@@ -28,11 +28,15 @@
 else
 {
     <div class="p-4">
+        <div class="d-flex justify-content-end mb-2">
+            <button type="button" class="btn btn-outline-primary" @onclick="@(_ => _agentKeysModalRef!.Open())">Agent keys</button>
+        </div>
         <div><Authorization AuthorizationFailure=AuthorizationFailure /></div>
         <div><AgentList Agents="Agents" /></div>
         <div class="mt-5"><BindingList Agents="Agents" Bindings="Bindings" /></div>
         <div class="mt-5"><DataFlowList DataFlow="DataFlow" /></div>
     </div>
+    <AgentKeysModal @ref="_agentKeysModalRef" />
 }
 
 @code {
@@ -42,6 +46,7 @@ else
 
     private string _brokerKey = string.Empty;
     private string _brokerKeyInput = string.Empty;
+    private AgentKeysModal? _agentKeysModalRef;
 
     public bool AuthorizationFailure { get; set; }
     public List<Agent> Agents { get; set; } = new();

@@ -1,0 +1,80 @@
+@using Broker.Client.Infrastructure
+@using System.Text
+@using Newtonsoft.Json
+@inject AuthorizedHttpClientFactory AuthorizedHttpClientFactory
+
+@if (_show)
+{
+    <div class="modal-backdrop fade show" />
+    <div class="modal fade d-block show">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" @onclick=@(_ => OnClose()) />
+                    <div class="mt-up mb-2">
+                        <h5>Agent keys</h5>
+                    </div>
+                    @if (string.IsNullOrEmpty(_error) == false)
+                    {
+                        <div class="alert alert-danger">@_error</div>
+                    }
+                    <textarea class="form-control" rows="12" @bind="_keysText" />
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-success w-75 mt-2" @onclick=@(_ => OnSave())>Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _show;
+    private string _keysText = "{}";
+    private string _error = string.Empty;
+
+    public async Task Open()
+    {
+        _error = string.Empty;
+        try
+        {
+            var response = await AuthorizedHttpClientFactory.CreateClient("Default").GetAsync("/api/broker/agentKeys");
+            var content = await response.Content.ReadAsStringAsync();
+            var map = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(content) ?? new();
+            _keysText = JsonConvert.SerializeObject(map, Formatting.Indented);
+        }
+        catch (Exception e)
+        {
+            _error = "Failed to load agent keys.";
+            _keysText = "{}";
+        }
+
+        _show = true;
+        StateHasChanged();
+    }
+
+    private void OnClose()
+    {
+        _show = false;
+    }
+
+    private async Task OnSave()
+    {
+        Dictionary<Guid, string>? map;
+        try
+        {
+            map = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(_keysText) ?? new();
+        }
+        catch (Exception e)
+        {
+            _error = "Invalid JSON. Expected an object of { \"agentId\": \"key\" }.";
+            return;
+        }
+
+        await AuthorizedHttpClientFactory.CreateClient("Default").PostAsync("/api/broker/agentKeys",
+            new StringContent(JsonConvert.SerializeObject(map), Encoding.UTF8, "application/json"));
+
+        _error = string.Empty;
+        _show = false;
+    }
+}
