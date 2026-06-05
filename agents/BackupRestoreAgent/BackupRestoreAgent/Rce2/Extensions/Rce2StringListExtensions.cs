@@ -1,4 +1,4 @@
-namespace Rce2;
+﻿namespace Rce2;
 
 public static class Rce2StringListExtensions
 {

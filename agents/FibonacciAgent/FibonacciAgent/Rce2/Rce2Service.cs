@@ -63,14 +63,22 @@ public class Rce2Service
         Task.Run(FeedHandler);
     }
 
-    public async Task Send(string contact, object payload)
+    public async Task<bool> Send(string contact, object payload)
     {
-        await CreateHttpClient().PostAsync($"{_brokerAddress}/api/agent/{_agentId}", new StringContent(JsonConvert.SerializeObject(new Rce2Message
+        try
         {
-            Type = _outputDefinitions[contact],
-            Contact = contact,
-            Payload = JObject.FromObject(new { data = payload })
-        }), Encoding.UTF8, "application/json"));
+            await CreateHttpClient().PostAsync($"{_brokerAddress}/api/agent/{_agentId}", new StringContent(JsonConvert.SerializeObject(new Rce2Message
+            {
+                Type = _outputDefinitions[contact],
+                Contact = contact,
+                Payload = JObject.FromObject(new { data = payload })
+            }), Encoding.UTF8, "application/json"));
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private async Task FeedHandler()
