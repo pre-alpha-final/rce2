@@ -11,7 +11,7 @@ public static class MenuCatalog
     public static readonly IReadOnlyList<MenuItem> Items = new[]
     {
         new MenuItem("youtube", "Youtube", "Youtube media control", typeof(Youtube)),
-        new MenuItem("placeholder1", "Placeholder", "placeholder"),
+        new MenuItem("backuprestore", "Backup/Restore", "Backup and restore", typeof(BackupRestore)),
         new MenuItem("placeholder2", "Placeholder", "placeholder"),
         new MenuItem("placeholder3", "Placeholder", "placeholder"),
         new MenuItem("sendit", "Send It!", "Send debug signals", typeof(SendIt)),

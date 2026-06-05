@@ -1,0 +1,37 @@
+@using TabletUIAgent.Models
+
+<div class="feature-pane backup-wrapper">
+    <div class="backup-container">
+        <div class="path-row">
+            <input
+                class="path-input"
+                type="text"
+                placeholder="Enter backup path..."
+                aria-label="Backup path"
+                @bind="Path" />
+            <button class="btn btn-outline-secondary path-set-btn" @onclick="SetPath">Set</button>
+        </div>
+
+        <button class="btn btn-primary touch-btn backup-btn" @onclick="Backup">Backup</button>
+        <button class="btn btn-outline-secondary touch-btn restore-btn" @onclick="Restore">Restore</button>
+    </div>
+</div>
+
+@code {
+    private string Path = "";
+
+    private void SetPath()
+    {
+        Toast.Show("Path set");
+    }
+
+    private void Backup()
+    {
+        Toast.Show("Backup started");
+    }
+
+    private void Restore()
+    {
+        Toast.Show("Restore started");
+    }
+}
