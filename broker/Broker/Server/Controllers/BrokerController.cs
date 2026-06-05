@@ -15,14 +15,30 @@ public class BrokerController : ControllerBase
     private readonly IAgentFeedService _agentFeedService;
     private readonly IBindingRepository _bindingRepository;
     private readonly IRecentMessagesRepository _recentMessagesRepository;
+    private readonly IAgentKeyService _agentKeyService;
 
     public BrokerController(IBrokerFeedService brokerFeedService, IAgentFeedService agentFeedService,
-        IBindingRepository bindingRepository, IRecentMessagesRepository recentMessagesRepository)
+        IBindingRepository bindingRepository, IRecentMessagesRepository recentMessagesRepository,
+        IAgentKeyService agentKeyService)
     {
         _brokerFeedService = brokerFeedService;
         _agentFeedService = agentFeedService;
         _bindingRepository = bindingRepository;
         _recentMessagesRepository = recentMessagesRepository;
+        _agentKeyService = agentKeyService;
+    }
+
+    [HttpGet("agentKeys")]
+    public OkObjectResult GetAgentKeys()
+    {
+        return Ok(_agentKeyService.GetAll());
+    }
+
+    [HttpPost("agentKeys")]
+    public OkResult SetAgentKeys([FromBody] Dictionary<Guid, string> agentKeys)
+    {
+        _agentKeyService.SetAll(agentKeys ?? new());
+        return Ok();
     }
 
     [HttpGet("{id:Guid}")]

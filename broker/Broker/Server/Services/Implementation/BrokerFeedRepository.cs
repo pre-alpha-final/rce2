@@ -45,7 +45,8 @@ public class BrokerFeedRepository : IBrokerFeedRepository
 
     public BrokerEventBase GetNext(Guid feedId)
     {
-        if (_feeds.TryGetValue(feedId, out var feed) == false)
+        var feed = _feeds.GetOrAdd(feedId, _ => new ConcurrentQueue<BrokerEventBase>());
+        if (feed == null)
         {
             return null;
         }
