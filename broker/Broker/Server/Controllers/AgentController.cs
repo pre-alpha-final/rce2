@@ -64,13 +64,19 @@ public class AgentController : ControllerBase
 
         if (rce2Message.Type == Rce2Types.WhoIs)
         {
+            var agent = rce2Message.Payload.ToObject<Agent>();
+            if (agent == null || agent.Id != id)
+            {
+                return BadRequest();
+            }
+
             await PubSub.Hub.Default.PublishAsync(new WhoIsReceived
             {
-                Agent = rce2Message.Payload.ToObject<Agent>(),
+                Agent = agent,
             });
             await _brokerFeedService.BroadcastItem(new AgentUpdatedEvent
             {
-                Agent = rce2Message.Payload.ToObject<Agent>(),
+                Agent = agent,
             });
             await RecheckBindings();
 
