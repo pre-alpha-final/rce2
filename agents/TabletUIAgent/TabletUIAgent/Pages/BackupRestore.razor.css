@@ -24,7 +24,8 @@
     border-radius: var(--r2-radius);
 }
 
-.path-set-btn {
+.path-set-btn,
+.path-get-btn {
     font-size: 1.4rem;
     padding: 0.8rem 1.6rem;
     font-weight: bold;

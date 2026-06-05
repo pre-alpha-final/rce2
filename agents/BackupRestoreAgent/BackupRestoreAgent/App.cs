@@ -32,6 +32,7 @@ public class App : IHostedService
             .SetInputDefinitions(new()
             {
                 { "set-path", Rce2Types.String },
+                { "get-path", Rce2Types.Void },
                 { "backup", Rce2Types.Void },
                 { "restore", Rce2Types.Void },
             })
@@ -47,6 +48,9 @@ public class App : IHostedService
             {
                 case "set-path":
                     await HandleSetPath(e);
+                    break;
+                case "get-path":
+                    await HandleGetPath();
                     break;
                 case "backup":
                     await HandleBackup();
@@ -86,6 +90,25 @@ public class App : IHostedService
         catch (Exception ex)
         {
             await Out($"set-path error: {ex.Message}");
+        }
+    }
+
+    private async Task HandleGetPath()
+    {
+        try
+        {
+            var path = _configRepository.Load().Path;
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                await Out("get-path: no path set");
+                return;
+            }
+
+            await Out($"path is '{path}'");
+        }
+        catch (Exception ex)
+        {
+            await Out($"get-path error: {ex.Message}");
         }
     }
 

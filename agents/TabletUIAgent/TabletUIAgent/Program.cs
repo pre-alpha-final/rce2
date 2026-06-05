@@ -43,6 +43,7 @@ public class Program
                 { "yt-forward-10", Rce2Types.Number },
                 { "sendit-output", Rce2Types.String },
                 { "br-set-path", Rce2Types.String },
+                { "br-get-path", Rce2Types.Void },
                 { "br-backup", Rce2Types.Void },
                 { "br-restore", Rce2Types.Void }
             })

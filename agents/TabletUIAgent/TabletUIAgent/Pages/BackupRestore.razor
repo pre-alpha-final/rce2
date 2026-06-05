@@ -14,6 +14,7 @@
                 aria-label="Backup path"
                 @bind="Path" />
             <button class="btn btn-outline-secondary path-set-btn" @onclick="SetPath">Set</button>
+            <button class="btn btn-outline-secondary path-get-btn" @onclick="GetPath">Get</button>
         </div>
 
         <button class="btn btn-primary touch-btn backup-btn" @onclick="Backup">Backup</button>
@@ -60,6 +61,18 @@
         catch (Exception ex)
         {
             Toast.Error($"Set path failed: {ex.Message}");
+        }
+    }
+
+    private async Task GetPath()
+    {
+        try
+        {
+            await Rce2Service.Send("br-get-path", null);
+        }
+        catch (Exception ex)
+        {
+            Toast.Error($"Get path failed: {ex.Message}");
         }
     }
 
