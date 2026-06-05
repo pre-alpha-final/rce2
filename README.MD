@@ -42,6 +42,13 @@ The concept of an "agent" came from an early draft, where agent and broker respo
 In current implementation agents have no knowledge of the rest of the network. They get messages delivered to their message feed and send their own messages to the ether. Only on broker level you see the entire network and agent bindings.
 Additionally there is a key scheme available for the agents, where every agent gets a key assigned and is required to use it for all communication. This way if an agent is compromised it doesn't affect other agents on the network. These per-agent keys are managed from the broker. An agent with an assigned key must present it, while an agent with no key may connect unauthenticated.
 
+# Supplement docs
+More detailed docs spread across the repo:
+
+- [Web Server Agent](agents/WebServerAgents/README.MD) - gives HTTP server functionality to devices without one.
+- [Minecraft Advanced Computer Agent](agents/MinecraftAgents/AdvancedComputer/README.MD) - agent for Minecraft's advanced computer (CC: Tweaked).
+- [Minecraft Turtle Scanner/Printer](agents/MinecraftAgents/Turtle3dPrinter/README.MD) - agents that scan and re-3D-print a structure around a turtle.
+
 License
 ----
 MIT
