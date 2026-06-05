@@ -31,7 +31,8 @@ public class Program
             .SetAgentName("TabletUI")
             .SetInputDefinitions(new()
             {
-                { "sendit-input", Rce2Types.String }
+                { "sendit-input", Rce2Types.String },
+                { "br-debug", Rce2Types.String }
             })
             .SetOutputDefinitions(new()
             {
@@ -40,7 +41,10 @@ public class Program
                 { "yt-pause-resume", Rce2Types.Void },
                 { "yt-forward", Rce2Types.Number },
                 { "yt-forward-10", Rce2Types.Number },
-                { "sendit-output", Rce2Types.String }
+                { "sendit-output", Rce2Types.String },
+                { "br-set-path", Rce2Types.String },
+                { "br-backup", Rce2Types.Void },
+                { "br-restore", Rce2Types.Void }
             })
             .Init();
     }

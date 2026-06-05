@@ -1,0 +1,89 @@
+@using PubSub
+@using Rce2
+@using TabletUIAgent.Models
+@implements IDisposable
+@inject Rce2Service Rce2Service
+
+<div class="feature-pane backup-wrapper">
+    <div class="backup-container">
+        <div class="path-row">
+            <input
+                class="path-input"
+                type="text"
+                placeholder="Enter backup path..."
+                aria-label="Backup path"
+                @bind="Path" />
+            <button class="btn btn-outline-secondary path-set-btn" @onclick="SetPath">Set</button>
+        </div>
+
+        <button class="btn btn-primary touch-btn backup-btn" @onclick="Backup">Backup</button>
+        <button class="btn btn-outline-secondary touch-btn restore-btn" @onclick="Restore">Restore</button>
+    </div>
+</div>
+
+@code {
+    private string Path = "";
+
+    public BackupRestore()
+    {
+        Hub.Default.Subscribe<Rce2Message>(this, e =>
+        {
+            if (e.Contact != "br-debug")
+            {
+                return;
+            }
+
+            var payload = e.Payload["data"]?.ToObject<string>();
+            if (string.IsNullOrWhiteSpace(payload) == false)
+            {
+                Toast.Show(payload);
+            }
+        });
+    }
+
+    public void Dispose()
+    {
+        Hub.Default.Unsubscribe<Rce2Message>(this);
+    }
+
+    private async Task SetPath()
+    {
+        if (string.IsNullOrWhiteSpace(Path))
+        {
+            return;
+        }
+
+        try
+        {
+            await Rce2Service.Send("br-set-path", Path);
+        }
+        catch (Exception ex)
+        {
+            Toast.Error($"Set path failed: {ex.Message}");
+        }
+    }
+
+    private async Task Backup()
+    {
+        try
+        {
+            await Rce2Service.Send("br-backup", null);
+        }
+        catch (Exception ex)
+        {
+            Toast.Error($"Backup failed: {ex.Message}");
+        }
+    }
+
+    private async Task Restore()
+    {
+        try
+        {
+            await Rce2Service.Send("br-restore", null);
+        }
+        catch (Exception ex)
+        {
+            Toast.Error($"Restore failed: {ex.Message}");
+        }
+    }
+}
