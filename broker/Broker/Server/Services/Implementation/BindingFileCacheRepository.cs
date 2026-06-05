@@ -68,7 +68,7 @@ public class BindingFileCacheRepository : IBindingRepository
         try
         {
             var content = File.ReadAllText(FileName);
-            Bindings = JsonConvert.DeserializeObject<HashSet<Binding>>(content);
+            Bindings = JsonConvert.DeserializeObject<HashSet<Binding>>(content) ?? new HashSet<Binding>();
         }
         catch (Exception e)
         {
