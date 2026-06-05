@@ -116,6 +116,7 @@ A message is `{ Type, Contact, Payload }` (`Rce2Message`). On the wire, `Send("e
 
 - `Send` sets `Type` to the contact's declared output type automatically and wraps your payload as `{ "data": <payload> }`.
 - So inbound, your value is always at `Payload["data"]` — use `.ToObject<T>()` to read it. **Validate before dereferencing**: `Payload?["data"]?.ToObject<T>()` rather than assuming shape.
+- `Send` returns `Task<bool>` and **never throws**: `true` when the POST completed, `false` on any failure (a contact missing from `SetOutputDefinitions`, a network error, or a serialization error). Awaiting it is always safe; capture the result when you need to know the send actually went out.
 
 `Rce2Types` constants:
 
@@ -156,7 +157,7 @@ Always dispose it (the `using` above) so it unsubscribes from the hub.
 
 ## Checklist for a correct agent
 
-- Every contact you pass to `Send(...)` exists in `SetOutputDefinitions`.
+- Every contact you pass to `Send(...)` exists in `SetOutputDefinitions` — an unknown contact makes `Send` return `false` (it no longer throws, so a typo fails silently).
 - Every inbound `Contact` you act on exists in `SetInputDefinitions`.
 - Payloads are read defensively from `Payload?["data"]`.
 - `AgentId` stays `Guid.NewGuid()` in committed code; a static id is a production-only, deploy-time change (avoids collisions between developers' checkouts).
