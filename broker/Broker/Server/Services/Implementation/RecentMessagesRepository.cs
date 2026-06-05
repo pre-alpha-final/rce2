@@ -20,6 +20,11 @@ public class RecentMessagesRepository : IRecentMessagesRepository
                 return;
             }
 
+            if (_queue.Any(e => e.BrokerEventBaseId == item.BrokerEventBaseId))
+            {
+                return;
+            }
+
             if (_queue.Count >= MaxSize)
             {
                 _queue.Dequeue();
