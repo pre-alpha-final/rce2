@@ -14,7 +14,7 @@ public class AgentFeedRepository : IAgentFeedRepository
 
     public void AddItem(Guid feedId, Rce2Message item)
     {
-        var feed = _feeds.GetOrAdd(feedId, new ConcurrentQueue<Rce2Message>());
+        var feed = _feeds.GetOrAdd(feedId, _ => new ConcurrentQueue<Rce2Message>());
         feed.Enqueue(item);
     }
 
@@ -37,7 +37,10 @@ public class AgentFeedRepository : IAgentFeedRepository
 
     public Rce2Message GetNext(Guid feedId)
     {
-        var feed = _feeds.GetOrAdd(feedId, new ConcurrentQueue<Rce2Message>());
+        if (_feeds.TryGetValue(feedId, out var feed) == false)
+        {
+            return null;
+        }
         feed.TryDequeue(out var next);
 
         return next;

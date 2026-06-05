@@ -20,7 +20,7 @@ public class BrokerFeedRepository : IBrokerFeedRepository
 
     public void AddItem(Guid feedId, BrokerEventBase item)
     {
-        var feed = _feeds.GetOrAdd(feedId, new ConcurrentQueue<BrokerEventBase>());
+        var feed = _feeds.GetOrAdd(feedId, _ => new ConcurrentQueue<BrokerEventBase>());
         feed.Enqueue(item);
         _recentMessagesRepository.AddItem(item);
     }
@@ -45,7 +45,10 @@ public class BrokerFeedRepository : IBrokerFeedRepository
 
     public BrokerEventBase GetNext(Guid feedId)
     {
-        var feed = _feeds.GetOrAdd(feedId, new ConcurrentQueue<BrokerEventBase>());
+        if (_feeds.TryGetValue(feedId, out var feed) == false)
+        {
+            return null;
+        }
         feed.TryDequeue(out var next);
 
         return next;

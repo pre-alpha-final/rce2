@@ -1,5 +1,6 @@
 ﻿using Broker.Server.Infrastructure;
 using Broker.Shared.Events;
+using System.Collections.Concurrent;
 
 namespace Broker.Server.Services.Implementation;
 
@@ -20,7 +21,7 @@ public class JanitorService : IJanitorService
         PubSub.Hub.Default.Subscribe<Activity>(this, OnActivity);
     }
 
-    public Dictionary<Guid, DateTimeOffset> ActivityDictionary { get; set; } = new();
+    public ConcurrentDictionary<Guid, DateTimeOffset> ActivityDictionary { get; set; } = new();
 
     public async Task Run()
     {
@@ -82,7 +83,7 @@ public class JanitorService : IJanitorService
 
     private void HandleActivityDictionary(KeyValuePair<Guid, DateTimeOffset> inactiveEntity)
     {
-        ActivityDictionary.Remove(inactiveEntity.Key);
+        ActivityDictionary.TryRemove(inactiveEntity.Key, out _);
     }
 
     private async Task OnActivity(Activity activity)
