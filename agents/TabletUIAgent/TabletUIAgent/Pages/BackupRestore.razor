@@ -1,4 +1,8 @@
+@using PubSub
+@using Rce2
 @using TabletUIAgent.Models
+@implements IDisposable
+@inject Rce2Service Rce2Service
 
 <div class="feature-pane backup-wrapper">
     <div class="backup-container">
@@ -20,18 +24,66 @@
 @code {
     private string Path = "";
 
-    private void SetPath()
+    public BackupRestore()
     {
-        Toast.Show("Path set");
+        Hub.Default.Subscribe<Rce2Message>(this, e =>
+        {
+            if (e.Contact != "br-debug")
+            {
+                return;
+            }
+
+            var payload = e.Payload["data"]?.ToObject<string>();
+            if (string.IsNullOrWhiteSpace(payload) == false)
+            {
+                Toast.Show(payload);
+            }
+        });
     }
 
-    private void Backup()
+    public void Dispose()
     {
-        Toast.Show("Backup started");
+        Hub.Default.Unsubscribe<Rce2Message>(this);
     }
 
-    private void Restore()
+    private async Task SetPath()
     {
-        Toast.Show("Restore started");
+        if (string.IsNullOrWhiteSpace(Path))
+        {
+            return;
+        }
+
+        try
+        {
+            await Rce2Service.Send("br-set-path", Path);
+        }
+        catch (Exception ex)
+        {
+            Toast.Error($"Set path failed: {ex.Message}");
+        }
+    }
+
+    private async Task Backup()
+    {
+        try
+        {
+            await Rce2Service.Send("br-backup", null);
+        }
+        catch (Exception ex)
+        {
+            Toast.Error($"Backup failed: {ex.Message}");
+        }
+    }
+
+    private async Task Restore()
+    {
+        try
+        {
+            await Rce2Service.Send("br-restore", null);
+        }
+        catch (Exception ex)
+        {
+            Toast.Error($"Restore failed: {ex.Message}");
+        }
     }
 }
