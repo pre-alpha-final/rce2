@@ -68,32 +68,43 @@ public sealed class App : IHostedService
 
     private void HandleMessage(Rce2Message message)
     {
-        var url = message.Contact switch
+        switch (message.Contact)
         {
-            WhatIsMyIpAddressContact => WhatIsMyIpAddressUrl,
-            OpenUrlContact => NormalizeUrl(message.Payload["data"]?.ToObject<string>()),
-            Automation1Contact => null,
-            _ => null
-        };
-
-        if (message.Contact != WhatIsMyIpAddressContact &&
-            message.Contact != OpenUrlContact &&
-            message.Contact != Automation1Contact)
-        {
-            return;
+            case WhatIsMyIpAddressContact:
+                HandleWhatIsMyIpAddress();
+                break;
+            case OpenUrlContact:
+                HandleOpenUrl(message);
+                break;
+            case Automation1Contact:
+                HandleAutomation1();
+                break;
         }
+    }
 
-        if (message.Contact == Automation1Contact)
-        {
-            return;
-        }
+    private void HandleWhatIsMyIpAddress()
+    {
+        TryNavigateToUrl(WhatIsMyIpAddressUrl);
+    }
 
+    private void HandleOpenUrl(Rce2Message message)
+    {
+        var url = NormalizeUrl(message.Payload["data"]?.ToObject<string>());
         if (url is null)
         {
             Console.Error.WriteLine($"Ignoring invalid URL payload: {message.Payload["data"]}");
             return;
         }
 
+        TryNavigateToUrl(url);
+    }
+
+    private static void HandleAutomation1()
+    {
+    }
+
+    private void TryNavigateToUrl(string url)
+    {
         lock (_driverLock)
         {
             try
