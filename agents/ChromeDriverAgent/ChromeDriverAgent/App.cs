@@ -10,7 +10,10 @@ public sealed class App : IHostedService
 {
     private const string BrokerAddress = "https://localhost:7113";
     private const string AgentKey = "";
+    private const string WhatIsMyIpAddressContact = "what-is-my-ip-address";
     private const string OpenUrlContact = "open-url";
+    private const string Automation1Contact = "automation-1";
+    private const string WhatIsMyIpAddressUrl = "https://whatismyipaddress.com/";
 
     private readonly Rce2Service _rce2Service;
     private readonly object _driverLock = new();
@@ -31,7 +34,9 @@ public sealed class App : IHostedService
             .SetAgentName("Chrome Driver")
             .SetInputDefinitions(new()
             {
-                { OpenUrlContact, Rce2Types.String }
+                { WhatIsMyIpAddressContact, Rce2Types.Void },
+                { OpenUrlContact, Rce2Types.String },
+                { Automation1Contact, Rce2Types.Void }
             })
             .SetOutputDefinitions(new())
             .Init();
@@ -63,12 +68,26 @@ public sealed class App : IHostedService
 
     private void HandleMessage(Rce2Message message)
     {
-        if (message.Contact != OpenUrlContact)
+        var url = message.Contact switch
+        {
+            WhatIsMyIpAddressContact => WhatIsMyIpAddressUrl,
+            OpenUrlContact => NormalizeUrl(message.Payload["data"]?.ToObject<string>()),
+            Automation1Contact => null,
+            _ => null
+        };
+
+        if (message.Contact != WhatIsMyIpAddressContact &&
+            message.Contact != OpenUrlContact &&
+            message.Contact != Automation1Contact)
         {
             return;
         }
 
-        var url = NormalizeUrl(message.Payload["data"]?.ToObject<string>());
+        if (message.Contact == Automation1Contact)
+        {
+            return;
+        }
+
         if (url is null)
         {
             Console.Error.WriteLine($"Ignoring invalid URL payload: {message.Payload["data"]}");
