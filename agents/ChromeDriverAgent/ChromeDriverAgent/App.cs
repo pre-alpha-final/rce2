@@ -79,12 +79,26 @@ public sealed class App : IHostedService
         {
             try
             {
-                GetDriver().Navigate().GoToUrl(url);
+                NavigateToUrl(url);
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"Failed to open URL in Chrome: {ex}");
             }
+        }
+    }
+
+    private void NavigateToUrl(string url)
+    {
+        try
+        {
+            GetDriver().Navigate().GoToUrl(url);
+        }
+        catch (WebDriverException ex) when (ShouldRestartDriver(ex))
+        {
+            Console.Error.WriteLine("ChromeDriver browser session was no longer usable. Restarting ChromeDriver and retrying once.");
+            ResetDriver();
+            GetDriver().Navigate().GoToUrl(url);
         }
     }
 
@@ -109,6 +123,23 @@ public sealed class App : IHostedService
 
         _driver = new ChromeDriver(service, options);
         return _driver;
+    }
+
+    private void ResetDriver()
+    {
+        try
+        {
+            _driver?.Quit();
+            _driver?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to clean up invalid ChromeDriver session: {ex.Message}");
+        }
+        finally
+        {
+            _driver = null;
+        }
     }
 
     private ChromeOptions CreateChromeOptions()
@@ -141,6 +172,14 @@ public sealed class App : IHostedService
         }
 
         return null;
+    }
+
+    private static bool ShouldRestartDriver(WebDriverException ex)
+    {
+        return ex is NoSuchWindowException ||
+               ex.Message.Contains("invalid session id", StringComparison.OrdinalIgnoreCase) ||
+               ex.Message.Contains("target window already closed", StringComparison.OrdinalIgnoreCase) ||
+               ex.Message.Contains("web view not found", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string CreateUserDataDirectory()
