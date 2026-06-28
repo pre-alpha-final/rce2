@@ -55,7 +55,6 @@ public sealed class App : IHostedService
             finally
             {
                 _driver = null;
-                TryDeleteUserDataDirectory(_userDataDirectory);
             }
         }
 
@@ -146,28 +145,14 @@ public sealed class App : IHostedService
 
     private static string CreateUserDataDirectory()
     {
+        var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var directory = Path.Combine(
-            Path.GetTempPath(),
+            localAppData,
             "Rce2",
             "ChromeDriverAgent",
-            Guid.NewGuid().ToString("N"));
+            "User Data");
 
         Directory.CreateDirectory(directory);
         return directory;
-    }
-
-    private static void TryDeleteUserDataDirectory(string directory)
-    {
-        try
-        {
-            if (Directory.Exists(directory))
-            {
-                Directory.Delete(directory, recursive: true);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"Failed to delete ChromeDriver profile directory '{directory}': {ex.Message}");
-        }
     }
 }
