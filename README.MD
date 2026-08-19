@@ -1,3 +1,6 @@
+# Next version available
+--- Next version at: [Remote Controlled Electronics v3](https://github.com/pre-alpha-final/rce3 "Remote Controlled Electronics v3") ---  
+
 # Rce2 - Remote Controlled Electronics v2
 An evolution over the original Rce design.
 <p align="center"><img src="/docs/main.jpg" width="600"/></p>
